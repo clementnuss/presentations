@@ -3,7 +3,9 @@
 deps
 
 ```shell
-npm i -g @iconify-json/uim
-npm i -g @iconify-json/logos
-npm i -g @iconify-json/fluent-emoji
+npm install -g @slidev/cli
+npm install -g @slidev/theme-seriph
+npm install -g @iconify-json/uim
+npm install -g @iconify-json/logos
+npm install -g @iconify-json/fluent-emoji
 ```
