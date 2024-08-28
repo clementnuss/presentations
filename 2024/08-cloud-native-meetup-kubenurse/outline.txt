@@ -1,0 +1,23 @@
+# Introduction
+
+# Randomness
+
+in the context of theoretical computer science, servers/computers can be
+considered as a practical realization of random (access) machines
+
+in the context of applied systems engineering (or platform engineering, DevOps,
+DevSecOps, NetOps, SysOps), servers can be observed to behave randomly
+
+
+
+# Kubenurse
+
+
+
+# Example: ESXi host with latency issues
+
+# Demo - installing Kubenurse
+
+# Demo - introducing some chaos on random nodes, monitoring the effect with kubenurse
+
+# Conclusion / Call to Action
