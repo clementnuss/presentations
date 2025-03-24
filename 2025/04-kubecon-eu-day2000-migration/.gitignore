@@ -5,6 +5,5 @@ dist
 .vite-inspect
 .remote-assets
 components.d.ts
-package-lock.json
-netlify.toml
 components/
+netlify.toml
