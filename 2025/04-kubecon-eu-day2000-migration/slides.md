@@ -3,10 +3,7 @@ theme: seriph
 themeConfig:
   primary: '#E85C0D'
 # color palette: #FABC3F #E85C0D #C7253E #821131
-background: /images/IMG_0719_Original.jpeg
-layout: cover
 title: "Day-2’000 - Migration From kubeadm+Ansible to ClusterAPI+Talos: A Swiss Bank’s Journey"
-
 author: Clément Nussbaumer
 info: |-
   Is it even possible to migrate 35 clusters in an air-gapped environment with a
@@ -29,25 +26,34 @@ class: text-center
 highlighter: shiki
 mdc: true
 hideInToc: true
+layout: two-cols-header
+layoutClass: cover text-right
 ---
 
 # Day-2'099 Migration
-## from kubeadm+Ansible to ClusterAPI+Talos
+## kubeadm+Ansible to ClusterAPI+Talos
 ## A Swiss Bank’s Journey
-
-KubeCon EU 2025 - London
 
 **Clément Nussbaumer**
 
-<a href="https://clement.n8r.ch/en/articles/" style="font-size: 1.5rem;" target="_blank" alt="Blog" class="absolute right-6rem bottom-30px m-6 text-xl">clement.n8r.ch</a>
+<a href="https://clement.n8r.ch/en/articles/" style="font-size: 1.5rem;" target="_blank" alt="Blog" class="absolute right-6rem top-15rem m-6 text-xl">clement.n8r.ch</a>
 
 <a href="https://www.linkedin.com/in/clement-j-m-nussbaumer/" target="_blank" alt="Blog"
-  class="absolute right-4rem bottom-30px m-6  text-xl icon-btn opacity-100 !border-none "><carbon-logo-linkedin />
+  class="absolute right-4rem top-15rem m-6  text-xl icon-btn opacity-100 !border-none "><carbon-logo-linkedin />
 </a>
 
 <a href="https://github.com/clementnuss" target="_blank" alt="GitHub"
-  class="absolute right-2rem bottom-30px m-6 text-xl icon-btn opacity-100 !border-none"><carbon-logo-github />
+  class="absolute right-2rem top-15rem m-6 text-xl icon-btn opacity-100 !border-none"><carbon-logo-github />
 </a>
+
+<!-- <img border="rounded" src="./images/KubeConLondon.png" width="30%" class="absolute bottom-1rem left-2rem "> -->
+
+<img border="rounded" src="./images/KubeConlogo.png" width="87%" class="absolute justify-items-center bottom-1rem">
+
+<figure class="absolute top-2rem left-2rem m-0">
+  <img border="rounded" src="./images/clusterapi-cuttle.webp" width="30%">
+  <footer><cite style="font-size: 75%;display: block;text-align: start;" >Created with FLUX.1 [dev] by Black Forest Labs</cite></footer>
+</figure>
 
 ---
 
@@ -58,6 +64,10 @@ How old can your clusters get?
 <div class="grid grid-cols-5 gap-4">
 <div class="col-span-2 flex flex-col flex-items-start">
 
+<br>
+<br>
+<br>
+
 
 ```console
 $ kubectl get namespace kube-system
@@ -66,7 +76,6 @@ kube-system   Active   5y273d
 ```
 
 ```console
-
      5 years (365.25 days)
  + 273 days
 = 2099 days
@@ -85,25 +94,11 @@ kube-system   Active   5y273d
 src: ./slides/intro-pf.md
 ---
 ---
-title: Our Journey
----
-
-# Our Journey
-Agenda
-
-1. Starting Point
-1. Destination
-1. Cluster API
-1. Talos Linux
-1. Migration
-
-
----
 
 # Starting Point
 Legacy cluster provisioning
 
-<div class="grid grid-cols-4 gap-4">
+<div class="grid grid-cols-5 gap-4">
 <div class="col-span-2">
 
 1. provision Debian VMs (terraform)
@@ -115,7 +110,7 @@ Legacy cluster provisioning
 1. configure ArgoCD integration
 
 </div>
-<div class="col-span-2">
+<div class="col-span-3">
 <figure>
   <img border="rounded" src="./images/clusters-pipeline.png" width="100%" alt="">
   <footer><cite style="font-size: 70%;display: block;text-align: center;" >Current cluster provisioning pipeline overview</cite></footer>
@@ -131,8 +126,8 @@ base tools: log collection, ssh access control, security tools
 
 # ClusterAPI
 
-<div class="grid grid-cols-4 gap-4">
-<div class="col-span-2">
+<div class="grid grid-cols-5 gap-4">
+<div class="col-span-3">
 
 <figure>
   <img border="rounded" src="./images/clusterapi-overview.png" width="100%" alt="">
@@ -142,7 +137,7 @@ base tools: log collection, ssh access control, security tools
 </div>
 <div class="col-span-2 flex flex-col flex-items-start">
 
-```bash
+```console
 $ kubectl get clusters --all-namespaces
 NAMESPACE    NAME           AGE
 capi-lab-a   e1-k8s-lab-a   29d
@@ -150,19 +145,19 @@ capi-lab-b   e1-k8s-lab-b   95d
 capi-lab-c   e1-k8s-lab-c   95d
 ```
 
-```bash
+```console
 $ kubectl get machinedeployments
-NAME                        REPLICAS AGE    VERSION
-e1-k8s-pfnet-lab-a-md-002   2        5d5h   v1.30.5
-e1-k8s-pfnet-lab-a-md-1     1        19d    v1.31.4
+NAME                  REPLICAS AGE    VERSION
+e1-k8s-lab-a-md-002   2        5d5h   v1.30.5
+e1-k8s-lab-a-md-1     1        19d    v1.31.4
 ```
 
-```bash
+```console
 $ kubectl get machines
-NAME                       PHASE     AGE    VERSION
-lab-a-md-002-8q69n-lr7ch   Running   5d4h   v1.30.5
-lab-a-md-002-8q69n-lwx4t   Running   4d2h   v1.30.5
-lab-a-md-1-8zh2h-4rtb9     Running   19d    v1.31.5
+NAME                 PHASE     AGE    VERSION
+lab-a-md-002-lr7ch   Running   5d4h   v1.30.5
+lab-a-md-002-lwx4t   Running   4d2h   v1.30.5
+lab-a-md-1-4rtb9     Running   19d    v1.31.5
 ```
 
 
@@ -179,13 +174,14 @@ lab-a-md-1-8zh2h-4rtb9     Running   19d    v1.31.5
 <div class="grid grid-cols-4 gap-4">
 <div class="col-span-2 flex flex-col flex-items-start">
 
-
 > immutable, minimal, ephemeral \
 > declarative configuration file and gRPC API [^talos-philosophy]
 
 [^talos-philosophy]: <https://www.talos.dev/v1.9/learn-more/philosophy/>
 
-```text
+<br>
+
+```console
 $ talosctl services
 SERVICE              STATE     HEALTH
 apid                 Running   OK    
@@ -202,7 +198,7 @@ udevd                Running   OK
 </div>
 <div class="col-span-2">
 <figure>
-  <img border="rounded" src="./images/talos-overview.png" width="80%" alt="">
+  <img border="rounded" src="./images/talos-overview.png" width="99%" alt="">
 </figure>
 </div>
 </div>
@@ -216,7 +212,7 @@ The Journey
 <div class="grid grid-cols-5 gap-4">
 <div class="col-span-2 flex flex-col flex-items-start">
 
-Resources:
+Documentation:
 
 - [Talos `kubeadm` migration guide](https://www.talos.dev/v1.9/advanced/migrating-from-kubeadm/)
 - [Talos `v1alpha1/config` reference](https://www.talos.dev/v1.9/reference/configuration/v1alpha1/config/)
@@ -226,7 +222,7 @@ Resources:
 </div>
 <div class="col-span-3">
 <figure>
-  <img border="rounded" src="./images/migration.png" width="75%" alt="">
+  <img border="rounded" src="./images/migration.png" width="90%" alt="">
   <!-- <footer><cite style="font-size: 70%;display: block;text-align: center;" >Current cluster provisioning pipeline overview</cite></footer> -->
 </figure>
 </div>
@@ -283,21 +279,18 @@ resources:
 
 # step 1: import existing PKI
 
+<br>
+
 ````md magic-move
-```bash
+```text
 $ export TOKEN=$(kubeadm token create --ttl 0)
 $ talosctl gen secrets \
   --from-kubernetes-pki /etc/kubernetes/pki/ \
   --kubernetes-bootstrap-token ${TOKEN} \
-  --output-file secretbundle.yaml
+  --output-file secretsbundle.yaml
 ```
-```bash {*}{lines:true}
-$ export TOKEN=$(kubeadm token create --ttl 0)
-$ talosctl gen secrets \
-  --from-kubernetes-pki /etc/kubernetes/pki/ \
-  --kubernetes-bootstrap-token ${TOKEN} \
-  --output-file secretbundle.yaml
-$ yq secretsbundle.yaml
+```yaml {*}{lines:true}
+--- # secretsbundle.yaml
 secrets:
   bootstraptoken: c00ffe.0123456789abcdef
   secretboxencryptionsecret: base64-encoded-etcd-encryption-key
@@ -310,7 +303,7 @@ certs:
     key: base64-encoded-key
   k8sserviceaccount:
     key: base64-encoded-key
-  os: # Talos PKI used for API access
+  os:
     crt: base64-encoded-crt
     key: base64-encoded-key
 ```
@@ -322,7 +315,7 @@ layoutClass: gap-2
 class: justify-items-start
 ---
 
-# step 2: ClusterAPI CRDs
+# step 2: create ClusterAPI CRDs
 
 ::left::
 
@@ -364,7 +357,7 @@ spec:
   infrastructureTemplate:
     apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
     kind: VSphereMachineTemplate
-    name: control-plane-v1.8.3-pf.0
+    name: control-plane-v1.9.4-pf.0
   replicas: 0
   rolloutStrategy:
     rollingUpdate:
@@ -380,9 +373,9 @@ layoutClass: gap-4
 class: justify-items-start
 ---
 
-# step 2: ClusterAPI CRDs
+# step 2: create ClusterAPI CRDs
 
-::left::
+<br>
 
 ```yaml {*}{lines:true}
 ---
@@ -394,10 +387,10 @@ resources:
   - control-plane.yaml
   - data-plane.yaml
 secretGenerator:
-  - name: e1-k8s-lab-f-talos # talos secrets bundle
+  - name: e1-k8s-lab-f-talos
     files:
       - bundle=secrets/secretsbundle.yaml
-  - name: e1-k8s-lab-f-ca # k8s CA
+  - name: e1-k8s-lab-f-ca
     files:
       - tls.crt=secrets/tls.crt
       - tls.key=secrets/tls.key
@@ -408,27 +401,41 @@ generatorOptions:
 ```
 
 ---
+
+# step 3: add ClusterAPI nodes
+
+<figure class="justify-items-center">
+  <img border="rounded" src="./images/migration-1:3.png" width="70%" alt="">
+</figure>
+
+---
+
+# step 3: add ClusterAPI nodes
+
+<figure class="justify-items-center">
+  <img border="rounded" src="./images/migration-2:3.png" width="70%" alt="">
+</figure>
+
+---
+
+# step 3: add ClusterAPI nodes
+
+<figure class="justify-items-center">
+  <img border="rounded" src="./images/migration-3:3.png" width="70%" alt="">
+</figure>
+
+---
 class: justify-items-start
 ---
 
 # step 3: create ClusterAPI nodes
 What could go wrong after all?
 
-- starting a control-plane node before ClusterAPI notices the cluster already exists
-
 - mismatched `--service-account-issuer` config:
 
   ```log
-  
   [authentication.go:73] "Unable to authenticate the request" err="invalid bearer token"
   ```
-
----
-class: justify-items-start
----
-
-# step 3: create ClusterAPI nodes
-What could go wrong after all? part 2
 
 - `etcd` encryption key missing:
 
@@ -443,7 +450,7 @@ What could go wrong after all? part 2
   [transformer.go:163] "failed to decrypt data" err="output array was not large enough for encryption"
   ```
 
-- loss of quorum: use the `--force-new-cluster` to recover one node and join the other afterwards
+- loss of quorum: use the `--force-new-cluster` to recover one node
 
 ---
 layout: two-cols-header
@@ -456,27 +463,134 @@ class: justify-items-start
 
 ::left::
 
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
 ## Live migration 🎢
 
-- import existing PKI/certs
-- create ClusterAPI CRDs
-- create new control-plane nodes
-- hope for the best!
 
 ::right::
 
 <figure>
-  <img border="rounded" src="/images/demo-monkey.webp" width="95%" alt="">
+  <img border="rounded" src="./images/clusterapi-cuttle.webp" width="95%" alt="">
   <footer><cite style="font-size: 70%;display: block;text-align: center;" >Created with FLUX.1 [dev] by Black Forest Labs</cite></footer>
 </figure>
 
 ---
-
-# ArgoCD & ApplicationSets
 layout: two-cols-header
 layoutClass: gap-4
 class: justify-items-start
 ---
 
+# Bootstrapping Issue
+The Chicken & Egg problem
 
+::left::
+
+<figure>
+  <img border="rounded" src="./images/chicken-or-egg.jpeg" width="95%" alt="">
+  <footer><cite style="font-size: 70%;display: block;text-align: center;" >Created with FLUX.1 [dev] by Black Forest Labs</cite></footer>
+</figure>
+
+<br>
+<br>
+
+::right::
+
+<figure>
+  <img border="rounded" src="./images/bootstrapping.png" width="100%" alt="">
+</figure>
+
+---
+
+# Conclusion
+
+
+<figure place-items="center">
+  <img border="rounded" src="./images/migration.png" width="60%" alt="">
+</figure>
+
+
+---
+
+# Questions?
+
+
+<a href="https://clement.n8r.ch/en/articles/" style="font-size: 1.5rem;" target="_blank" alt="Blog" class="absolute right-6rem top-15rem m-6 text-xl">clement.n8r.ch</a>
+
+<a href="https://www.linkedin.com/in/clement-j-m-nussbaumer/" target="_blank" alt="Blog"
+  class="absolute right-4rem top-15rem m-6  text-xl icon-btn opacity-100 !border-none "><carbon-logo-linkedin />
+</a>
+
+<a href="https://github.com/clementnuss" target="_blank" alt="GitHub"
+  class="absolute right-2rem top-15rem m-6 text-xl icon-btn opacity-100 !border-none"><carbon-logo-github />
+</a>
+
+<!-- <img border="rounded" src="./images/KubeConLondon.png" width="30%" class="absolute bottom-1rem left-2rem "> -->
+
+<img border="rounded" src="./images/KubeConlogo.png" width="87%" class="absolute justify-items-center bottom-1rem">
+
+
+
+---
+
+# Templating Talos Configs
+
+
+```bash
+yq '(.. | select(has("yq_load_str"))) |= load_str(.yq_load_str)'
+```
+
+````md magic-move
+
+```yaml
+---
+apiVersion: bootstrap.cluster.x-k8s.io/v1alpha3
+kind: TalosConfigTemplate
+metadata:
+  name: config-template-20250326001
+spec:
+  template:
+    spec:
+      generateType: worker
+      strategicPatches:
+        - yq_load_str: config/lab/strategic-patches.yaml
+        - yq_load_str: config/lab/registries.yaml
+        - yq_load_str: config/lab/ca-certificates.yaml
+        - yq_load_str: config/lab/log-config.yaml
+```
+
+```yaml {10-18}
+---
+apiVersion: bootstrap.cluster.x-k8s.io/v1alpha3
+kind: TalosConfigTemplate
+metadata:
+  name: config-template-20250326001
+spec:
+  template:
+    spec:
+      generateType: worker
+      strategicPatches:
+        - | # strategic-patches.yaml content
+          cluster:
+            apiServer:
+              extraArgs:
+          ...
+        - | # registries.yaml content
+          ...
+```
+````
+
+---
+
+# ArgoCD AppSets
+
+
+<figure class="justify-items-center" >
+  <img border="rounded" src="./images/appsets.png" width="80%" alt="">
+</figure>
 

@@ -5,7 +5,7 @@ export default defineShikiSetup(() => {
   return {
     themes: {
       dark: 'catppuccin-frappe',
-      light: 'catppuccin-latte',
+      light: 'github-light-high-contrast',
     },
   }
 })

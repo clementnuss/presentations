@@ -9,17 +9,17 @@ Some context
 <div grid="~ cols-2 gap-4">
 <div>
 
-35 Vanilla v1.31 Kubernetes
+- 35 Vanilla v1.31 Kubernetes, 450 nodes
 
-Oldest cluster `AGE 5y274d`
+- Oldest cluster: `AGE = 5y273d`
 
-450 nodes (15 with GPU)
+- 2 on-prem datacenters - VSphere Virtualization
 
-Namespace self-service with inhouse operator
+- Chaos Monkey on all clusters 🐒
 
-ArgoCD and GitOps for almost all deployments
+- Namespace self-service thanks to an in-house operator
 
-Chaos Monkey on all clusters 🐒
+- ArgoCD and GitOps for almost all deployments
 
 </div>
 <div>
