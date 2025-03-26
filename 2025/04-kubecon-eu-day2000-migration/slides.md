@@ -329,7 +329,7 @@ metadata:
   name: e1-k8s-lab-f
 spec:
   controlPlaneEndpoint:
-    host: e1-k8s-lab-f-internal.pnet.ch
+    host: e1-k8s-lab-f-internal.tld.ch
     port: 443
   controlPlaneRef:
     apiVersion: controlplane.cluster.x-k8s.io/v1alpha3
@@ -519,27 +519,32 @@ The Chicken & Egg problem
 
 # Questions?
 
+<figure place-items="center">
+  <img border="rounded" src="./images/clusterapi-cuttle.webp" width="36%" alt="">
+  <footer><cite style="font-size: 70%;display: block;text-align: center;" >Created with FLUX.1 [dev] by Black Forest Labs</cite></footer>
+</figure>
 
-<a href="https://clement.n8r.ch/en/articles/" style="font-size: 1.5rem;" target="_blank" alt="Blog" class="absolute right-6rem top-15rem m-6 text-xl">clement.n8r.ch</a>
+
+<a href="https://clement.n8r.ch/en/articles/" style="font-size: 1.5rem;" target="_blank" alt="Blog" class="absolute right-26rem bottom-1rem m-6 text-xl">clement.n8r.ch</a>
 
 <a href="https://www.linkedin.com/in/clement-j-m-nussbaumer/" target="_blank" alt="Blog"
-  class="absolute right-4rem top-15rem m-6  text-xl icon-btn opacity-100 !border-none "><carbon-logo-linkedin />
+  class="absolute right-24rem bottom-1rem m-6  text-xl icon-btn opacity-100 !border-none "><carbon-logo-linkedin />
 </a>
 
 <a href="https://github.com/clementnuss" target="_blank" alt="GitHub"
-  class="absolute right-2rem top-15rem m-6 text-xl icon-btn opacity-100 !border-none"><carbon-logo-github />
+  class="absolute right-22rem bottom-1rem m-6 text-xl icon-btn opacity-100 !border-none"><carbon-logo-github />
 </a>
 
-<!-- <img border="rounded" src="./images/KubeConLondon.png" width="30%" class="absolute bottom-1rem left-2rem "> -->
+<img border="rounded" src="./images/KubeConLondon.png" width="27%" class="absolute bottom-1rem left-2rem ">
 
-<img border="rounded" src="./images/KubeConlogo.png" width="87%" class="absolute justify-items-center bottom-1rem">
+<img border="rounded" src="./images/kccnc-eu-2025-color.png" width="27%" class="absolute justify-items-center right-2rem bottom-1rem">
 
 
 
 ---
 
 # Templating Talos Configs
-
+Additional content
 
 ```bash
 yq '(.. | select(has("yq_load_str"))) |= load_str(.yq_load_str)'
@@ -588,9 +593,42 @@ spec:
 ---
 
 # ArgoCD AppSets
+Additional content
 
 
 <figure class="justify-items-center" >
   <img border="rounded" src="./images/appsets.png" width="80%" alt="">
 </figure>
+
+---
+layout: two-cols-header
+layoutClass: gap-4
+class: justify-items-start
+---
+
+# ArgoCD AppSet for Cluster management
+Additional content
+
+```yaml
+spec.generators:
+  - matrix:
+      generators:
+        - git:
+            repoURL: git@your.repo/abcdef.git
+            revision: HEAD
+            directories:
+              - path: envs/lab/*
+              - path: envs/test/*
+spec.template:
+  sources:
+    - repoURL: git@your.repo/abcdef.git
+      plugin:
+        name: lovely-ytt
+        parameters:
+          - name: lovely_preprocessors
+            string: |
+              set -euxo && cd ../../../ && \
+              find config -name "*.yaml" -exec yq -i 'explode(.) | del(.".*")' {} \; && \
+              find {{ .path.path }} -name "*.yaml" -exec yq -i '(.. | select(has("yq_load_str"))) |= load_str(.yq_load_str)' {} \;
+```
 
