@@ -15,5 +15,8 @@
     "@slidev/theme-default": "latest",
     "@slidev/theme-seriph": "^0.25.0",
     "vue": "^3.5.13"
+  },
+  "devDependencies": {
+    "playwright-chromium": "^1.51.1"
   }
 }

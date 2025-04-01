@@ -28,6 +28,7 @@ mdc: true
 hideInToc: true
 layout: two-cols-header
 layoutClass: cover text-right
+exportFilename: day2000-migration-ClusterAPI-talos
 ---
 
 # Day-2'099 Migration
@@ -36,7 +37,9 @@ layoutClass: cover text-right
 
 **Clément Nussbaumer**
 
-<a href="https://clement.n8r.ch/en/articles/" style="font-size: 1.5rem;" target="_blank" alt="Blog" class="absolute right-6rem top-15rem m-6 text-xl">clement.n8r.ch</a>
+<a href="https://clement.n8r.ch/en/articles/" style="font-size: 1.5rem;" target="_blank" alt="Blog" class="absolute right-8rem top-15rem m-6 text-xl">clement.n8r.ch</a>
+
+<img src="./images/Jura.png" width="23rem" class="absolute right-6rem top-15rem m-6 text-xl">
 
 <a href="https://www.linkedin.com/in/clement-j-m-nussbaumer/" target="_blank" alt="Blog"
   class="absolute right-4rem top-15rem m-6  text-xl icon-btn opacity-100 !border-none "><carbon-logo-linkedin />
@@ -45,8 +48,6 @@ layoutClass: cover text-right
 <a href="https://github.com/clementnuss" target="_blank" alt="GitHub"
   class="absolute right-2rem top-15rem m-6 text-xl icon-btn opacity-100 !border-none"><carbon-logo-github />
 </a>
-
-<!-- <img border="rounded" src="./images/KubeConLondon.png" width="30%" class="absolute bottom-1rem left-2rem "> -->
 
 <img border="rounded" src="./images/KubeConlogo.png" width="87%" class="absolute justify-items-center bottom-1rem">
 
@@ -375,30 +376,9 @@ class: justify-items-start
 
 # step 2: create ClusterAPI CRDs
 
-<br>
-
-```yaml {*}{lines:true}
----
-apiVersion: kustomize.config.k8s.io/v1beta1
-namespace: capi-e1-k8s-lab-f
-kind: Kustomization
-resources:
-  - cluster.yaml
-  - control-plane.yaml
-  - data-plane.yaml
-secretGenerator:
-  - name: e1-k8s-lab-f-talos
-    files:
-      - bundle=secrets/secretsbundle.yaml
-  - name: e1-k8s-lab-f-ca
-    files:
-      - tls.crt=secrets/tls.crt
-      - tls.key=secrets/tls.key
-generatorOptions:
-  disableNameSuffixHash: true
-  labels:
-    cluster.x-k8s.io/cluster-name: e1-k8s-lab-f
-```
+<figure class="justify-items-center">
+  <img border="rounded" src="./images/capi-inside-ns.png" width="90%" alt="">
+</figure>
 
 ---
 
@@ -450,7 +430,7 @@ What could go wrong after all?
   [transformer.go:163] "failed to decrypt data" err="output array was not large enough for encryption"
   ```
 
-- loss of quorum: use the `--force-new-cluster` to recover one node
+- loss of quorum: use the `--force-new-cluster` flag to recover one node
 
 ---
 layout: two-cols-header
@@ -525,14 +505,16 @@ The Chicken & Egg problem
 </figure>
 
 
-<a href="https://clement.n8r.ch/en/articles/" style="font-size: 1.5rem;" target="_blank" alt="Blog" class="absolute right-26rem bottom-1rem m-6 text-xl">clement.n8r.ch</a>
+<a href="https://clement.n8r.ch/en/articles/" style="font-size: 1.5rem;" target="_blank" alt="Blog" class="absolute right-27rem bottom-1rem m-6 text-xl">clement.n8r.ch</a>
+
+<img src="./images/Jura.png" width="23rem" class="absolute right-25rem bottom-1rem m-6 text-xl">
 
 <a href="https://www.linkedin.com/in/clement-j-m-nussbaumer/" target="_blank" alt="Blog"
-  class="absolute right-24rem bottom-1rem m-6  text-xl icon-btn opacity-100 !border-none "><carbon-logo-linkedin />
+  class="absolute right-23rem bottom-1rem m-6  text-xl icon-btn opacity-100 !border-none "><carbon-logo-linkedin />
 </a>
 
 <a href="https://github.com/clementnuss" target="_blank" alt="GitHub"
-  class="absolute right-22rem bottom-1rem m-6 text-xl icon-btn opacity-100 !border-none"><carbon-logo-github />
+  class="absolute right-21rem bottom-1rem m-6 text-xl icon-btn opacity-100 !border-none"><carbon-logo-github />
 </a>
 
 <img border="rounded" src="./images/KubeConLondon.png" width="27%" class="absolute bottom-1rem left-2rem ">
