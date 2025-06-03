@@ -1,0 +1,28 @@
+kind: NetworkChaos
+apiVersion: chaos-mesh.org/v1alpha1
+metadata:
+  namespace: default
+  name: kubenurse-network-delay-not-control-plane
+spec:
+  selector:
+    namespaces:
+      - default
+    labelSelectors:
+      app.kubernetes.io/name: kubenurse
+    nodes:
+      - kind-worker3
+  mode: one
+  duration: 180s
+  action: delay
+  direction: to
+  target:
+    mode: all
+    selector:
+      namespaces:
+        - default
+      labelSelectors:
+        app.kubernetes.io/name: kubenurse
+  delay:
+    latency: 155ms
+    jitter: 40ms
+    correlation: "70"

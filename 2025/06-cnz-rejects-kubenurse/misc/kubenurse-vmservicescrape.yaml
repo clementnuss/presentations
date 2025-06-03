@@ -1,0 +1,14 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMServiceScrape
+metadata:
+  name: kubenurse
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: kubenurse
+      app.kubernetes.io/name: kubenurse
+  namespaceSelector:
+    matchNames:
+      - kube-nurse
+  endpoints:
+  - targetPort: 8080

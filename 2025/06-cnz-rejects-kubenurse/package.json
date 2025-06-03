@@ -1,0 +1,17 @@
+{
+  "name": "06-cnz-rejects-kubenurse",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "slidev build",
+    "dev": "slidev",
+    "export": "slidev export"
+  },
+  "dependencies": {
+    "@slidev/cli": "^51.8.0",
+    "@slidev/theme-default": "latest",
+    "@slidev/theme-seriph": "latest",
+    "slidev-addon-excalidraw": "^1.0.4",
+    "vue": "^3.5.14"
+  }
+}
