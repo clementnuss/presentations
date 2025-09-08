@@ -1,7 +1,7 @@
 ---
 theme: seriph
 themeConfig:
-  primary: '#E85C0D'
+  primary: "#E85C0D"
 # color palette: #FABC3F #E85C0D #C7253E #821131
 title: "Day-2’000 - Migration From kubeadm+Ansible to ClusterAPI+Talos: A Swiss Bank’s Journey"
 author: Clément Nussbaumer
@@ -28,35 +28,37 @@ highlighter: shiki
 mdc: true
 hideInToc: true
 layout: two-cols-header
-layoutClass: cover text-right
+layoutClass: cover text-right orange-yellow-grad
 exportFilename: day2000-migration-ClusterAPI-talos
 ---
 
 # Day-2'261 Migration
 ## kubeadm+Ansible to ClusterAPI+Talos
+
 ## A Swiss Bank’s Journey
 
 **Clément Nussbaumer**
 
-<a href="https://clement.n8r.ch/en/articles/" style="font-size: 1.5rem;" target="_blank" alt="Blog" class="absolute right-8rem top-15rem m-6 text-xl">clement.n8r.ch</a>
+<a href="https://clement.n8r.ch/en/articles/" style="font-size: 1.5rem;" target="_blank" alt="Blog" class="absolute right-8rem top-25rem m-6 text-xl">clement.n8r.ch</a>
 
-<img src="./images/Jura.png" width="23rem" class="absolute right-6rem top-15rem m-6 text-xl">
+<img src="./images/Jura.png" width="23rem" class="absolute right-6rem top-25rem m-6 text-xl" alt="Jura flag">
 
 <a href="https://www.linkedin.com/in/clement-j-m-nussbaumer/" target="_blank" alt="Blog"
-  class="absolute right-4rem top-15rem m-6  text-xl icon-btn opacity-100 !border-none "><carbon-logo-linkedin />
+  class="absolute right-4rem top-25rem m-6  text-xl icon-btn opacity-100 !border-none "><carbon-logo-linkedin />
 </a>
 
 <a href="https://github.com/clementnuss" target="_blank" alt="GitHub"
-  class="absolute right-2rem top-15rem m-6 text-xl icon-btn opacity-100 !border-none"><carbon-logo-github />
+  class="absolute right-2rem top-25rem m-6 text-xl icon-btn opacity-100 !border-none"><carbon-logo-github />
 </a>
 
-<img border="rounded" src="./images/CDS2025-hero-skyline.svg" width="87%" class="absolute justify-items-center bottom-1rem">
-<img border="rounded" src="./images/CDS2025-hero-text.svg" width="30%" class="absolute bottom-5rem right-18rem m-0">
+<img src="./images/CDS2025-hero-skyline.svg" width="87%" class="absolute justify-items-center bottom-1rem" alt="cds-skyline-background">
+<img src="./images/CDS2025-hero-text.svg" width="30%" class="absolute top-2rem left-2rem m-0" alt="CDS 2025 logo">
 
-<figure class="absolute top-2rem left-2rem m-0">
-  <img border="rounded" src="./images/clusterapi-cuttle.webp" width="30%">
-  <footer><cite style="font-size: 75%;display: block;text-align: start;" >Created with FLUX.1 [dev] by Black Forest Labs</cite></footer>
-</figure>
+<style>
+.orange-yellow-grad {
+  background: linear-gradient(90deg, #ffb300 0%, #e5ff71 100%);;
+}
+</style>
 
 ---
 
