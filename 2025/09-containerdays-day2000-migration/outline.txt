@@ -1,0 +1,25 @@
+
+Longevity -> 2'099 days old
+
+Intro:
+PF - vanilla K8s
+OSS software
+
+Journey:
+1. Starting point (legacy provisioning setup)
+2. Destination (ClusterAPI + Talos)
+3. Migration
+  3.0 adapt parameters (etcd encr, service account issuer, etc.)
+  3.1 import existing PKI
+  3.2 create CAPI secrets and CAPI cluster CRD
+  3.3 start first CAPI control-plane
+  3.4 discuss errors (mismatched etcd encryption, mismatched SA issuer, etcd quorum loss)
+
+Demo
+
+ArgoCD AppSets and yq templating
+
+Bootstrapping the first management cluster
+
+
+
