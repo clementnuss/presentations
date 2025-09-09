@@ -51,8 +51,8 @@ exportFilename: day2000-migration-ClusterAPI-talos
   class="absolute right-2rem top-25rem m-6 text-xl icon-btn opacity-100 !border-none"><carbon-logo-github />
 </a>
 
-<img src="./images/CDS2025-hero-skyline.svg" width="87%" class="absolute justify-items-center bottom-1rem" alt="cds-skyline-background">
-<img src="./images/CDS2025-hero-text.svg" width="30%" class="absolute top-10rem left-2rem m-0" alt="CDS 2025 logo">
+<img src="./images/CDS2025-hero-skyline.svg" class="absolute bottom-0 left-0" alt="cds-skyline-background">
+<img src="./images/CDS2025-hero-text.svg" width="30%" class="absolute top-8rem left-2rem m-0" alt="CDS 2025 logo">
 
 <style>
 .orange-yellow-grad {
@@ -499,14 +499,14 @@ The Chicken & Egg problem
 ---
 
 # Change of Plans
-Why we're not implementing ClusterAPI
+Why we're not implementing ClusterAPI (now)
 
 <div class="grid grid-cols-2 gap-8">
 <div class="flex flex-col">
 
 ## Siderolabs' Strategic Shift
 
-- ClusterAPI providers are now **"low priority"**
+- Talos ClusterAPI providers are now **"low priority"**
 - No new features planned for CAPI providers
 - Focus shifted to [**Omni**](https://omni.siderolabs.com/) platform
 
@@ -543,11 +543,10 @@ Why we're not implementing ClusterAPI
 ## Migration Takeaways
 
 - **ClusterAPI remains a valid option** for many organizations
-- **Migration tips are universal** - apply to any Talos deployment
 - **Key lessons learned:**
   - PKI import and secret matching are critical
   - Configuration alignment is crucial
-  - Step-by-step node replacement minimizes risk
+  - Step-by-step node replacement minimizes risk and permits to migrate without downtime
 
 </div>
 <div class="flex flex-col">
@@ -560,7 +559,7 @@ We're building an **open-source tool**:
 - **Stateless & minimal** Go binary
 - **Plugin-based architecture** for infrastructure flexibility
 
-🚀 **Coming soon** - stay tuned for the open-source release!
+**Coming soon** - stay tuned for the open-source release! 🪴
 
 *The migration journey continues...*
 
@@ -569,7 +568,7 @@ We're building an **open-source tool**:
 
 ---
 layout: two-cols-header
-layoutClass: cover orange-yellow-grad
+layoutClass: cover text-right orange-yellow-grad
 ---
 
 
@@ -587,8 +586,8 @@ layoutClass: cover orange-yellow-grad
   class="absolute right-2rem top-25rem m-6 text-xl icon-btn opacity-100 !border-none"><carbon-logo-github />
 </a>
 
-<img src="./images/CDS2025-hero-skyline.svg" width="87%" class="absolute justify-items-center bottom-1rem" alt="cds-skyline-background">
-<img src="./images/CDS2025-hero-text.svg" width="30%" class="absolute top-14rem left-4rem m-0" alt="CDS 2025 logo">
+<img src="./images/CDS2025-hero-skyline.svg" class="absolute bottom-0 left-0" alt="cds-skyline-background">
+<img src="./images/CDS2025-hero-text.svg" width="30%" class="absolute top-8rem left-2rem m-0" alt="CDS 2025 logo">
 
 <style>
 .orange-yellow-grad {
