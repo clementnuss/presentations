@@ -52,11 +52,18 @@ exportFilename: day2000-migration-ClusterAPI-talos
 </a>
 
 <img src="./images/CDS2025-hero-skyline.svg" width="87%" class="absolute justify-items-center bottom-1rem" alt="cds-skyline-background">
-<img src="./images/CDS2025-hero-text.svg" width="30%" class="absolute top-2rem left-2rem m-0" alt="CDS 2025 logo">
+<img src="./images/CDS2025-hero-text.svg" width="30%" class="absolute top-10rem left-2rem m-0" alt="CDS 2025 logo">
 
 <style>
 .orange-yellow-grad {
   background: linear-gradient(90deg, #ffb300 0%, #e5ff71 100%);;
+}
+.orange-yellow-grad h1,
+.orange-yellow-grad h2,
+.orange-yellow-grad p,
+.orange-yellow-grad strong,
+.orange-yellow-grad a {
+  color: #333333 !important;
 }
 </style>
 
@@ -203,7 +210,7 @@ udevd                Running   OK
 </div>
 <div class="col-span-2">
 <figure>
-  <img border="rounded" src="./images/talos-overview.png" width="99%" alt="">
+  <img border="rounded" src="./images/talos-overview.png" class="m-4" width="95%" alt="">
 </figure>
 </div>
 </div>
@@ -561,31 +568,40 @@ We're building an **open-source tool**:
 </div>
 
 ---
+layout: two-cols-header
+layoutClass: cover orange-yellow-grad
+---
+
 
 # Questions?
 
-<figure place-items="center">
-  <img border="rounded" src="./images/clusterapi-cuttle.webp" width="36%" alt="">
-  <footer><cite style="font-size: 70%;display: block;text-align: center;" >Created with FLUX.1 [dev] by Black Forest Labs</cite></footer>
-</figure>
+<a href="https://clement.n8r.ch/en/articles/" style="font-size: 1.5rem;" target="_blank" alt="Blog" class="absolute right-8rem top-25rem m-6 text-xl">clement.n8r.ch</a>
 
-
-<a href="https://clement.n8r.ch/en/articles/" style="font-size: 1.5rem;" target="_blank" alt="Blog" class="absolute right-27rem bottom-1rem m-6 text-xl">clement.n8r.ch</a>
-
-<img src="./images/Jura.png" width="23rem" class="absolute right-25rem bottom-1rem m-6 text-xl">
+<img src="./images/Jura.png" width="23rem" class="absolute right-6rem top-25rem m-6 text-xl" alt="Jura flag">
 
 <a href="https://www.linkedin.com/in/clement-j-m-nussbaumer/" target="_blank" alt="Blog"
-  class="absolute right-23rem bottom-1rem m-6  text-xl icon-btn opacity-100 !border-none "><carbon-logo-linkedin />
+  class="absolute right-4rem top-25rem m-6  text-xl icon-btn opacity-100 !border-none "><carbon-logo-linkedin />
 </a>
 
 <a href="https://github.com/clementnuss" target="_blank" alt="GitHub"
-  class="absolute right-21rem bottom-1rem m-6 text-xl icon-btn opacity-100 !border-none"><carbon-logo-github />
+  class="absolute right-2rem top-25rem m-6 text-xl icon-btn opacity-100 !border-none"><carbon-logo-github />
 </a>
 
-<img border="rounded" src="./images/KubeConLondon.png" width="27%" class="absolute bottom-1rem left-2rem ">
+<img src="./images/CDS2025-hero-skyline.svg" width="87%" class="absolute justify-items-center bottom-1rem" alt="cds-skyline-background">
+<img src="./images/CDS2025-hero-text.svg" width="30%" class="absolute top-14rem left-4rem m-0" alt="CDS 2025 logo">
 
-<img border="rounded" src="./images/kccnc-eu-2025-color.png" width="27%" class="absolute justify-items-center right-2rem bottom-1rem">
-
+<style>
+.orange-yellow-grad {
+  background: linear-gradient(90deg, #ffb300 0%, #e5ff71 100%);;
+}
+.orange-yellow-grad h1,
+.orange-yellow-grad h2,
+.orange-yellow-grad p,
+.orange-yellow-grad strong,
+.orange-yellow-grad a {
+  color: #333333 !important;
+}
+</style>
 
 
 ---
