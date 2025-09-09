@@ -182,7 +182,7 @@ lab-a-md-1-4rtb9     Running   19d    v1.31.5
 > immutable, minimal, ephemeral \
 > declarative configuration file and gRPC API [^talos-philosophy]
 
-[^talos-philosophy]: <https://www.talos.dev/v1.9/learn-more/philosophy/>
+[^talos-philosophy]: <https://www.talos.dev/v1.11/learn-more/philosophy/>
 
 <br>
 
@@ -491,13 +491,74 @@ The Chicken & Egg problem
 
 ---
 
+# Change of Plans
+Why we're not implementing ClusterAPI
+
+<div class="grid grid-cols-2 gap-8">
+<div class="flex flex-col">
+
+## Siderolabs' Strategic Shift
+
+- ClusterAPI providers are now **"low priority"**
+- No new features planned for CAPI providers
+- Focus shifted to [**Omni**](https://omni.siderolabs.com/) platform
+
+## Technical Concerns
+
+- Kubernetes as dependency for cluster management
+- In-place upgrades vs. machine replacement
+- CAPI complexity vs. simplicity goals
+
+</div>
+<div class="flex flex-col">
+
+## Alternative Approaches
+
+- **siderolabs'** solution (Omni)
+- using **ansible** to wrap `talosctl` operations? 😬
+- **Purpose-built tool** for Talos? 🪴
+
+**References:**
+
+- [GitHub Issue #193](https://github.com/siderolabs/cluster-api-bootstrap-provider-talos/issues/193#issuecomment-2449472526)
+- [Siderolabs Blog](https://www.siderolabs.com/blog/kubernetes-cluster-full-lifecycle-management-without-cluster-api/)
+
+</div>
+</div>
+
+---
+
 # Conclusion
 
+<div class="grid grid-cols-2 gap-8">
+<div class="flex flex-col">
 
-<figure place-items="center">
-  <img border="rounded" src="./images/migration.png" width="60%" alt="">
-</figure>
+## Migration Takeaways
 
+- **ClusterAPI remains a valid option** for many organizations
+- **Migration tips are universal** - apply to any Talos deployment
+- **Key lessons learned:**
+  - PKI import and secret matching are critical
+  - Configuration alignment is crucial
+  - Step-by-step node replacement minimizes risk
+
+</div>
+<div class="flex flex-col">
+
+## Looking Forward
+
+We're building an **open-source tool**:
+
+- **Purpose-built for Talos** Linux clusters
+- **Stateless & minimal** Go binary
+- **Plugin-based architecture** for infrastructure flexibility
+
+🚀 **Coming soon** - stay tuned for the open-source release!
+
+*The migration journey continues...*
+
+</div>
+</div>
 
 ---
 

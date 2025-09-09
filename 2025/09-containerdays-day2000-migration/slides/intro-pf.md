@@ -9,9 +9,9 @@ Some context
 <div grid="~ cols-2 gap-4">
 <div>
 
-- 35 Vanilla v1.31 Kubernetes, 450 nodes
+- 35 Vanilla v1.32 Kubernetes, 450 nodes
 
-- Oldest cluster: `AGE = 5y273d`
+- Oldest cluster: `AGE = 6y70d`
 
 - 2 on-prem datacenters - VSphere Virtualization
 
