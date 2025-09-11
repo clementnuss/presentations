@@ -4,8 +4,9 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, useAttrs } from 'vue'
-const attrs = useAttrs()
+import { onMounted, ref } from 'vue'
+import { exportToSvg } from '@excalidraw/excalidraw'
+
 const loading = ref(false)
 const svg = ref<string | null>(null)
 
@@ -23,27 +24,21 @@ const props = withDefaults(defineProps<{
   background: false,
 })
 
-
-onMounted(() => {
+onMounted(async () => {
   loading.value = true
-  loadScriptsSimultaneously([
-    'https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js',
-    'https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js',
-    'https://cdn.jsdelivr.net/npm/@excalidraw/excalidraw/dist/excalidraw.production.min.js',
-  ]).then(() => {
-    loadJsonAndExport(props)
-  }).finally(() => {
+  try {
+    await loadJsonAndExport(props)
+  } finally {
     loading.value = false
-  })
+  }
 })
-
 
 const loadJsonAndExport = async ({ drawFilePath: path, darkMode = false, background = false }: { drawFilePath: string; darkMode: boolean; background: boolean }) => {
   try {
     const url = new URL(path, window.location.origin + import.meta.env.BASE_URL).href
     const json = await (await fetch(url)).json()
 
-    const svgElement = await ExcalidrawLib.exportToSvg({
+    const svgElement = await exportToSvg({
       ...json,
       appState: {
         ...(json.appState as any),
@@ -58,23 +53,5 @@ const loadJsonAndExport = async ({ drawFilePath: path, darkMode = false, backgro
   } catch (error) {
     console.error('Failed to load JSON or export to SVG', error)
   }
-}
-
-function loadScript(src) {
-  return new Promise((resolve, reject) => {
-    if (document.querySelector(`script[src="${src}"]`)) {
-      resolve('success')
-      return
-    }
-    const script = document.createElement('script')
-    script.src = src
-    script.onload = resolve
-    script.onerror = reject
-    document.head.appendChild(script)
-  })
-}
-function loadScriptsSimultaneously(srcList: string[]) {
-  const promises = srcList.map(src => loadScript(src))
-  return Promise.all(promises)
 }
 </script>
