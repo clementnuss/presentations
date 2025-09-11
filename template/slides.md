@@ -61,6 +61,20 @@ Speaker notes for this slide
 
 ---
 
+# Excalidraw Test
+
+Testing static excalidraw rendering:
+
+<Excalidraw
+  drawFilePath="./drawings/test.excalidraw.json"
+/>
+
+<!--
+Testing the excalidraw addon with a static diagram
+-->
+
+---
+
 # Thank You!
 
 ## Questions?
