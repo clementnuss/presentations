@@ -27,71 +27,505 @@ highlighter: shiki
 mdc: true
 hideInToc: true
 layout: two-cols-header
-layoutClass: cover text-right orange-yellow-grad
+layoutClass: cover text-right conf-style
 exportFilename: a-swiss-cloud-native-farm
 ---
 
 # A Swiss Cloud-Native Farm 🐄
+##
 
 **Clément Nussbaumer**
 
-<a href="https://clement.n8r.ch/en/articles/" style="font-size: 1.5rem;" target="_blank" alt="Blog" class="absolute right-8rem top-25rem m-6 text-xl">clement.n8r.ch</a>
+<a href="https://clement.n8r.ch/en/articles/" style="font-size: 1.5rem;" target="_blank" alt="Blog" class="absolute right-8rem top-20rem m-6 text-xl">clement.n8r.ch</a>
 
-<img src="./images/Jura.png" width="23rem" class="absolute right-6rem top-25rem m-6 text-xl" alt="Jura flag">
+<img src="./images/Jura.png" width="23rem" class="absolute right-6rem top-20rem m-6 text-xl" alt="Jura flag">
 
 <a href="https://www.linkedin.com/in/clement-j-m-nussbaumer/" target="_blank" alt="Blog"
-  class="absolute right-4rem top-25rem m-6  text-xl icon-btn opacity-100 !border-none "><carbon-logo-linkedin />
+  class="absolute right-4rem top-20rem m-6  text-xl icon-btn opacity-100 !border-none "><carbon-logo-linkedin />
 </a>
 
 <a href="https://github.com/clementnuss" target="_blank" alt="GitHub"
-  class="absolute right-2rem top-25rem m-6 text-xl icon-btn opacity-100 !border-none"><carbon-logo-github />
+  class="absolute right-2rem top-20rem m-6 text-xl icon-btn opacity-100 !border-none"><carbon-logo-github />
 </a>
 
+<img src="./images/logo-cnd.svg" width="40%" class="absolute bottom-9rem left-2rem m-0" alt="CDS 2025 logo">
+
+<style>
+.conf-style {
+  background: linear-gradient(135deg, #e5e6ee 0%, #d4d6de 100%);
+  position: relative;
+  overflow: hidden;
+}
+.conf-style::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 30%;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 1200 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0,300 L0,200 Q150,180 300,160 T600,140 T900,120 T1200,100 L1200,300 Z' fill='%23b8bcc8' opacity='0.6'/%3E%3Cpath d='M0,300 L0,240 Q200,220 400,200 T800,180 T1200,160 L1200,300 Z' fill='%23a0a5b1' opacity='0.7'/%3E%3C/svg%3E") no-repeat center bottom;
+  background-size: cover;
+}
+.conf-style h1,
+.conf-style h2,
+.conf-style p,
+.conf-style strong,
+.conf-style a {
+  color: #333333 !important;
+  z-index: 1;
+}
+</style>
 <!--
 Speaker notes for the first slide
 -->
 
 ---
+layout: default
+---
+
+# About Me
+
+<div class="grid grid-cols-2 gap-12">
+<div>
+
+**Clément Nussbaumer**
+- Platform Engineer at PostFinance
+- 6+ years with Kubernetes
+- Swiss countryside enthusiast
+
+</div>
+<div>
+
+**My Wife's Family Farm**
+- Dairy operation in rural Switzerland
+- 80 cows, biogas plant
+- Traditional farming meets modern tech
+
+</div>
+</div>
+
+---
+layout: default
+---
+
+# The Challenge
+
+<div class="grid grid-cols-5 gap-12">
+<div class="col-span-2">
+
+**Traditional farming data needs:**
+- Manual monitoring
+- Paper records
+- Limited insights
+
+**Modern requirements:**
+- Real-time monitoring
+- Data-driven decisions
+- Remote management
+- Cost efficiency
+
+</div>
+<div class="col-span-3 flex flex-col justify-center items-center">
+
+<img src="./images/old-farm.jpg" class="rounded-lg shadow-lg max-h-80 w-auto" alt="Traditional swiss farm">
+
+<p class="text-xs text-gray-600 mt-2 text-center italic">
+"Swiss Farm" (1883) by Eugène Burnand<br>
+Oil on canvas, farm in Ecublens near Seppey, Vaud
+</p>
+
+</div>
+</div>
+
+<!--
+Setting the stage - why bring cloud-native to a farm?
+-->
+
+---
+layout: default
+---
+
+# Use Cases
+
+<div class="flex flex-col justify-center" style="height: 80%">
+
+<div class="grid grid-cols-3 gap-6">
+<div class="text-center">
+
+## 🥛 **Milking Data**
+Real-time collection & analysis
+
+</div>
+<div class="text-center">
+
+## ⚡ **Biogas Plant**
+Performance metrics & alerts
+
+</div>
+<div class="text-center">
+
+## 🚧 **Electric Fences**
+Remote control & monitoring
+
+</div>
+</div>
+
+<div class="grid grid-cols-2 gap-8 mt-8">
+<div class="text-center">
+
+## 📊 **Milk Vending Machine**
+LiDAR sensor integration
+
+</div>
+<div class="text-center">
+
+## 🧾 **Invoicing Solution**
+Billing for e.g.silage work
+
+</div>
+</div>
+
+</div>
+
+---
 layout: image-right
-image: ./images/placeholder.png
+image: ./images/k8s-cluster.png
 ---
 
-# Your First Content Slide
+# Infrastructure Foundation
 
-- Point 1
-- Point 2  
-- Point 3
+**Bare-metal Kubernetes**
+- Cost-effective on-premises
+- Full control over hardware
+- No cloud vendor lock-in
+
+**Talos Linux**
+- Immutable OS
+- API-driven configuration
+- Security-focused
+- Perfect for GitOps
 
 <!--
-Speaker notes for this slide
+Why bare-metal made sense for this use case
 -->
 
 ---
+layout: default
+---
 
-# Excalidraw Test
+# Node Topology
 
-Testing static excalidraw rendering:
+<div class="grid grid-cols-3 gap-4">
+<div class="text-center">
 
-<Excalidraw
-  drawFilePath="./drawings/test.excalidraw.json"
-/>
+**Control Plane**
+- 3x Intel NUCs
+- High availability
+- etcd clustering
+
+</div>
+<div class="text-center">
+
+**Worker Nodes**
+- 4x commodity hardware
+- Mixed workload types
+- Local storage
+
+</div>
+<div class="text-center">
+
+**Edge Devices**
+- Raspberry Pi 4s
+- Field sensors
+- Weather stations
+
+</div>
+</div>
+
+---
+layout: image-right
+image: ./images/victoriametrics.png
+---
+
+# Monitoring Stack
+
+**VictoriaMetrics**
+- Time-series storage
+- Better resource usage than Prometheus
+- Long-term data retention
+- Clustering support
+
+**Grafana Dashboards**
+- Farm operations overview
+- Equipment health monitoring
+- Alert visualization
 
 <!--
-Testing the excalidraw addon with a static diagram
+Why VictoriaMetrics was chosen over Prometheus
 -->
 
+---
+layout: default
+---
+
+# Custom Applications
+
+<div class="grid grid-cols-2 gap-8">
+<div>
+
+**Golang Services**
+- Milk data collector
+- Biogas metrics processor
+- Fence controller API
+- Weather station aggregator
+
+</div>
+<div>
+
+**Integration Challenges**
+- Legacy equipment protocols
+- Serial communication
+- File-based data exchange
+- Network reliability
+
+</div>
+</div>
+
+---
+layout: image-right
+image: ./images/old-vs-new.png
+---
+
+# Data Integration Evolution
+
+**Before:**
+- Manual CSV imports
+- Weekly data processing
+- Limited visibility
+- Error-prone workflows
+
+**After:**
+- Real-time streaming
+- Automated processing
+- Live dashboards
+- Reliable data pipelines
+
+<!--
+Show the transformation from manual to automated processes
+-->
+
+---
+layout: center
+---
+
+# Network Architecture
+
+<div class="text-center">
+
+## IPv6-First Strategy
+
+**Zero-cost Load Balancer**
+- Native IPv6 routing
+- No external dependencies
+- High availability
+
+**Connectivity**
+- Fiber internet (100/100 Mbps)
+- 4G backup connection
+- Starlink as tertiary
+
+</div>
+
+---
+layout: image-right
+image: ./images/gitops-workflow.png
+---
+
+# GitOps Operations
+
+**ArgoCD Management**
+- Declarative configuration
+- Automated deployments
+- Configuration drift detection
+
+**Talos Configuration**
+- Git-stored machine configs
+- Encrypted secrets with SOPS
+- Rolling updates
+
+<!--
+How GitOps principles apply to farm infrastructure
+-->
+
+---
+layout: default
+---
+
+# Backup Strategy
+
+<div class="grid grid-cols-2 gap-12">
+<div>
+
+**Application Data**
+- Velero for K8s resources
+- PVC snapshots
+- Cross-region replication
+
+</div>
+<div>
+
+**Database Backups**
+```bash
+mariadb-dump | \
+  gzip --rsyncable | \
+  restic backup
+```
+- Incremental backups
+- Encrypted at rest
+- Multiple destinations
+
+</div>
+</div>
+
+---
+layout: image-right
+image: ./images/grafana-dashboard.png
+---
+
+# Live Demo
+
+**Real Farm Data**
+- Current milk production
+- Biogas plant performance
+- Weather conditions
+- System health
+
+**GitOps Deployment**
+- Configuration changes
+- Rolling updates
+- Health monitoring
+
+<!--
+Show actual live dashboards from the farm
+-->
+
+---
+layout: center
+---
+
+# Lessons Learned
+
+<div class="grid grid-cols-2 gap-8">
+<div>
+
+## ✅ **What Worked**
+- On-premises cost savings
+- Reliable bare-metal performance
+- Talos Linux stability
+- GitOps workflow
+
+</div>
+<div>
+
+## 🔄 **Challenges**
+- Hardware failure isolation
+- Remote troubleshooting
+- Legacy system integration
+- Rural connectivity issues
+
+</div>
+</div>
+
+---
+layout: image-right
+image: ./images/cost-comparison.png
+---
+
+# On-Premises vs Cloud
+
+**Cost Benefits:**
+- 80% savings over cloud
+- No egress fees
+- Predictable costs
+- Hardware depreciation
+
+**When to Choose On-Premises:**
+- Predictable workloads
+- Data sovereignty requirements
+- Cost-sensitive environments
+- Reliable internet connectivity
+
+<!--
+Real numbers comparing cloud vs on-premises costs
+-->
+
+---
+layout: default
+---
+
+# Building Your Home Lab
+
+<div class="grid grid-cols-3 gap-6">
+<div>
+
+**Hardware**
+- Start with 3x Intel NUCs
+- Add storage nodes later
+- Consider power efficiency
+- Plan for growth
+
+</div>
+<div>
+
+**Networking**
+- Managed switches
+- VLANs for isolation
+- Backup connectivity
+- IPv6 support
+
+</div>
+<div>
+
+**Software**
+- Talos Linux
+- ArgoCD for GitOps
+- VictoriaMetrics
+- Join k8s-at-home community
+
+</div>
+</div>
+
+---
+layout: center
+---
+
+# Common Pitfalls
+
+**Avoid These Mistakes:**
+- Undersized control plane
+- Single points of failure
+- Inadequate backup testing
+- Ignoring security updates
+- Over-engineering from day one
+
+**Start Simple, Scale Smart**
+
+---
+layout: image-right
+image: ./images/Jura.png
 ---
 
 # Thank You!
 
-## Questions?
+**Questions?**
 
-<div class="flex justify-center items-center h-64">
-  <div class="text-6xl">
-    🙏
-  </div>
+Cloud-native principles work everywhere – 
+even on Swiss farms! 🐄
+
+<div class="mt-8">
+<a href="https://clement.n8r.ch/en/articles/" target="_blank">clement.n8r.ch</a>
 </div>
 
 <!--
-Closing slide - thank the audience and invite questions
+Wrap up and invite questions about farm infrastructure, Talos Linux, or home labs
 -->
