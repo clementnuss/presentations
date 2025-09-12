@@ -1,0 +1,61 @@
+/* Swiss Cloud Native Farm Theme - Custom Background */
+
+/* Global background style for all slides */
+.slidev-layout {
+  background: linear-gradient(135deg, #e5e6ee 0%, #d4d6de 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.slidev-layout::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 30%;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 1200 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0,300 L0,250 Q150,240 300,230 T600,220 T900,210 T1200,200 L1200,300 Z' fill='%23b8bcc8' opacity='0.6'/%3E%3Cpath d='M0,300 L0,270 Q200,260 400,250 T800,240 T1200,230 L1200,300 Z' fill='%23a0a5b1' opacity='0.7'/%3E%3C/svg%3E") no-repeat center bottom;
+  background-size: cover;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Ensure all content stays above the background */
+.slidev-layout > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Cover slide specific adjustments */
+.slidev-layout.cover {
+  /* Additional cover styles can go here if needed */
+}
+
+/* Improve footnote visibility against mountain background */
+.footnotes {
+  background: rgba(255, 255, 255, 0.3);
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-top: 16px;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.footnotes .footnotes-list {
+  margin: 0;
+  padding-left: 16px;
+}
+
+.footnotes .footnote-item p {
+  margin: 0;
+  /* font-size: 0.75rem; */
+  color: #374151;
+}
+
+.footnotes .footnote-backref {
+  display: none;
+}
+
+.footnotes-sep {
+  display: none;
+}
