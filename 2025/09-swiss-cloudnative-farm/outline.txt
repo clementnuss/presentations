@@ -1,5 +1,5 @@
 # A Swiss Cloud-Native Farm 🐄 - Presentation Outline
-**Duration: 45 minutes (35 min presentation + 10 min Q&A)**
+**Duration: 45 minutes (40 min presentation + 5 min Q&A)**
 
 ## 1. Introduction (3 minutes)
 - Personal introduction & context
@@ -20,22 +20,25 @@
 ## 3. The Technology Stack (15 minutes)
 ### Infrastructure Foundation (5 min)
 - Bare-metal Kubernetes cluster
-- Talos Linux: small intro and advantages
-- Node architecture and hardware considerations
+- Talos Linux: small intro and advantages -> plug to PF stand and letsboot course
+- Node topology and hardware considerations
 
-### Monitoring & Observability (5 min)
-- VictoriaMetrics: time-series data storage
-- Grafana: dashboards for different stakeholders
+### Monitoring & Observability (7 min)
+- VictoriaMetrics: time-series data storage (show operator, show 2 clusters (short/long term))
+- VictoriaLogs: ?
+- Grafana: dashboards for different use cases
 - Custom metrics collection from farm equipment
 - Alert management for critical systems
 
-### Applications & Automation (5 min)
+### Applications & Automation (7 min)
 - Custom Golang applications for data ingestion
 - Electric fence remote control system
 - Data processing pipelines
+- InvoiceNinja use case
 - Integration challenges with legacy farm equipment
+  - mention old way of importing. show old UI, file format
 
-## 4. Network & Load Balancing (7 minutes)
+## 4. Network & Load Balancing (5 minutes)
 - IPv6 implementation strategy
 - Zero-cost load balancer solution
 - Network topology and security considerations
@@ -44,20 +47,20 @@
 ## 5. GitOps & Operations (5 minutes)
 - GitOps workflow for farm infrastructure
 - Deployment strategies in remote environment
-- Backup and disaster recovery
+- Backup and disaster recovery (velero)
+- MariaDB backup strategy (mariadb dump | gzip --rsyncable | restic)
 - Maintenance windows and cattle-friendly scheduling
 
 ## 6. Lessons Learned & Best Practices (3 minutes)
-- Reliability in agricultural environments
-- Scaling considerations
 - When to choose on-premises vs cloud
+- Reliability in agricultural environments
 
 ## 7. Building Your Own Home Lab (2 minutes)
 - Hardware recommendations
-- Getting started guide
+- Getting started guide -> k8s-at-home community
 - Common pitfalls to avoid
 
-## 8. Q&A (10 minutes)
+## 8. Q&A (5 minutes)
 - Open discussion
 - Technical deep-dives based on audience interest
 
