@@ -202,7 +202,7 @@ layout: default
 <div class="grid grid-cols-2 gap-8 h-full items-start">
 <div class="flex justify-center mt-6">
 
-<img src="./images/k8s-cluster-photo.jpg" class="rounded-lg shadow-lg max-h-96 w-auto" alt="Kubernetes cluster hardware">
+<img src="./images/cloud-cave-analogy.jpg" class="rounded-lg shadow-lg max-h-96 w-auto" alt="Cloud cave analogy">
 
 </div>
 
@@ -241,6 +241,7 @@ layout: default
 - "We love to break production at home" 🏠
 - Key contributors: `bjw-s`, `onedr0p`
 - **GitOps**-first approach with FluxCD
+- Encrypted secrets with SOPS
 - Open-source home lab configurations
 - Active Discord & GitHub community
 
@@ -301,25 +302,138 @@ udevd                Running   OK
 </div>
 
 ---
-layout: image-right
-image: ./images/victoriametrics.png
+layout: default
+---
+
+# Network Architecture
+
+<div class="grid grid-cols-2 gap-8 h-full items-start">
+<div class="flex flex-col justify-start">
+
+**Dual-Stack Cluster**
+
+- Init7 🐇 copper connection 250/70MBps 
+- IPv6 `2001:1620:5386::/48` range: `2001:1620:5386:0000:0000:0000:0000:0000` - `2001:1620:5386:ffff:ffff:ffff:ffff:ffff`
+
+**MetalLB Load Balancer**
+
+- Routable IPv6 service range
+- L2 Advertisement via NDP protocol
+- Zero-cost HA with node failover
+- no need for port-forwarding/NAT with IPv6
+
+</div>
+<div class="h-full flex items-start justify-center">
+  <div style="transform: scale(1); transform-origin: top;">
+    <Excalidraw
+      drawFilePath="./drawings/network-ipv6.excalidraw"
+    />
+  </div>
+</div>
+</div>
+
+---
+layout: default
+---
+
+# Stateful Storage
+
+<div class="grid grid-cols-2 gap-12">
+<div class="flex justify-center items-center">
+
+<!-- Image placeholder for storage diagram -->
+<img src="./images/k8s-cluster-photo.jpg" class="rounded-lg shadow-lg max-h-96 w-auto" alt="Kubernetes cluster overview">
+
+</div>
+<div>
+
+**Distributed Storage**
+- Longhorn for replicated block storage
+- VictoriaMetrics PVCs for time-series data
+- HA MariaDB & PostgreSQL databases
+
+**Backup Strategy**
+- PVC snapshots via Velero
+- Database-specific backups[^db-backup]:
+
+```bash
+mariadb-dump | gzip --rsyncable && restic backup
+```
+
+- Incremental backups every 15 minutes
+
+[^db-backup]: https://clement.n8r.ch/en/articles/backing-up-mariadb-on-kubernetes/
+
+</div>
+</div>
+
+---
+layout: default
 ---
 
 # Monitoring Stack
 
-**VictoriaMetrics**
-- Time-series storage
-- Better resource usage than Prometheus
-- Long-term data retention
-- Clustering support
+<div class="grid grid-cols-2 gap-8 h-full items-start">
+<div class="flex flex-col justify-start mt-6">
 
-**Grafana Dashboards**
-- Farm operations overview
-- Equipment health monitoring
-- Alert visualization
+**Why VictoriaMetrics?**
+- Better resource usage than Prometheus
+- Simple architecture
+- Easy horizontal scaling
+- Long-term data retention
+- Drop-in Prometheus replacement
+
+**Grafana Integration**
+- Farm operations dashboards
+- Custom alerting rules
+
+</div>
+<div class="h-full flex items-start justify-center">
+  <div style="transform: scale(1); transform-origin: top;">
+    <Excalidraw
+      drawFilePath="./drawings/victoriametrics.excalidraw"
+    />
+  </div>
+</div>
+</div>
 
 <!--
-Why VictoriaMetrics was chosen over Prometheus
+VictoriaMetrics cluster architecture showing separation of concerns and scalability
+-->
+
+---
+layout: default
+---
+
+# Long-term Storage Strategy
+
+<div class="grid grid-cols-2 gap-8 h-95 items-start">
+<div class="flex flex-col justify-start ">
+
+**Two VictoriaMetrics Clusters[^vm-config]**
+- **Short-term**: 3 months retention
+- **Long-term**: 10 years retention
+
+**Smart Routing**
+- vmagent sends to long-term only if `retention_period=long-term`
+
+**vmselect Proxy**
+- Distributes and deduplicates queries across clusters
+
+[^vm-config]: https://github.com/clementnuss/k8s-gitops/tree/main/workloads/metrics
+
+</div>
+<div class="h-full flex items-start justify-center">
+  <div style="transform: scale(1.15); transform-origin: top;">
+    <Excalidraw
+      drawFilePath="./drawings/victoriametrics-long-term.excalidraw"
+    />
+  </div>
+</div>
+</div>
+
+<!--
+Two-tier VictoriaMetrics setup with smart routing and query deduplication
 -->
 
 ---
@@ -395,6 +509,29 @@ layout: default
 </div>
 </div>
 
+
+---
+layout: image-right
+image: ./images/grafana-dashboard.png
+---
+
+# Live Demo
+
+**Real Farm Data**
+- Current milk production
+- Biogas plant performance
+- Weather conditions
+- System health
+
+**GitOps Deployment**
+- Configuration changes
+- Rolling updates
+- Health monitoring
+
+<!--
+Show actual live dashboards from the farm
+-->
+
 ---
 layout: image-right
 image: ./images/old-vs-new.png
@@ -418,100 +555,6 @@ image: ./images/old-vs-new.png
 Show the transformation from manual to automated processes
 -->
 
----
-layout: center
----
-
-# Network Architecture
-
-<div class="text-center">
-
-## IPv6-First Strategy
-
-**Zero-cost Load Balancer**
-- Native IPv6 routing
-- No external dependencies
-- High availability
-
-**Connectivity**
-- Fiber internet (100/100 Mbps)
-- 4G backup connection
-- Starlink as tertiary
-
-</div>
-
----
-layout: image-right
-image: ./images/gitops-workflow.png
----
-
-# GitOps Operations
-
-**ArgoCD Management**
-- Declarative configuration
-- Automated deployments
-- Configuration drift detection
-
-**Talos Configuration**
-- Git-stored machine configs
-- Encrypted secrets with SOPS
-- Rolling updates
-
-<!--
-How GitOps principles apply to farm infrastructure
--->
-
----
-layout: default
----
-
-# Backup Strategy
-
-<div class="grid grid-cols-2 gap-12">
-<div>
-
-**Application Data**
-- Velero for K8s resources
-- PVC snapshots
-- Cross-region replication
-
-</div>
-<div>
-
-**Database Backups**
-```bash
-mariadb-dump | \
-  gzip --rsyncable | \
-  restic backup
-```
-- Incremental backups
-- Encrypted at rest
-- Multiple destinations
-
-</div>
-</div>
-
----
-layout: image-right
-image: ./images/grafana-dashboard.png
----
-
-# Live Demo
-
-**Real Farm Data**
-- Current milk production
-- Biogas plant performance
-- Weather conditions
-- System health
-
-**GitOps Deployment**
-- Configuration changes
-- Rolling updates
-- Health monitoring
-
-<!--
-Show actual live dashboards from the farm
--->
 
 ---
 layout: center

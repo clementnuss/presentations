@@ -1,0 +1,21 @@
+flowchart TD
+    A[🌐 Internet Request<br/>2001:1620:5386:cafe::80] --> B[🔧 MikroTik Router]
+    B --> |NDP Query<br/>Who has 2001:1620:5386:cafe::80?| C[📡 MetalLB Controller<br/>IP Advertisement]
+    
+    C --> D[🖥️ Node 1<br/>NDP Reply]
+    C --> E[🖥️ Node 2]
+    C --> F[🖥️ Node 3]  
+    C --> G[🖥️ Node 4]
+    
+    D --> |Forwards to| H[⚖️ ingress-nginx<br/>LoadBalancer Service]
+    H --> I[🚀 Farm Applications<br/>Grafana, etc.]
+    
+    style A fill:#90EE90
+    style B fill:#FFE4B5
+    style C fill:#87CEEB
+    style D fill:#98FB98
+    style E fill:#DDD
+    style F fill:#DDD
+    style G fill:#DDD
+    style H fill:#DDA0DD
+    style I fill:#FFB6C1
