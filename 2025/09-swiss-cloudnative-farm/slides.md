@@ -60,14 +60,14 @@ layout: default
 
 # About Me
 
-<div class="grid grid-cols-2 gap-12">
+<div class="grid grid-cols-3 gap-8">
 <div>
 
 **Clément Nussbaumer**
 - Platform Engineer at PostFinance
 - 6+ years with Kubernetes
 - Golang enthusiast
-- Musician a Brass Band
+- Musician in a Brass Band
 
 </div>
 <div>
@@ -78,6 +78,15 @@ layout: default
 - 250 chicken 🥚
 - Biogas plant ⚡️
 - Work (silage, etc.) for third parties
+
+</div>
+<div class="flex flex-col justify-center items-center">
+
+<img src="./images/selfie-with-Jura.jpeg" class="rounded-lg shadow-lg max-h-80 w-auto" alt="Clément with Jura the cow">
+
+<p class="text-xs text-gray-600 mt-2 text-center italic">
+Recent selfie with Jura (cow #33) <img src="./images/Jura.png" width="12rem" class="inline" alt="Jura flag"> 🐄
+</p>
 
 </div>
 </div>
@@ -877,7 +886,7 @@ layout: default
 
 # Electric Fence Control
 
-<div class="grid grid-cols-2 gap-8 h-90 items-start">
+<div class="grid grid-cols-3 gap-6 h-80 items-start">
 <div class="flex flex-col justify-start">
 
 **Remote Fence Management**
@@ -885,7 +894,6 @@ layout: default
 - Shelly MQTT relays for power control
 - Kubernetes-hosted MQTT cluster
 - Home Assistant integration
-- Mobile app control from anywhere
 
 **Use Cases**
 
@@ -894,19 +902,28 @@ layout: default
 </div>
 <div class="flex flex-col justify-center items-center">
 
-<img src="./images/home-assistant.png" class="rounded-lg shadow-lg max-h-64 w-auto" alt="Electric fence control setup">
+<img src="./images/Shelly-1PM-Gen3-main-image.webp" class="rounded-lg shadow-lg max-h-64 w-auto" alt="Shelly 1PM Gen3 relay">
 
 <p class="text-xs text-gray-600 mt-2 text-center italic">
-Shelly relay controlling fence power
+Shelly 1PM Gen3 MQTT relay
 </p>
 
-<div class="mt-6 p-4 bg-blue-100 bg-opacity-30 border-l-4 border-blue-500 rounded backdrop-filter backdrop-blur-md">
-  <p class="text-lg font-bold text-blue-800 text-center">
-    🔌 Shelly relay → MQTT ← Home Assistant
-  </p>
 </div>
+<div class="flex flex-col justify-center items-center">
+
+<img src="./images/home-assistant.png" class="rounded-lg shadow-lg max-h-70 w-auto" alt="Home Assistant dashboard">
+
+<p class="text-xs text-gray-600 mt-2 text-center italic">
+Home Assistant fence control
+</p>
 
 </div>
+</div>
+
+<div class="mt-6 p-4 bg-blue-100 bg-opacity-30 border-l-4 border-blue-500 rounded backdrop-filter backdrop-blur-md">
+  <p class="font-bold text-blue-800 text-center">
+    🔌 Shelly → MQTT ← Home Assistant
+  </p>
 </div>
 
 ---
@@ -948,22 +965,42 @@ InvoiceNinja dashboard
 </div>
 
 ---
-layout: image-right
-image: ./images/grafana-dashboard.png
+layout: default
 ---
 
 # Live Demo
 
+<div class="grid grid-cols-2 gap-8 h-90 items-start">
+<div class="flex flex-col justify-start">
+
 **Real Farm Data**
+
 - Current milk production
 - Biogas plant performance
-- Weather conditions
-- System health
+- Electric fence status
 
-**GitOps Deployment**
-- Configuration changes
-- Rolling updates
-- Health monitoring
+**Security Considerations**
+
+- One IT guy 👨‍💻
+- Managing electric fences ⚡
+- Remotely controlling livestock barriers 🐄
+- What could possibly go wrong? 🦕 🦖
+
+</div>
+<div class="flex flex-col justify-center items-center">
+
+<img src="./images/jurassic-park-meme.jpeg" class="rounded-lg shadow-lg max-h-75 w-auto" alt="Jurassic Park IT guy Dennis Nedry">
+
+<div class="text-xs text-gray-600 mt-2 text-center italic">
+
+*Jurassic Park[^jurassic]*
+
+</div>
+
+</div>
+</div>
+
+[^jurassic]: https://www.jurassicsystems.com/
 
 <!--
 Show actual live dashboards from the farm
@@ -990,85 +1027,56 @@ layout: center
 ## 🔄 **Challenges**
 
 - Legacy system integration
-- Rural connectivity issues
 - Reverse engineering
 
 </div>
 </div>
 
 ---
-layout: image-right
-image: ./images/cost-comparison.png
----
-
-# On-Premises vs Cloud
-
-**Cost Benefits:**
-- 80% savings over cloud
-- No egress fees
-- Predictable costs
-- Hardware depreciation
-
-**When to Choose On-Premises:**
-- Predictable workloads
-- Data sovereignty requirements
-- Cost-sensitive environments
-- Reliable internet connectivity
-
-<!--
-Real numbers comparing cloud vs on-premises costs
--->
-
----
 layout: default
 ---
 
-# Building Your Home Lab
+<div class="flex flex-col justify-center items-center h-full text-center">
 
-<div class="grid grid-cols-3 gap-6">
-<div>
+<h1 class="mt-8">Thank You! 🙏</h1>
 
-**Hardware**
-- Start with 3x Intel NUCs
-- Add storage nodes later
-- Consider power efficiency
-- Plan for growth
-
-</div>
-<div>
-
-**Networking**
-- Managed switches
-- VLANs for isolation
-- Backup connectivity
-- IPv6 support
-
-</div>
-<div>
-
-**Software**
-- Talos Linux
-- ArgoCD for GitOps
-- VictoriaMetrics
-- Join k8s-at-home community
-
-</div>
+<div class="text-xl font-bold mt-4 mb-6">
+Questions?
 </div>
 
----
-layout: image-right
-image: ./images/farm-main-site.jpg
----
-
-# Thank You!
-
-**Questions?**
-
-Cloud-native principles work everywhere – 
+<div class="text-lg text-gray-700 mb-12">
+Cloud-native principles work everywhere, 
 even on Swiss farms! 🐄
+</div>
 
-<div class="mt-8">
-<a href="https://clement.n8r.ch/en/articles/" target="_blank">clement.n8r.ch</a>
+<div class="grid grid-cols-3 gap-12 w-full max-w-4xl">
+<div class="col-span-2 flex flex-col items-center">
+<img src="./images/farm-main-site.jpg" class="rounded-lg shadow-lg max-h-70 w-auto" alt="Farm main site">
+<p class="text-xs text-gray-600 mt-2 italic">The farm that started it all</p>
+</div>
+
+<div class="col-span-1 flex flex-col justify-center justify-content-start">
+<div class="text-center">
+<a href="https://clement.n8r.ch/en/articles/" target="_blank" class="text-2xl font-bold hover:underline">clement.n8r.ch</a>
+
+<div class="mt-6 flex justify-center space-x-4">
+<a href="https://www.linkedin.com/in/clement-j-m-nussbaumer/" target="_blank" class="text-xl">
+<carbon-logo-linkedin />
+</a>
+<a href="https://github.com/clementnuss" target="_blank" class="text-xl">
+<carbon-logo-github />
+</a>
+</div>
+
+<div class="mt-8 p-4 bg-green-100 bg-opacity-30 border-l-4 border-green-500 rounded backdrop-filter backdrop-blur-md">
+<p class="text-sm font-bold text-green-800">
+From Kubernetes to Cows - Happy to discuss both! 🚀🐄
+</p>
+</div>
+</div>
+</div>
+</div>
+
 </div>
 
 <!--
