@@ -348,12 +348,14 @@ layout: default
 <div>
 
 **Distributed Storage**
+
 - Longhorn for replicated block storage
 - VictoriaMetrics PVCs for time-series data
 - HA MariaDB & PostgreSQL databases
 
 **Backup Strategy**
-- PVC snapshots via Velero
+
+- PVC snapshots via Velero and copied to offsite S3
 - Database-specific backups[^db-backup]:
 
 ```bash
@@ -486,29 +488,464 @@ Billing for e.g.silage work
 layout: default
 ---
 
-# Custom Applications
+# DeLaval Milking Robot
+##
 
-<div class="grid grid-cols-2 gap-8">
-<div>
+<div class="grid grid-cols-5 gap-8 h-90 items-start">
+<div class="col-span-2 flex flex-col justify-start">
 
-**Golang Services**
-- Milk data collector
-- Biogas metrics processor
-- Fence controller API
-- Weather station aggregator
+**DeLaval VMS™ Installed December 2024**
 
-</div>
-<div>
+- Automated milking system
+- 65 cows, 2.4 milkings per day average
 
-**Integration Challenges**
-- Legacy equipment protocols
-- Serial communication
-- File-based data exchange
-- Network reliability
+**DelPro Farm Manager Software**
+
+- Individual cow tracking & health monitoring
+- Centralized herd management system
+- Health & reproduction tracking
+- Feeding optimization
 
 </div>
+<div class="col-span-3 flex flex-col justify-center items-center">
+
+<img src="./images/milk-robot.jpg" class="mt-2 rounded-lg shadow-lg w-auto" alt="Milking robot">
+
+<p class="text-xs text-gray-600 mt-2 text-center italic">
+Milking Robot
+</p>
+
+</div>
 </div>
 
+---
+layout: default
+---
+
+# DelPro Farm Manager
+
+<div class="grid grid-cols-5 gap-8 h-90 items-start">
+<div class="col-span-3 flex flex-col justify-center items-center">
+  <div style="transform: scale(0.9); transform-origin: top;">
+    <img src="./images/delpro-gui.png" class="rounded-lg shadow-lg w-auto" alt="DelPro Farm Manager interface">
+  </div>
+
+<p class="text-xs text-gray-600 mt-2 text-center italic">
+DelPro Farm Manager GUI
+</p>
+
+</div>
+<div class="col-span-2 flex flex-col justify-start">
+
+**Legacy Management Interface**
+
+- Traditional Windows-based application
+- Limited real-time capabilities
+- Manual data export processes
+
+**Key Limitations**
+
+- No API access for automation
+- Limited mobile access
+
+</div>
+</div>
+
+---
+layout: default
+---
+
+# DelPro Data Extraction
+
+<div class="grid grid-cols-2 gap-8 h-90 items-start">
+<div class="flex flex-col justify-start">
+
+**Custom-Built DelPro Exporter[^delpro-exporter]**
+- Golang service that queries MS SQL database
+
+**Live Mode: `/metrics`**
+
+- Real-time Prometheus exposition format
+- Current milking data and cow status
+
+**Historical Mode: `/historical-metrics`**
+
+- Prometheus format with timestamps
+- Backfilling historical data into VictoriaMetrics[^vm-import]
+
+[^delpro-exporter]: https://github.com/clementnuss/delpro-exporter
+[^vm-import]: https://docs.victoriametrics.com/victoriametrics/#how-to-import-data-in-prometheus-exposition-format
+
+</div>
+<div class="flex flex-col justify-center">
+
+```go
+// Query DelPro MS SQL database
+records := db.Query(`
+  SELECT animal_number, milk_yield, duration
+  FROM milking_sessions 
+  WHERE session_end > ?
+`, lastUpdate)
+
+// Convert to Prometheus metrics
+for _, r := range records {
+  metrics.GetOrCreateGauge(
+    "milk_yield_liters", 
+    map[string]string{
+      "animal": r.AnimalNumber,
+    }).Set(r.Yield)
+}
+```
+
+</div>
+</div>
+
+---
+layout: image-right
+image: ./images/milking-dashboard.png
+---
+
+# Live Grafana Dashboard
+
+**Real-time Grafana Dashboard**
+
+- Live milk production metrics
+- Individual cow performance tracking
+
+**Data Pipeline**
+
+- Custom golang collector reads DelPro exports
+- Metrics pushed to VictoriaMetrics
+- Real-time visualization in Grafana
+
+**Key Metrics**
+
+- Daily/weekly milk yield per cow
+- Milking frequency and duration
+- Health status indicators
+- Feed efficiency ratios
+
+---
+layout: default
+---
+
+# Biogas Plant Operations
+
+<div class="grid grid-cols-3 gap-6 h-80 items-start">
+<div class="flex flex-col justify-center items-center">
+
+<img src="./images/biogas-digester-overview.jpeg" class="rounded-lg shadow-lg max-h-94 w-auto" alt="Biogas plant exterior view">
+
+<p class="text-xs text-gray-600 mt-2 text-center italic">
+External biogas facility
+</p>
+
+</div>
+<div class="flex flex-col justify-start items-center">
+
+<img src="./images/saia-pcd.JPG" class="rounded-lg shadow-lg max-h-48 w-auto" alt="Biogas plant interior systems">
+
+<p class="text-xs text-gray-600 mt-2 text-center italic">
+Control systems & monitoring
+</p>
+
+<img src="./images/engine-interior.jpeg" class="rounded-lg shadow-lg max-h-48 w-auto " alt="Biogas engine overview">
+
+<p class="text-xs text-gray-600 mt-2 text-center italic">
+Engine overview
+</p>
+
+</div>
+<div class="flex flex-col justify-start">
+
+**Energy Production**
+
+- 2x220 kW electrical capacity
+- Waste-to-energy conversion
+- Grid-connected power generation
+- Heat recovery for farm operations
+
+**Key Metrics to Monitor**
+
+- Temperature profiles
+- Electrical output
+- Digester volume
+
+</div>
+</div>
+
+---
+layout: default
+---
+
+# SAIA PCD Controller GUI
+
+<div class="grid grid-cols-3 gap-8 h-90 items-start">
+<div class="col-span-2 flex flex-col justify-center items-center relative">
+
+<div v-click-hide class="flex flex-col justify-center items-center">
+  <img src="./images/biogas-gui.png" class="rounded-lg shadow-lg w-auto" alt="SAIA PCD Controller GUI">
+  
+  <p class="text-xs text-gray-600 mt-2 text-center italic">
+    SAIA PCD Management Interface
+  </p>
+</div>
+
+<div v-after class="absolute top-0 left-0 right-0 bottom-0 flex flex-col justify-center items-center">
+  <img src="./images/biogas-gui-old-graphs.png" class="rounded-lg shadow-lg w-auto" alt="SAIA PCD Controller GUI - Historical Graphs">
+  
+  <p class="text-xs text-gray-600 mt-2 text-center italic">
+    Historical Data Visualization
+  </p>
+</div>
+
+</div>
+<div class="col-span-1 flex flex-col justify-start">
+
+**Legacy Control Interface**
+
+- Windows-based management software
+- Manual data export only
+
+**Key Limitations**
+
+- Limited remote capabilities (VNC only)
+- Data locked in legacy system
+- Outdated dashboard capabilities
+
+</div>
+</div>
+
+---
+layout: default
+---
+
+# SAIA EtherSBus Protocol
+
+<div class="grid grid-cols-2 gap-8 h-60 items-start">
+<div class="flex flex-col justify-start">
+
+**SAIA PCD Communication**
+
+- Proprietary EtherSBus protocol
+- Network-based communication (UDP, port 5050)
+
+**Existing Python Library**
+
+- Found `digimat-saia` library
+- Implements EtherSBus protocol
+
+
+</div>
+<div class="flex flex-col justify-center items-center mt-2">
+
+```python
+# SAIA EtherSBus communication
+from digimat_saia import SAIANode
+
+# Create local node and declare remote server
+node = SAIANode(253)
+server = node.servers.declare('192.168.1.100')
+
+# Read biogas parameters from remote PCD
+gas_flow = server.registers[1000].float32
+temperature = server.registers[1001].float32
+power_output = server.registers[1002].float32
+pump_running = server.flags[10].value
+```
+
+</div>
+</div>
+
+<div v-click class="mt-8 p-6 bg-orange-100 bg-opacity-80 border-l-4 border-orange-500 rounded backdrop-filter backdrop-blur-md text-center">
+
+**Problem: I don't want to implement a prometheus exporter in Python again.[^alpro]**
+
+
+</div>
+
+[^alpro]: <https://github.com/clementnuss/alpro-openmetrics-exporter>
+
+---
+layout: default
+---
+
+# gRPC Service Implementation
+
+<div class="grid grid-cols-2 gap-8 h-90 items-start">
+<div class="flex flex-col justify-start">
+
+**SAIA gRPC Service[^saia-grpc]**
+
+- Python service using digimat-saia
+- ConnectRPC framework (CNCF sandbox)
+
+**ConnectRPC Benefits**
+
+- Simplified gRPC development
+
+**Service Capabilities**
+
+- Real-time parameter reading/setting
+- Error handling & retries
+
+[^saia-grpc]: https://github.com/clementnuss/saia-grpc-service/blob/main/saia_grpc_service.py
+
+</div>
+<div class="flex flex-col justify-center items-center">
+
+```python
+# gRPC service using ConnectRPC
+class SaiaService(SaiaServiceServicer):
+    def ReadFlag(
+        self, 
+        request: saia_pb2.ReadFlagRequest, 
+        context: grpc.ServicerContext
+    ) -> saia_pb2.ReadFlagResponse:
+        r = typing.cast(
+            SAIAItemFlag, 
+            server.flags[request.address]
+        )
+
+        if r is None or not r.isAlive():
+            context.abort(
+                grpc.StatusCode.INTERNAL, 
+                "unable to read register value"
+            )
+
+        return saia_pb2.ReadFlagResponse(value=r.bool)
+```
+
+</div>
+</div>
+
+---
+layout: default
+---
+
+# Prometheus Metrics Exporter
+
+<div class="grid grid-cols-2 gap-8 h-90 items-start">
+<div class="flex flex-col justify-start">
+
+**SAIA PCD Exporter[^saia-exporter]**
+
+- Golang service for metrics collection
+- Queries gRPC service periodically
+- uses `VictoriaMetrics/metrics` go library
+
+**Data Pipeline Flow**
+
+1. SAIA PCD → EtherSBus protocol
+2. gRPC service → JSON/Protobuf
+3. delpro-exporter → metrics format
+4. VictoriaMetrics → storage
+5. Grafana → visualization
+
+[^saia-exporter]: https://github.com/clementnuss/saia-pcd-exporter
+
+</div>
+<div class="flex flex-col justify-center">
+
+```go
+// Query gRPC service and export metrics
+func (e *Exporter) collectMetrics() {
+  resp, err := e.grpcClient.GetBiogasMetrics(ctx)
+  if err != nil {
+    log.Printf("gRPC error: %v", err)
+    return
+  }
+
+  gasFlowGauge.Set(resp.GasFlow)
+  powerOutputGauge.Set(resp.PowerOutput)
+  temperatureGauge.WithLabelValues(
+    resp.Sensor
+  ).Set(resp.Temperature)
+}
+```
+
+**Monitoring Benefits**
+
+- Real-time biogas performance, custom alerts
+
+</div>
+</div>
+
+---
+layout: default
+---
+
+# Electric Fence Control
+
+<div class="grid grid-cols-2 gap-8 h-90 items-start">
+<div class="flex flex-col justify-start">
+
+**Remote Fence Management**
+
+- Shelly MQTT relays for power control
+- Kubernetes-hosted MQTT cluster
+- Home Assistant integration
+- Mobile app control from anywhere
+
+**Use Cases**
+
+- Emergency fence shutdown / repairs
+
+</div>
+<div class="flex flex-col justify-center items-center">
+
+<img src="./images/home-assistant.png" class="rounded-lg shadow-lg max-h-64 w-auto" alt="Electric fence control setup">
+
+<p class="text-xs text-gray-600 mt-2 text-center italic">
+Shelly relay controlling fence power
+</p>
+
+<div class="mt-6 p-4 bg-blue-100 bg-opacity-30 border-l-4 border-blue-500 rounded backdrop-filter backdrop-blur-md">
+  <p class="text-lg font-bold text-blue-800 text-center">
+    🔌 Shelly relay → MQTT ← Home Assistant
+  </p>
+</div>
+
+</div>
+</div>
+
+---
+layout: default
+---
+
+# Farm Invoicing System
+
+<div class="grid grid-cols-2 gap-8 h-90 items-start">
+<div class="flex flex-col justify-start">
+
+**InvoiceNinja[^invoiceninja] - Open Source Invoicing**
+
+- Complete invoicing and billing solution
+- Customer management and payment tracking
+
+**Farm Use Cases**
+
+- Silage work for third parties
+- Hay sales and crop drying
+
+**Cloud-Native Deployment**
+- MariaDB Operator[^mariadb-operator] → HA MariaDB
+- InvoiceNinja Helm Chart
+
+[^invoiceninja]: https://invoiceninja.com/
+[^mariadb-operator]: https://github.com/mariadb-operator/mariadb-operator
+
+</div>
+<div class="flex flex-col justify-center items-center">
+
+<img src="./images/invoiceninja.png" class="rounded-lg shadow-lg max-h-64 w-auto" alt="InvoiceNinja dashboard">
+
+<p class="text-xs text-gray-600 mt-2 text-center italic">
+InvoiceNinja dashboard
+</p>
+
+</div>
+</div>
 
 ---
 layout: image-right
@@ -533,41 +970,17 @@ Show actual live dashboards from the farm
 -->
 
 ---
-layout: image-right
-image: ./images/old-vs-new.png
----
-
-# Data Integration Evolution
-
-**Before:**
-- Manual CSV imports
-- Weekly data processing
-- Limited visibility
-- Error-prone workflows
-
-**After:**
-- Real-time streaming
-- Automated processing
-- Live dashboards
-- Reliable data pipelines
-
-<!--
-Show the transformation from manual to automated processes
--->
-
-
----
 layout: center
 ---
 
-# Lessons Learned
+<h1 class="text-center">Lessons Learned</h1>
 
-<div class="grid grid-cols-2 gap-8">
+<div class="grid grid-cols-2 gap-8 mt-12">
 <div>
 
 ## ✅ **What Worked**
+
 - On-premises cost savings
-- Reliable bare-metal performance
 - Talos Linux stability
 - GitOps workflow
 
@@ -575,10 +988,10 @@ layout: center
 <div>
 
 ## 🔄 **Challenges**
-- Hardware failure isolation
-- Remote troubleshooting
+
 - Legacy system integration
 - Rural connectivity issues
+- Reverse engineering
 
 </div>
 </div>
@@ -643,23 +1056,8 @@ layout: default
 </div>
 
 ---
-layout: center
----
-
-# Common Pitfalls
-
-**Avoid These Mistakes:**
-- Undersized control plane
-- Single points of failure
-- Inadequate backup testing
-- Ignoring security updates
-- Over-engineering from day one
-
-**Start Simple, Scale Smart**
-
----
 layout: image-right
-image: ./images/Jura.png
+image: ./images/farm-main-site.jpg
 ---
 
 # Thank You!
