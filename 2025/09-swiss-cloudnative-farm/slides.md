@@ -60,33 +60,37 @@ layout: default
 
 # About Me
 
-<div class="grid grid-cols-3 gap-8">
-<div>
+<div class="grid grid-cols-3 gap-8 h-85 items-start">
+<div class="bg-white bg-opacity-10 backdrop-filter backdrop-blur-md rounded-lg p-6 border border-white border-opacity-20">
 
-**Clément Nussbaumer**
-- Platform Engineer at PostFinance
-- 6+ years with Kubernetes
-- Golang enthusiast
-- Musician in a Brass Band
+## 👨‍💻 **Clément Nussbaumer**
+
+- Platform Engineer at PostFinance 🏦
+- 6+ years with Kubernetes ☸️
+- Golang enthusiast 🐹
+- Musician in a Brass Band 🎺
 
 </div>
-<div>
+<div class="bg-white bg-opacity-10 backdrop-filter backdrop-blur-md rounded-lg p-6 border border-white border-opacity-20">
 
-**My Wife's Family Farm**
-- Dairy operation in rural Switzerland
+## 🚜 **My Wife's Family Farm**
+
+- Dairy operation in rural Switzerland 🇨🇭
+- Biogas plant ⚡️
 - 65 cows 🥛
 - 250 chicken 🥚
-- Biogas plant ⚡️
-- Work (silage, etc.) for third parties
+- Work (silage, etc.) for third parties 🌾
 
 </div>
-<div class="flex flex-col justify-center items-center">
+<div class="flex flex-col justify-center items-center h-full">
 
-<img src="./images/selfie-with-Jura.jpeg" class="rounded-lg shadow-lg max-h-80 w-auto" alt="Clément with Jura the cow">
+<img src="./images/selfie-with-Jura.jpeg" class="rounded-xl shadow-2xl max-h-80 w-auto border-4 border-white border-opacity-30" alt="Clément with Jura the cow">
 
-<p class="text-xs text-gray-600 mt-2 text-center italic">
-Recent selfie with Jura (cow #33) <img src="./images/Jura.png" width="12rem" class="inline" alt="Jura flag"> 🐄
+<div class="mt-4 bg-white bg-opacity-20 backdrop-filter backdrop-blur-md rounded-lg p-3 border border-white border-opacity-30">
+<p class="text-sm text-gray-800 font-medium text-center">
+Recent selfie with Jura (cow #33) <img src="./images/Jura.png" width="1.2rem" class="inline mx-1" alt="Jura flag"> 🐄
 </p>
+</div>
 
 </div>
 </div>
@@ -97,29 +101,31 @@ layout: default
 
 # The Challenge
 
-<div class="grid grid-cols-5 gap-12">
-<div class="col-span-2">
+<div class="grid grid-cols-5 gap-8 h-60 items-start">
+<div class="col-span-2 bg-white bg-opacity-10 backdrop-filter backdrop-blur-md rounded-lg border border-white border-opacity-20 mt-8">
 
-**The Challenge:**
+## **The Challenge:**
 
-- Legacy systems with old protocols
-- Outdated/slow GUIs
-- Limited monitoring capabilities
+- Legacy systems with old protocols 📟
+- Outdated/slow GUIs 🐌
+- Limited monitoring 📊
 
-**Goal:**
-- Real-time data collection
-- Modern interfaces
-- Customized alerting
+## **Goal:**
+
+- Real-time data collection ⚡
+- Customized alerting 🔔
 
 </div>
-<div class="col-span-3 flex flex-col justify-center items-center">
+<div class="col-span-3 flex flex-col justify-center items-center h-full">
 
-<img src="./images/old-farm.jpg" class="rounded-lg shadow-lg max-h-80 w-auto" alt="Traditional swiss farm">
+<img src="./images/old-farm.jpg" class="rounded-xl shadow-2xl max-h-80 w-auto border-4 border-white border-opacity-30" alt="Traditional swiss farm">
 
-<p class="text-xs text-gray-600 mt-2 text-center italic">
-"Swiss Farm" (1883) by Eugène Burnand<br>
-Oil on canvas, farm in Ecublens near Seppey, Vaud
+<div class="mt-4 bg-white bg-opacity-20 backdrop-filter backdrop-blur-md rounded-lg p-3 border border-white border-opacity-30">
+<p class="text-sm text-gray-800 font-medium text-center">
+<strong>"Swiss Farm" (1883)</strong> by Eugène Burnand<br>
+<em>Oil on canvas, farm in Ecublens near Seppey, Vaud</em>
 </p>
+</div>
 
 </div>
 </div>
@@ -610,29 +616,33 @@ for _, r := range records {
 </div>
 
 ---
-layout: image-right
-image: ./images/milking-dashboard.png
+layout: default
 ---
 
-# Live Grafana Dashboard
+# Grafana Dashboard
 
-**Real-time Grafana Dashboard**
+<div class="grid grid-cols-2 gap-8 h-90 items-center">
+<div class="flex flex-col justify-center items-center">
 
-- Live milk production metrics
-- Individual cow performance tracking
+<img src="./images/milk-dashboard-trends.png" class="rounded-lg shadow-lg max-h-80 w-auto" alt="Milk production trends dashboard">
 
-**Data Pipeline**
+<p class="text-xs text-gray-600 mt-2 text-center italic">
+Production trends and analytics
+</p>
 
-- Custom golang collector reads DelPro exports
-- Metrics pushed to VictoriaMetrics
-- Real-time visualization in Grafana
+</div>
+<div class="flex flex-col justify-center items-center">
 
-**Key Metrics**
+<img src="./images/milk-dashboard-individual-cow.png" class="rounded-lg shadow-lg max-h-80 w-auto" alt="Individual cow dashboard for Jura">
 
-- Daily/weekly milk yield per cow
-- Milking frequency and duration
-- Health status indicators
-- Feed efficiency ratios
+<p class="text-xs text-gray-600 mt-2 text-center italic">
+Individual cow stats - Jura (#33) 🐄
+</p>
+
+</div>
+</div>
+
+
 
 ---
 layout: default
@@ -766,11 +776,12 @@ pump_running = server.flags[10].value
 </div>
 </div>
 
-<div v-click class="mt-8 p-6 bg-orange-100 bg-opacity-80 border-l-4 border-orange-500 rounded backdrop-filter backdrop-blur-md text-center">
+<div class="flex justify-center mt-8">
+<div v-click class="p-6 bg-orange-100 bg-opacity-80 border-l-4 border-orange-500 rounded backdrop-filter backdrop-blur-md text-center max-w-3xl">
 
 **Problem: I don't want to implement a prometheus exporter in Python again.[^alpro]**
 
-
+</div>
 </div>
 
 [^alpro]: <https://github.com/clementnuss/alpro-openmetrics-exporter>
@@ -884,6 +895,22 @@ func (e *Exporter) collectMetrics() {
 layout: default
 ---
 
+# Biogas Plant Dashboard
+
+<div class="flex flex-col justify-center items-center h-90">
+
+<img src="./images/biogas-grafana.png" class="rounded-lg shadow-lg max-h-80 w-auto" alt="Biogas plant Grafana dashboard">
+
+<p class="text-xs text-gray-600 mt-4 text-center italic">
+Real-time biogas plant monitoring and analytics
+</p>
+
+</div>
+
+---
+layout: default
+---
+
 # Electric Fence Control
 
 <div class="grid grid-cols-3 gap-6 h-80 items-start">
@@ -920,10 +947,12 @@ Home Assistant fence control
 </div>
 </div>
 
-<div class="mt-6 p-4 bg-blue-100 bg-opacity-30 border-l-4 border-blue-500 rounded backdrop-filter backdrop-blur-md">
+<div class="flex justify-center mt-6">
+<div class="p-3 bg-blue-100 bg-opacity-30 border-l-4 border-blue-500 rounded backdrop-filter backdrop-blur-md max-w-md">
   <p class="font-bold text-blue-800 text-center">
     🔌 Shelly → MQTT ← Home Assistant
   </p>
+</div>
 </div>
 
 ---
@@ -932,7 +961,7 @@ layout: default
 
 # Farm Invoicing System
 
-<div class="grid grid-cols-2 gap-8 h-90 items-start">
+<div class="grid grid-cols-2 gap-8 h-90 items-center">
 <div class="flex flex-col justify-start">
 
 **InvoiceNinja[^invoiceninja] - Open Source Invoicing**
@@ -955,7 +984,7 @@ layout: default
 </div>
 <div class="flex flex-col justify-center items-center">
 
-<img src="./images/invoiceninja.png" class="rounded-lg shadow-lg max-h-64 w-auto" alt="InvoiceNinja dashboard">
+<img src="./images/invoiceninja.png" class="rounded-lg shadow-lg mt-14 max-h-64 w-auto" alt="InvoiceNinja dashboard">
 
 <p class="text-xs text-gray-600 mt-2 text-center italic">
 InvoiceNinja dashboard
@@ -1049,13 +1078,13 @@ Cloud-native principles work everywhere,
 even on Swiss farms! 🐄
 </div>
 
-<div class="grid grid-cols-3 gap-12 w-full max-w-4xl">
+<div class="grid grid-cols-3 gap-12 w-full max-w-4xl items-start">
 <div class="col-span-2 flex flex-col items-center">
-<img src="./images/farm-main-site.jpg" class="rounded-lg shadow-lg max-h-70 w-auto" alt="Farm main site">
+<img src="./images/farm-main-site.jpg" class="rounded-lg shadow-lg max-h-65 w-auto" alt="Farm main site">
 <p class="text-xs text-gray-600 mt-2 italic">The farm that started it all</p>
 </div>
 
-<div class="col-span-1 flex flex-col justify-center justify-content-start">
+<div class="col-span-1 flex flex-col justify-start">
 <div class="text-center">
 <a href="https://clement.n8r.ch/en/articles/" target="_blank" class="text-2xl font-bold hover:underline">clement.n8r.ch</a>
 
