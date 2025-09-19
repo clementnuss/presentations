@@ -959,6 +959,48 @@ Home Assistant fence control
 layout: default
 ---
 
+# Milk Vending Machine
+
+<div class="grid grid-cols-2 gap-8 h-90 items-center">
+<div class="flex flex-col justify-start">
+
+**Self-Service Farm Shop**
+- Fresh eggs, flour, sausages, and milk
+
+**LiDAR Integration Challenge**
+
+- Monitor milk levels in the 40L tank
+- Automated alerts when machine is empty
+
+<div v-click class="mt-6 p-4 bg-blue-100 bg-opacity-30 border-l-4 border-blue-500 rounded backdrop-filter backdrop-blur-md">
+<p class="text-sm font-bold text-blue-800 text-center mb-3">
+Tank Geometry: 1cm height = 1 liter 🧮
+</p>
+
+$$
+\begin{aligned}
+1L &= 10^{-3}m^3 = \pi \cdot r^2 \cdot 10^{-2}m \\
+r &= \sqrt{\frac{10^{-1}}{\pi}} = 0.178m = 17.8cm
+\end{aligned}
+$$
+</div>
+
+</div>
+<div class="flex flex-col justify-center items-center">
+
+<img src="./images/milk-vending-dashboard.png" class="rounded-lg shadow-lg max-h-80 w-auto" alt="Milk vending machine dashboard">
+
+<p class="text-xs text-gray-600 mt-2 text-center italic">
+Milk vending machine monitoring dashboard
+</p>
+
+</div>
+</div>
+
+---
+layout: default
+---
+
 # Farm Invoicing System
 
 <div class="grid grid-cols-2 gap-8 h-90 items-center">
