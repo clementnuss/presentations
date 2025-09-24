@@ -1,0 +1,125 @@
+/* E2E Testing Custom Theme Enhancements */
+
+/* Tech-themed gradient background for better visual appeal */
+.slidev-layout {
+  background: linear-gradient(135deg, #0f1419 0%, #1a202c 50%, #2d3748 100%);
+  position: relative;
+  overflow: hidden;
+  color: #f7fafc;
+}
+
+/* Subtle tech grid pattern overlay */
+.slidev-layout::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='grid' width='10' height='10' patternUnits='userSpaceOnUse'%3E%3Cpath d='M 10 0 L 0 0 0 10' fill='none' stroke='%23ffffff' stroke-width='0.3' opacity='0.1'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100' height='100' fill='url(%23grid)'/%3E%3C/svg%3E");
+  opacity: 0.2;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Ensure content stays above background */
+.slidev-layout > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Cover slide adjustments for better contrast */
+.slidev-layout.cover {
+  background: linear-gradient(135deg, #1a202c 0%, #2d3748 50%, #4a5568 100%);
+}
+
+/* Improve text visibility on dark background */
+.slidev-layout h1,
+.slidev-layout h2,
+.slidev-layout h3 {
+  color: #f7fafc;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Better contrast for paragraphs and list items */
+.slidev-layout p,
+.slidev-layout li {
+  color: #e2e8f0;
+}
+
+.slidev-layout strong {
+  color: #f7fafc;
+  font-weight: 700;
+}
+
+/* Enhanced code block styling */
+.slidev-code {
+  background: rgba(26, 32, 44, 0.8) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(4px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+}
+
+/* Tech-themed accent colors for links */
+.slidev-layout a {
+  color: #63b3ed;
+  text-decoration: none;
+}
+
+.slidev-layout a:hover {
+  color: #90cdf4;
+  text-decoration: underline;
+}
+
+/* Orange accent for brand consistency */
+.orange-accent {
+  color: #E85C0D;
+  font-weight: bold;
+}
+
+/* Improved bullet points styling */
+.slidev-layout ul li::marker {
+  color: #E85C0D;
+}
+
+/* Better spacing for content */
+.slidev-layout .slidev-page {
+  padding: 2rem;
+}
+
+/* Emoji enhancements - make them slightly larger */
+.slidev-layout li {
+  line-height: 1.8;
+}
+
+/* Code syntax highlighting adjustments for dark theme */
+.slidev-code .token.keyword {
+  color: #f78c6c !important;
+}
+
+.slidev-code .token.string {
+  color: #c3e88d !important;
+}
+
+.slidev-code .token.comment {
+  color: #546e7a !important;
+}
+
+/* Fix for clickable links - disable pointer events on empty column divs */
+.slidev-layout .col-left,
+.slidev-layout .col-right {
+  pointer-events: none;
+}
+
+/* Re-enable pointer events for actual content inside columns */
+.slidev-layout .col-left *,
+.slidev-layout .col-right * {
+  pointer-events: auto;
+}
+
+/* Ensure absolute positioned links are clickable */
+.slidev-layout a[class*="absolute"] {
+  pointer-events: auto;
+  z-index: 999;
+}

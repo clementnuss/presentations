@@ -1,5 +1,5 @@
 ---
-theme: seriph
+theme: ./theme
 themeConfig:
   primary: "#E85C0D"
 # color palette: #FABC3F #E85C0D #C7253E #821131
@@ -29,6 +29,8 @@ exportFilename: letsboot-e2e-testing-kubernetes
 
 **Clément Nussbaumer**
 
+<a href="https://www.letsboot.ch/" target="_blank" alt="letsboot" style="font-size: 1.2rem;" class="absolute left-4rem top-25rem m-6 text-xl orange-accent">letsboot.ch</a>
+
 <a href="https://clement.n8r.ch/en/articles/" style="font-size: 1.5rem;" target="_blank" alt="Blog" class="absolute right-8rem top-25rem m-6 text-xl">clement.n8r.ch</a>
 
 <img src="./images/Jura.png" width="23rem" class="absolute right-6rem top-25rem m-6 text-xl" alt="Jura flag">
@@ -55,13 +57,21 @@ Welcome to this introduction on E2E testing for Kubernetes clusters
 - **Real environment** behavior vs unit tests
 - **Confidence** in deployments
 
+<div v-click class="absolute top-15rem right-6rem bg-white bg-opacity-10 backdrop-filter backdrop-blur-md rounded-lg p-5 border border-white border-opacity-20 max-w-80">
+<p class="text-sm text-gray-200 font-medium">
+💡 <strong>Pro tip:</strong> Your end users should NOT be your end-to-end tests!
+<br><br>
+You want to know something is broken <em>before</em> they start calling you at 3am 😴
+</p>
+</div>
+
 <!--
 E2E testing ensures your Kubernetes infrastructure works as expected in real scenarios
 -->
 
 ---
 layout: image-right
-image: ./images/placeholder.png
+image: ./images/e2e-framework.png
 ---
 
 # The e2e-framework Approach
@@ -73,11 +83,18 @@ image: ./images/placeholder.png
 - **Resource lifecycle** management
 
 ```go
-func TestDeployment(ctx context.Context, t *testing.T, cfg *envconf.Config) {
+func TestKubernetes(t *testing.T) {
     // Create deployment
     // Validate it's running
     // Clean up
 }
+```
+
+⬇️
+
+
+```bash
+go test ./tests/ -v
 ```
 
 <!--
@@ -91,7 +108,7 @@ The e2e-framework makes it easy to write comprehensive Kubernetes tests
 - 🚀 **Basic Deployments** - Pod creation & readiness
 - 💾 **Persistent Volumes** - Storage functionality
 - 🌐 **Networking & CNI** - Service connectivity
-- 🔒 **Security Policies** - RBAC & Network Policies
+- 🔒 **Security Policies** - RBAC validation
 - 📊 **Observability** - Metrics & logging integration
 
 <!--
@@ -108,11 +125,19 @@ These are common scenarios you'll want to test in any Kubernetes environment
 - **Metrics correlation** with deployments
 
 ```go
-// Export test results to OTEL
-tracer.Start(ctx, "k8s-deployment-test")
-defer span.End()
-// ... test logic ...
-span.SetStatus(codes.Ok, "Test passed")
+// Initialize metrics collector
+collector := metrics.NewCollector()
+
+func TestKubernetesDeployment(t *testing.T) {
+    start := time.Now()
+
+  // register cleanup function to record test results
+    t.Cleanup(func() {
+      metricsCollector.RecordTestExecution(t, time.Since(start))
+    })
+
+    // ... test logic here ...
+}
 ```
 
 <!--
@@ -123,7 +148,9 @@ Observability of your tests is as important as the tests themselves
 
 # Live Demo
 
-## https://github.com/clementnuss/e2e-tests
+## 
+
+https://github.com/clementnuss/e2e-tests
 
 - **Real test examples** for Kubernetes
 - **Go test framework** in action
