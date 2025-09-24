@@ -1,0 +1,25 @@
+{
+  "name": "letsboot-e2e-testing-kubernetes",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "slidev build",
+    "dev": "slidev",
+    "export": "slidev export"
+  },
+  "dependencies": {
+    "@excalidraw/excalidraw": "^0.18.0",
+    "@iconify-json/fluent-emoji": "^1.2.6",
+    "@iconify-json/logos": "^1.2.9",
+    "@iconify-json/uim": "^1.2.3",
+    "@slidev/cli": "^52.2.4",
+    "@slidev/theme-default": "latest",
+    "@slidev/theme-seriph": "^0.25.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "vue": "^3.5.21"
+  },
+  "devDependencies": {
+    "playwright-chromium": "^1.55.0"
+  }
+}

@@ -1,0 +1,43 @@
+# E2E Testing on Kubernetes Clusters - LETSboot Presentation
+
+## Introduction (3 minutes)
+- Brief introduction to E2E testing challenges
+- Why Kubernetes infrastructure needs testing
+- What the audience will learn from the session
+
+## Main Content (10 minutes)
+- Why E2E Testing on Kubernetes?
+  - Infrastructure as Code validation
+  - Complex component interactions
+  - Real environment confidence
+
+- The e2e-framework Approach
+  - kubernetes-sigs community project
+  - Go-based testing framework
+  - Native Kubernetes integration
+
+- Test Scenarios Covered
+  - Basic deployments & pod lifecycle
+  - Persistent volume functionality
+  - Networking & CNI validation
+  - Security policies (RBAC, NetworkPolicies)
+
+- OpenTelemetry Integration
+  - Test result collection
+  - Dashboard visualization
+  - Historical cluster health tracking
+
+## Demo/Examples (5 minutes)
+- Live demonstration of the e2e-tests project
+- Real Go test examples
+- OpenTelemetry dashboard showing test results
+- GitHub repository walkthrough
+
+## Conclusion (2 minutes)
+- Key takeaways for testing Kubernetes
+- Next steps: trying the framework
+- Questions and discussion
+
+## Resources
+- Project: https://github.com/clementnuss/e2e-tests
+- Framework: https://github.com/kubernetes-sigs/e2e-framework
