@@ -148,7 +148,13 @@ Observability of your tests is as important as the tests themselves
 
 # Live Demo
 
-## 
+##
+
+<div class="grid grid-cols-2 gap-8">
+
+<div>
+
+<br>
 
 https://github.com/clementnuss/e2e-tests
 
@@ -157,8 +163,150 @@ https://github.com/clementnuss/e2e-tests
 - **OpenTelemetry integration**
 - **Dashboard results** visualization
 
+</div>
+
+<div>
+
+<img src="./images/e2e-tests-dashboard.png" alt="e2e tests dashboard" class="w-75 rounded-lg shadow-lg">
+
+</div>
+
+</div>
+
 <!--
 Time to see the actual implementation and test results
+-->
+
+---
+
+# Beyond E2E: Continuous Network Monitoring
+
+## Meet `kubenurse` 🏥
+
+- **Network health monitoring** for Kubernetes clusters
+- **Real-time visibility** into cluster connectivity
+- **Proactive problem detection** before users notice
+
+🔗 **GitHub**: https://github.com/postfinance/kubenurse
+
+<!--
+E2E tests are great, but what about ongoing monitoring of your cluster's health?
+-->
+
+---
+
+# What kubenurse Monitors
+##
+
+<div class="grid grid-cols-2 gap-8">
+
+<div>
+
+<br>
+
+- 🌐 **Node-to-node** network latencies
+- 🔌 **Pod-to-apiserver** communication
+- 🎯 **Ingress & service** connectivity
+- 🔍 **DNS resolution** performance
+- ⚡ **Inter-pod** network paths
+
+<div v-click class="mt-6 bg-white bg-opacity-10 backdrop-filter backdrop-blur-md rounded-lg p-4 border border-white border-opacity-20">
+<p class="text-sm text-gray-200 font-medium">
+💡 kubenurse runs as a DaemonSet and performs health checks every 5 seconds
+</p>
+</div>
+
+</div>
+
+<div>
+
+<img src="./images/kubenurse-diagram.png" alt="kubenurse architecture diagram" class="w-95 rounded-lg shadow-lg">
+
+</div>
+
+</div>
+
+<!--
+kubenurse provides comprehensive network monitoring across your entire cluster
+-->
+
+---
+
+# kubenurse in Action
+##
+
+<div class="grid grid-cols-2 gap-8">
+
+<div>
+
+<br>
+
+- **Real-time dashboards** in Grafana
+- **Historical trends** and patterns
+- **Alert integration** for network issues
+- **Multi-cluster visibility**
+
+<br>
+
+```yaml
+# Deploy with Helm
+helm repo add kubenurse \
+  https://postfinance.github.io/kubenurse
+helm install kubenurse kubenurse/kubenurse
+```
+
+</div>
+
+<div>
+
+<img src="./images/kubenurse-dashboard.png" alt="kubenurse dashboard" class="w-95 rounded-lg shadow-lg">
+
+</div>
+
+</div>
+
+<!--
+kubenurse provides immediate visibility into your cluster's network health
+-->
+
+---
+
+# E2E Tests + kubenurse = 🔎
+
+<div class="grid grid-cols-2 gap-8">
+
+<div>
+
+### 🧪 **E2E Tests**
+- **Deployment validation**
+- **Feature verification**
+- **Scheduled execution**
+- **CI/CD integration**
+
+</div>
+
+<div>
+
+### 🏥 **kubenurse**
+- **Continuous monitoring**
+- **Network health tracking**
+- **Real-time metrics**
+- **Always-on detection**
+
+</div>
+
+</div>
+
+<div class="mt-8 text-center">
+
+**Together**: Complete observability from deployment to production!
+
+🔗 **GitHub**: https://github.com/postfinance/kubenurse
+
+</div>
+
+<!--
+E2E tests and kubenurse complement each other perfectly for comprehensive cluster health
 -->
 
 ---
