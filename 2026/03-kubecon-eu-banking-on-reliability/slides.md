@@ -92,37 +92,41 @@ layout: default
 # About Me
 
 <div class="grid grid-cols-3 gap-8 h-85 items-start">
-<div class="bg-white bg-opacity-10 backdrop-filter backdrop-blur-md rounded-lg p-6 border border-white border-opacity-20">
+<div class="bg-white bg-opacity-70 backdrop-filter backdrop-blur-md rounded-lg p-6 border border-white border-opacity-0">
 
 ## 👨‍💻 **Clément Nussbaumer**
 
-- Platform Engineer at PostFinance 🏦
-- 6+ years with Kubernetes ☸️
-- Golang enthusiast 🐹
+- Systems Engineer at PostFinance 🏦 🇨🇭
+- Living on a farm 🐄
 - Musician in a Brass Band 🎺
+- Father of 1 👶
 
 </div>
-<div class="bg-white bg-opacity-10 backdrop-filter backdrop-blur-md rounded-lg p-6 border border-white border-opacity-20">
+<div class="bg-white bg-opacity-70 backdrop-filter backdrop-blur-md rounded-lg p-6 border border-white border-opacity-20">
 
 ## 🏦 **PostFinance**
 
-- Swiss financial institution
+- Systemic Swiss financial institution
 - ~35 Kubernetes clusters
 - Air-gapped environment
-- Custom PKI infrastructure
-- Serving millions of transactions
+- Strict regulatory requirements
 
 </div>
-<div class="bg-white bg-opacity-10 backdrop-filter backdrop-blur-md rounded-lg p-6 border border-white border-opacity-20">
+<div class="bg-white bg-opacity-70 backdrop-filter backdrop-blur-md rounded-lg p-6 border border-white border-opacity-20">
 
-## ☸️ **The Platform**
+## 🖥️ **The Platform**
 
 - 5+ years in production
-- ClusterAPI + Talos Linux
-- Strict regulatory requirements
-- Every failed request = potential denied payment
+- kubeadm / Debian clusters 
+- ongoing Talos + [TOPF](https://github.com/postfinance/topf/) migration
 
 </div>
+</div>
+
+<div v-click class="p-2 bg-orange-100 bg-opacity-80 border-l-4 border-orange-500 rounded backdrop-filter backdrop-blur-md text-center">
+
+**Every failed request = potential denied payment** 💸
+
 </div>
 
 <!--
@@ -136,157 +140,192 @@ layout: default
 
 # Part 1: SLOs as a Driver
 
-## Setting targets forces you to face reality
+## How we went from "it feels slow" to data-driven reliability
 
 <br>
 
 <div class="grid grid-cols-2 gap-8">
 <div>
 
-**What is an SLO?**
+**The situation before SLOs**
 
-- A target for how reliable a service should be
-- Measured with Service Level Indicators (SLIs)
-- Example: 99.95% of API calls succeed within 500ms
+- "The cluster feels slow today" 🤷
+- Devs complaining about sluggish `kubectl` / `k9s` sessions
+- We had basic Grafana dashboards showing request times
+- Degraded performance for **months** - never properly investigated
+- No link to any particular event
+
+</div>
+<div>
+
+<div v-click class="p-4 bg-orange-100 bg-opacity-80 border-l-4 border-orange-500 rounded backdrop-filter backdrop-blur-md">
+
+**The problem:** without a clear target and structured measurement, "slow" is subjective and easy to ignore.
+
+We tolerated degradation because we couldn't quantify it.
+
+</div>
+
+</div>
+</div>
+
+<!--
+Before SLOs, our reliability signal was basically vibes. Developers would
+complain, we'd shrug, and life went on. The cluster was slow sometimes,
+but it wasn't terrible, so nobody prioritized fixing it.
+-->
+
+---
+layout: default
+---
+
+# Implementing SLOs
+
+## Standing on the shoulders of giants
+
+<div class="grid grid-cols-2 gap-8">
+<div>
+
+**Google's SRE Book**[^sre-book] covers SLOs extensively - I won't repeat it here.
+
+Someone on the team suggested we implement SLOs. I got the task and honestly wasn't thrilled at first.
+
+**What we defined for the API server:**
+
+- **Availability**: % of non-5xx/429 responses → target **99.9%**
+- **Latency (read-only)**: GET/LIST requests completing within threshold (varies by subresource & scope)
+- **Latency (read-write)**: POST/PUT/PATCH/DELETE completing within **1s**
+
+[^sre-book]: <https://sre.google/sre-book/service-level-objectives/>
+
+</div>
+<div>
+
+<div v-click>
+
+**The hard part: PromQL queries**
+
+Properly defining the `error_query` and `total_query` for each SLI took real effort.
+
+For latency SLOs, you need to account for different thresholds per verb, subresource, and scope.
+
+```promql
+# e.g. read-only latency error query
+apiserver_request_duration_seconds_count{
+  verb=~"LIST|GET"
+} - apiserver_request_sli_duration_seconds_bucket{
+  verb=~"LIST|GET"
+}
+```
+
+</div>
+
+</div>
+</div>
+
+<!--
+I got the task of implementing SLOs. Wasn't really fond of it at first -
+defining the PromQL queries precisely was tedious. You need to handle
+different latency thresholds for different verbs and subresources.
+-->
+
+---
+layout: default
+---
+
+# Sloth: Making SLOs Tractable
+
+<div class="grid grid-cols-2 gap-8 h-85 items-start">
+<div class="flex flex-col justify-start">
+
+**Sloth**[^sloth] made SLO implementation manageable:
+
+- Define your SLI with just `error_query` + `total_query`
+- Generates **all** required recording rules
+- Generates multi-window multi-burn-rate alerts
+- Clean YAML specification
+
+```yaml
+slos:
+  - name: apiserver-availability
+    objective: 99.9
+    sli:
+      events:
+        error_query: |
+          sum(apiserver_request_total{
+            code=~"5..|429"})
+        total_query: |
+          sum(apiserver_request_total)
+```
+
+[^sloth]: <https://github.com/slok/sloth>
+
+</div>
+<div class="flex flex-col justify-start">
+
+<div v-click>
+
+**What Sloth generates for you:**
+
+- `slo:sli_error:ratio_rate5m`
+- `slo:sli_error:ratio_rate30m`
+- `slo:sli_error:ratio_rate1h`
+- `slo:sli_error:ratio_rate2h`
+- `slo:sli_error:ratio_rate6h`
+- `slo:sli_error:ratio_rate1d`
+- `slo:sli_error:ratio_rate3d`
+- Multi-window burn-rate alerts (page / ticket)
+- Error budget remaining calculations
+
+Without Sloth, you'd write **dozens** of recording rules by hand.
+
+</div>
+
+</div>
+</div>
+
+<!--
+Sloth was a game changer. Instead of writing dozens of recording rules by hand,
+you define your SLI in a few lines and it generates everything. Highly recommend it.
+-->
+
+---
+layout: default
+---
+
+# SLOs Reveal the Truth
+
+## And then we started seeing what was really going on
+
+<br>
+
+<div class="grid grid-cols-2 gap-8">
+<div>
+
+**With SLOs in place, we could finally see:**
+
+- Error budget burning during cluster upgrades
+- Latency SLO violations correlating with specific events
+- Degraded API server performance was **measurable**, not just "a feeling"
 
 <div v-click class="mt-6 p-4 bg-orange-100 bg-opacity-80 border-l-4 border-orange-500 rounded backdrop-filter backdrop-blur-md">
 
-**The key insight:** SLOs don't just measure reliability - they **drive** improvements by making problems visible and quantifiable.
+**The shift:** from "the cluster feels slow" to "we burned 40% of our monthly error budget during last Tuesday's upgrade."
 
 </div>
 
 </div>
 <div>
 
-**The cascade effect:**
-
-1. Set SLO target
-2. Measure current state
-3. Discover you're not meeting it
-4. Investigate root causes
-5. Fix underlying issues
-6. Repeat
+TODO: Add Grafana screenshot of SLO dashboard showing error budget burn during upgrades
 
 </div>
 </div>
 
 <!--
-Let's start with how SLOs became the catalyst for a series of platform
-improvements. When you commit to specific reliability targets, you're forced
-to confront every weakness in your stack.
--->
-
----
-layout: default
----
-
-# SLO-Driven Fix: API Server Load-Balancing
-
-<div class="grid grid-cols-2 gap-8 h-85 items-start">
-<div class="flex flex-col justify-start">
-
-**The Problem**
-
-- SLI: API server request latency
-- Uneven load distribution across API servers
-- Some API servers overloaded while others idle
-
-**The Investigation**
-
-- SLO violations correlated with specific API server instances
-- Load balancer was using sticky sessions
-- Long-lived connections never redistributed
-
-**The Fix**
-
-- TODO: Add specific fix details
-
-</div>
-<div class="flex flex-col justify-start">
-
-TODO: Add diagram or metrics screenshot showing before/after
-
-</div>
-</div>
-
-<!--
-Our first SLO-driven improvement: API server load-balancing. The SLO violation
-data pointed us directly to the problem.
--->
-
----
-layout: default
----
-
-# SLO-Driven Fix: nginx Readiness Probes
-
-<div class="grid grid-cols-2 gap-8 h-85 items-start">
-<div class="flex flex-col justify-start">
-
-**The Problem**
-
-- nginx pods marked "ready" before fully initialized
-- Requests routed to pods that couldn't serve them yet
-- Brief spikes in error rates during rollouts
-
-**The Investigation**
-
-- SLO dashboard showed error spikes during deployments
-- Correlated with nginx pod restarts
-- Default readiness probe was too permissive
-
-**The Fix**
-
-- TODO: Add specific readiness probe improvements
-
-</div>
-<div class="flex flex-col justify-start">
-
-TODO: Add diagram or code snippet showing readiness probe configuration
-
-</div>
-</div>
-
-<!--
-The second SLO-driven fix: nginx readiness probes. Deployments were causing
-brief reliability dips that the SLO made visible.
--->
-
----
-layout: default
----
-
-# SLO-Driven Fix: etcd Leadership Transitions
-
-<div class="grid grid-cols-2 gap-8 h-85 items-start">
-<div class="flex flex-col justify-start">
-
-**The Problem**
-
-- etcd leader elections causing API server latency spikes
-- Cluster control plane briefly unavailable during transitions
-
-**The Investigation**
-
-- SLO data showed periodic latency spikes
-- Correlated with etcd leader changes
-- Default election timeouts too aggressive
-
-**The Fix**
-
-- TODO: Add specific etcd tuning details
-
-</div>
-<div class="flex flex-col justify-start">
-
-TODO: Add metrics showing before/after etcd tuning
-
-</div>
-</div>
-
-<!--
-The third SLO-driven fix: etcd leadership transitions. These periodic
-latency spikes were invisible without proper SLO monitoring.
+This is where it got interesting. Once the SLOs were live, we could clearly see
+that cluster upgrades were our biggest source of degradation. What we'd been
+ignoring for months was now quantified and impossible to dismiss.
 -->
 
 ---
