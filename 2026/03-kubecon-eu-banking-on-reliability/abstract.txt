@@ -1,0 +1,15 @@
+
+TITLE
+Banking on Reliability: Cloud Native SRE Practices in Financial Services
+
+DESCRIPTION
+Join me for real-world stories from 5 years operating a Kubernetes platform at a major Swiss bank.
+First, I'll explain how Service Level Objectives (SLOs) drove cascading improvements to API server load-balancing, nginx readiness probes, and etcd leadership transitions.
+Second, I'll showcase two open-source Golang monitoring tools we built: a DNS server monitoring tool and a distributed mesh for node-to-node checks that detects network problems and performance degradations. I'll explain how open-sourcing led to community contributions, including O(n²) to O(n) scaling improvements.
+Third, you'll learn about our continuous end-to-end Golang test suite covering all platform aspects, with reproducible building blocks you can implement.
+Finally, we'll have an interactive debugging session tracking down rare 502 errors (6 per million requests) caused by mismatched connection timeouts - critical in banking where failed requests mean denied payments.
+
+BENEFITS TO THE ECOSYSTEM
+This session contributes two production-tested open-source Golang monitoring tools (DNS monitoring and node-to-node mesh) with proven scalability improvements from O(n²) to O(n).
+Attendees will gain reproducible patterns for SLO implementation, end-to-end testing frameworks, and debugging methodologies that can be adapted across industries.
+

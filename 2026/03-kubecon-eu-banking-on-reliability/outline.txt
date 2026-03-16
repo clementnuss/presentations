@@ -1,0 +1,41 @@
+# Banking on Reliability: Cloud Native SRE Practices in Financial Services
+## KubeCon EU 2026
+
+## Introduction
+- About me / PostFinance context
+- 5 years operating K8s at a Swiss bank
+- Why reliability matters in financial services
+
+## Part 1: SLOs as a Driver for Improvement
+- What is an SLO / SLI
+- The cascade effect: set → measure → discover → fix
+- Fix 1: API server load-balancing
+- Fix 2: nginx readiness probes
+- Fix 3: etcd leadership transitions
+
+## Part 2: Open-Source Monitoring Tools
+- DNS monitoring tool
+  - Why monitor DNS
+  - Architecture and implementation
+- kubenurse: node-to-node mesh
+  - Architecture and metrics
+  - Real-world detection examples
+  - Community contribution: O(n²) → O(n) scaling fix
+
+## Part 3: Continuous End-to-End Testing
+- Why E2E testing on Kubernetes
+- e2e-framework (kubernetes-sigs)
+- Test categories: deployments, storage, networking, RBAC
+- OpenTelemetry integration for results
+- Grafana dashboard for continuous monitoring
+
+## Part 4: Interactive Debugging - The 502 Mystery
+- Symptoms: 6 per million requests = 502
+- Investigation steps
+- Root cause: mismatched connection timeouts (nginx vs backend keepalive)
+- The fix and validation
+- Lessons learned
+
+## Conclusion
+- Key takeaways
+- Q&A
