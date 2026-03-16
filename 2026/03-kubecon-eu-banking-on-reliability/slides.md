@@ -14,7 +14,7 @@ info: |-
 
 class: text-center
 highlighter: shiki
-mdc: true
+# mdc: true
 hideInToc: true
 layout: default
 exportFilename: banking-on-reliability-kubecon-eu-2026
@@ -117,7 +117,7 @@ layout: default
 ## 🖥️ **The Platform**
 
 - 5+ years in production
-- kubeadm / Debian clusters 
+- kubeadm / Debian clusters
 - ongoing Talos + [TOPF](https://github.com/postfinance/topf/) migration
 
 </div>
@@ -140,110 +140,49 @@ layout: default
 
 # Part 1: SLOs as a Driver
 
-## How we went from "it feels slow" to data-driven reliability
+From "it feels slow" to data-driven reliability
 
-<br>
+<div class="grid grid-cols-5 gap-6">
+<div class="col-span-3">
 
-<div class="grid grid-cols-2 gap-8">
-<div>
+- "The cluster feels slow today" 🤷 — devs complaining, sluggish **k9s** sessions
+- Basic Grafana dashboards, but no clear target
+- Degraded performance for **months** — never properly investigated
 
-**The situation before SLOs**
+<div v-click class="mt-4 p-3 bg-orange-100 bg-opacity-80 border-l-4 border-orange-500 rounded backdrop-filter backdrop-blur-md">
 
-- "The cluster feels slow today" 🤷
-- Devs complaining about sluggish `kubectl` / `k9s` sessions
-- We had basic Grafana dashboards showing request times
-- Degraded performance for **months** - never properly investigated
-- No link to any particular event
+Without a target and a timeline, "slow" is subjective and easy to ignore.
 
 </div>
-<div>
-
-<div v-click class="p-4 bg-orange-100 bg-opacity-80 border-l-4 border-orange-500 rounded backdrop-filter backdrop-blur-md">
-
-**The problem:** without a clear target and structured measurement, "slow" is subjective and easy to ignore.
-
-We tolerated degradation because we couldn't quantify it.
 
 </div>
+<div v-click class="col-span-2 flex justify-center items-center">
+
+<img src="./images/skeleton computer.png" class="rounded-lg shadow-lg max-h-60 w-auto" alt="Slow cluster experience">
 
 </div>
 </div>
 
 <!--
-Before SLOs, our reliability signal was basically vibes. Developers would
-complain, we'd shrug, and life went on. The cluster was slow sometimes,
-but it wasn't terrible, so nobody prioritized fixing it.
+Before SLOs, our reliability signal was vibes. Developers would complain,
+we'd shrug, nobody prioritized fixing it.
 -->
 
 ---
 layout: default
 ---
 
-# Implementing SLOs
+# API Server SLOs
+##
 
-## Standing on the shoulders of giants
+Three SLOs defined for the Kubernetes API server[^sre-book]:
 
-<div class="grid grid-cols-2 gap-8">
-<div>
+- **Availability** — less than 0.1% of requests return 5xx or 429
+- **Latency (read)** — GET/LIST within threshold (varies by subresource & scope)
+- **Latency (write)** — POST/PUT/PATCH/DELETE within **1s**
 
-**Google's SRE Book**[^sre-book] covers SLOs extensively - I won't repeat it here.
 
-Someone on the team suggested we implement SLOs. I got the task and honestly wasn't thrilled at first.
-
-**What we defined for the API server:**
-
-- **Availability**: % of non-5xx/429 responses → target **99.9%**
-- **Latency (read-only)**: GET/LIST requests completing within threshold (varies by subresource & scope)
-- **Latency (read-write)**: POST/PUT/PATCH/DELETE completing within **1s**
-
-[^sre-book]: <https://sre.google/sre-book/service-level-objectives/>
-
-</div>
-<div>
-
-<div v-click>
-
-**The hard part: PromQL queries**
-
-Properly defining the `error_query` and `total_query` for each SLI took real effort.
-
-For latency SLOs, you need to account for different thresholds per verb, subresource, and scope.
-
-```promql
-# e.g. read-only latency error query
-apiserver_request_duration_seconds_count{
-  verb=~"LIST|GET"
-} - apiserver_request_sli_duration_seconds_bucket{
-  verb=~"LIST|GET"
-}
-```
-
-</div>
-
-</div>
-</div>
-
-<!--
-I got the task of implementing SLOs. Wasn't really fond of it at first -
-defining the PromQL queries precisely was tedious. You need to handle
-different latency thresholds for different verbs and subresources.
--->
-
----
-layout: default
----
-
-# Sloth: Making SLOs Tractable
-
-<div class="grid grid-cols-2 gap-8 h-85 items-start">
-<div class="flex flex-col justify-start">
-
-**Sloth**[^sloth] made SLO implementation manageable:
-
-- Define your SLI with just `error_query` + `total_query`
-- Generates **all** required recording rules
-- Generates multi-window multi-burn-rate alerts
-- Clean YAML specification
+Defining the PromQL queries was tedious but **sloth**[^sloth] made it tractable:
 
 ```yaml
 slos:
@@ -251,42 +190,19 @@ slos:
     objective: 99.9
     sli:
       events:
-        error_query: |
-          sum(apiserver_request_total{
-            code=~"5..|429"})
-        total_query: |
-          sum(apiserver_request_total)
+        error_query: sum(apiserver_request_total{code=~"5..|429"})
+        total_query: sum(apiserver_request_total)
 ```
 
+→ generates all recording rules, multi-window burn-rate alerts, error budget calculations
+
+
+[^sre-book]: <https://sre.google/sre-book/service-level-objectives/>
 [^sloth]: <https://github.com/slok/sloth>
 
-</div>
-<div class="flex flex-col justify-start">
-
-<div v-click>
-
-**What Sloth generates for you:**
-
-- `slo:sli_error:ratio_rate5m`
-- `slo:sli_error:ratio_rate30m`
-- `slo:sli_error:ratio_rate1h`
-- `slo:sli_error:ratio_rate2h`
-- `slo:sli_error:ratio_rate6h`
-- `slo:sli_error:ratio_rate1d`
-- `slo:sli_error:ratio_rate3d`
-- Multi-window burn-rate alerts (page / ticket)
-- Error budget remaining calculations
-
-Without Sloth, you'd write **dozens** of recording rules by hand.
-
-</div>
-
-</div>
-</div>
-
 <!--
-Sloth was a game changer. Instead of writing dozens of recording rules by hand,
-you define your SLI in a few lines and it generates everything. Highly recommend it.
+Got the task of implementing SLOs, wasn't thrilled at first. Sloth was a game
+changer - define error_query + total_query, get dozens of recording rules for free.
 -->
 
 ---
@@ -294,38 +210,34 @@ layout: default
 ---
 
 # SLOs Reveal the Truth
+##
 
-## And then we started seeing what was really going on
+<div class="grid grid-cols-5 gap-6">
+<div class="col-span-2">
 
-<br>
-
-<div class="grid grid-cols-2 gap-8">
-<div>
-
-**With SLOs in place, we could finally see:**
+With SLOs in place, degradation was **measurable**, not just "a feeling."
 
 - Error budget burning during cluster upgrades
-- Latency SLO violations correlating with specific events
-- Degraded API server performance was **measurable**, not just "a feeling"
+- Latency violations correlating with specific events
 
-<div v-click class="mt-6 p-4 bg-orange-100 bg-opacity-80 border-l-4 border-orange-500 rounded backdrop-filter backdrop-blur-md">
+<div v-click class="mt-4 p-3 bg-orange-100 bg-opacity-80 border-l-4 border-orange-500 rounded backdrop-filter backdrop-blur-md">
 
-**The shift:** from "the cluster feels slow" to "we burned 40% of our monthly error budget during last Tuesday's upgrade."
-
-</div>
+**The shift:** "the cluster feels slow" \
+↳ "we burned 40% of our error budget during last Tuesday's upgrade"
 
 </div>
-<div>
 
-TODO: Add Grafana screenshot of SLO dashboard showing error budget burn during upgrades
+</div>
+<div class="col-span-3 flex justify-center items-center">
+
+TODO: Add Grafana screenshot (`slo-error-budget.png`)
 
 </div>
 </div>
 
 <!--
-This is where it got interesting. Once the SLOs were live, we could clearly see
-that cluster upgrades were our biggest source of degradation. What we'd been
-ignoring for months was now quantified and impossible to dismiss.
+Once SLOs were live, we could clearly see that cluster upgrades were our biggest
+source of degradation. Impossible to dismiss now.
 -->
 
 ---
