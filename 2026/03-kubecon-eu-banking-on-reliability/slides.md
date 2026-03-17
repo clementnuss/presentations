@@ -244,6 +244,145 @@ source of degradation. Impossible to dismiss now.
 layout: default
 ---
 
+# Fix #1: etcd Topology — Before
+
+##
+
+Each apiserver connects to all 3 etcd members
+
+<div class="grid grid-cols-5">
+<div class="col-span-4 flex justify-start items-start">
+  <div style="transform: scale(0.75); transform-origin: top left;">
+    <Excalidraw
+      drawFilePath="./drawings/etcd-initial-topology.excalidraw"
+    />
+  </div>
+</div>
+<div v-click class="col-span-1 absolute right-8 top-1/2 -translate-y-1/2">
+  <img src="./images/meme-complex-junction-road.jpg" class="rounded-lg shadow-lg w-80" alt="Complex Junction road meme">
+</div>
+</div>
+
+<!--
+Our initial topology was a variant of the external topology, but with each
+apiserver connecting to all 3 etcd members. The idea was redundancy, but
+when one etcd node gets upgraded, all 3 apiservers are impacted.
+-->
+
+---
+layout: default
+---
+
+# Fix #1: etcd Topology — After
+##
+
+Stacked topology: each apiserver talks to its local etcd[^ha-topo]
+
+[^ha-topo]: <https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/ha-topology/>
+
+<div class="h-90 overflow-hidden">
+<div class="flex justify-start items-start">
+  <div style="transform: scale(0.70); transform-origin: top center;">
+    <Excalidraw
+      drawFilePath="./drawings/etcd-stacked-topology.excalidraw"
+    />
+  </div>
+</div>
+</div>
+
+<!--
+With stacked topology, each apiserver talks to its local etcd only.
+An etcd upgrade now only impacts one apiserver instead of all three.
+Already a significant improvement.
+-->
+
+---
+layout: default
+---
+
+# Fix #2: etcd Leadership Migration
+Moving leader away before maintenance
+
+<div class="grid grid-cols-5">
+<div class="col-span-3">
+
+- Before upgrading a node, move etcd leadership to another member
+- Avoids leader election during maintenance window
+- Light improvement, but not the full solution
+
+<p></p>
+
+```bash
+# move etcd leadership away from the node being upgraded
+etcdctl move-leader <target-member-id>
+```
+
+</div>
+<div class="col-span-2 absolute right-8 top-1/2 -translate-y-1/2">
+  <img src="./images/meme-etcd-leadership-hot-potato.jpg" class="rounded-lg shadow-lg w-80" alt="etcd leadership hot potato meme">
+</div>
+</div>
+
+<!--
+We modified our playbooks to migrate etcd leadership before touching a node.
+This helped, but wasn't enough - the next fix was the real game changer.
+-->
+
+---
+layout: default
+---
+
+# Fix #3: The Real Culprit
+
+<div class="grid grid-cols-5 gap-6">
+<div class="col-span-3">
+
+One CP node doing all the work, the other two idle.
+
+- **Long-lived HTTP/2 connections** never redistributed
+- Clients open a connection once → reuse it forever
+
+<div v-click>
+
+**The fix:** `--goaway-chance=0.001`[^goaway]
+
+→ 1/1000 requests get a GOAWAY, client reconnects through LB
+
+</div>
+
+<div v-click class="mt-2 p-3 bg-orange-100 bg-opacity-80 border-l-4 border-orange-500 rounded backdrop-filter backdrop-blur-md">
+
+Within hours: load balanced, caches filled. Next upgrades: smooth ✅
+
+</div>
+
+</div>
+<div v-click class="col-span-2 p-4 bg-gray-100 bg-opacity-80 rounded font-mono text-xs border border-gray-300 self-start mt-4">
+
+**RFC 7540 §6.8 — GOAWAY**[^rfc7540]
+
+The GOAWAY frame (type=0x7) is used to initiate shutdown of a connection.
+
+GOAWAY allows an endpoint to **gracefully stop accepting new streams** while still **finishing processing of previously established streams**.
+
+</div>
+</div>
+
+[^goaway]: <https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver/>
+[^rfc7540]: <https://datatracker.ietf.org/doc/html/rfc7540#section-6.8>
+
+<!--
+This was the game changer. Long-lived HTTP/2 connections meant clients would
+stick to one apiserver forever. The goaway-chance flag randomly closes
+connections, forcing clients to reconnect through the load balancer. Once all
+apiservers were handling traffic and had warm caches, upgrades stopped being
+a problem.
+-->
+
+---
+layout: default
+---
+
 # Part 2: Open-Source Monitoring Tools
 
 ## Built from production needs, improved by the community
