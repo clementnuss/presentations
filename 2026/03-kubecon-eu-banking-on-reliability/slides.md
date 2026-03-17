@@ -521,89 +521,38 @@ layout: default
 
 # Part 3: Continuous End-to-End Testing
 
-## Your end users should NOT be your end-to-end tests
+Your end users should NOT be your end-to-end tests
 
-<br>
-
-<div class="grid grid-cols-2 gap-8">
+<div class="grid grid-cols-2 gap-8 mt-4">
 <div>
 
-**Why E2E testing on K8s?**
+**Why?**
 
-- Infrastructure as Code needs testing too
 - Complex interactions between components
-- Networking, storage, security validations
-- **Real environment** behavior vs unit tests
-
-</div>
-<div>
+- Networking, storage, security, DNS validations
 
 **Our approach**
 
-- Go-based test suite using `e2e-framework`[^e2e-fw]
-- Tests run **continuously**, not just in CI
-- Covers networking, DNS, storage, RBAC, and more
-- Results captured with **OpenTelemetry**
-
-[^e2e-fw]: https://github.com/kubernetes-sigs/e2e-framework
+- Go test suite using `e2e-framework`[^e2e-fw], scheduled as a **K8s CronJob** (every 15min)
+- Results captured with **OpenTelemetry** → Grafana dashboards
 
 </div>
-</div>
-
-<div v-click class="mt-4 p-4 bg-blue-100 bg-opacity-30 border-l-4 border-blue-500 rounded backdrop-filter backdrop-blur-md text-center">
-
-💡 **You want to know something is broken _before_ users start calling you at 3am** 😴
-
-</div>
-
-<!--
-Let's move on to our approach to end-to-end testing. We want to catch issues
-before our banking customers do.
--->
-
----
-layout: default
----
-
-# E2E Test Architecture
-
-<div class="grid grid-cols-2 gap-8 h-85 items-start">
-<div class="flex flex-col justify-start">
-
-**Building blocks**
-
-- 🚀 **Deployments** - Pod creation & readiness
-- 💾 **Persistent Volumes** - Storage functionality
-- 🌐 **Networking & CNI** - Service connectivity
-- 🔒 **Security Policies** - RBAC validation
-- 📊 **Observability** - Metrics & logging
-
-**OpenTelemetry Integration**
-
-- Test results pushed to OTEL collector
-- Dashboard visualization of test outcomes
-- Historical tracking of cluster health
-
-</div>
-<div class="flex flex-col justify-start">
+<div>
 
 ```go
-func TestKubernetesDeployment(t *testing.T) {
+func TestKubernetesDeployment(t *testing.T) 
     start := time.Now()
 
-    // register cleanup to record results
     t.Cleanup(func() {
       metricsCollector.RecordTestExecution(
         t, time.Since(start),
       )
     })
 
-    // create deployment and wait for ready
     dep := newDeployment("nginx", 3)
     err := env.Create(ctx, dep)
     require.NoError(t, err)
 
-    // validate pods are running
     waitForPodsReady(t, dep, 30*time.Second)
 }
 ```
@@ -611,40 +560,90 @@ func TestKubernetesDeployment(t *testing.T) {
 </div>
 </div>
 
+[^e2e-fw]: <https://github.com/kubernetes-sigs/e2e-framework>
+
 <!--
-Here's the architecture of our e2e test suite. Each test is a reproducible
-building block that you can adapt for your own clusters.
+Our e2e tests run continuously on all 35 clusters, not just in CI.
+Results flow into OTEL and Grafana so we see degradation trends over time.
 -->
 
 ---
 layout: default
 ---
 
-# E2E Test Results Dashboard
+# Open-Source: e2e-tests[^e2e-tests]
 
-<div class="grid grid-cols-2 gap-8 h-85 items-start">
-<div class="flex flex-col justify-start">
+An analogous open-source implementation you can try today
 
-**Continuous monitoring with Grafana**
+<div class="grid grid-cols-2 gap-8 mt-4">
+<div>
 
-- Tests run every 5 minutes across all clusters
-- Results visualized per cluster, per test category
-- Historical trends reveal degradation patterns
-- Alert rules trigger on test failures
-
-🔗 github.com/clementnuss/e2e-tests
+| Test | What it validates |
+| --- | --- |
+| **Deployment** | Pod scheduling, container runtime, workload lifecycle |
+| **Storage (CSI)** | PV provisioning, read/write operations |
+| **Networking** | DNS resolution, service discovery, inter-pod connectivity |
+| **RBAC** | Role-based access boundaries, permission enforcement |
 
 </div>
-<div class="flex flex-col justify-center items-center">
+<div>
 
-TODO: Add screenshot of e2e test Grafana dashboard
+**How it runs**
+
+- Deployed as a K8s **CronJob** (every 15min)
+- Runs in-cluster: creates a namespace, provisions test resources, validates everything works
+- Metrics stream to OTLP endpoint → VictoriaMetrics / Grafana
+
+<div v-click class="mt-4 p-3 bg-orange-100 bg-opacity-80 border-l-4 border-orange-500 rounded backdrop-filter backdrop-blur-md">
+
+Fork it, adapt the tests to your platform, deploy as a CronJob → instant cluster health monitoring
+
+</div>
+
+</div>
+</div>
+
+[^e2e-tests]: <https://github.com/clementnuss/e2e-tests>
+
+---
+layout: default
+---
+
+# E2E Test Results
+
+##
+
+<div class="grid grid-cols-5 gap-6">
+<div class="col-span-2">
+
+- Tests run every **15 minutes** across all clusters
+- Results visualized per cluster, per test category
+- Historical trends reveal degradation patterns
+
+<div v-click class="mt-4 p-3 bg-orange-100 bg-opacity-80 border-l-4 border-orange-500 rounded backdrop-filter backdrop-blur-md">
+
+Alert rules trigger on test failures → we know before users do
+
+</div>
+
+</div>
+<div class="col-span-3">
+
+TODO: Add screenshot of e2e test Grafana dashboard (`e2e-tests-dashboard.png`)
 
 </div>
 </div>
 
 <!--
-The test results flow into Grafana dashboards, giving us continuous visibility
-into the health of all 35 clusters.
+The dashboard gives us continuous visibility into all 35 clusters.
+When a test starts failing, we get alerted immediately.
+-->
+
+[^e2e-tests]: <https://github.com/clementnuss/e2e-tests>
+
+<!--
+Our internal e2e tests are not open-source, but I've written an analogous
+implementation that covers the same patterns. Fork it and adapt to your needs.
 -->
 
 ---
