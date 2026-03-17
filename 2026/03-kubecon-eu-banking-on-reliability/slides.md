@@ -652,33 +652,27 @@ layout: default
 
 # Part 4: The 502 Mystery
 
-## Interactive debugging session
+~1.7M requests/day on one ingress. **8–10 failures per day.** Where would you look?
 
-<br>
+<div class="grid grid-cols-5 gap-6 mt-4">
+<div class="col-span-3">
 
-<div class="grid grid-cols-2 gap-8">
-<div>
-
-**The symptoms**
-
-- **6 per million** requests returned 502
-- Seemingly random, no pattern in time or endpoint
-- In banking: failed requests = **denied payments**
-- Support tickets from payment processing teams
+- 502s uniformly distributed across all ingress-nginx pods
+- No pattern in time, endpoint, or client
+- App pods healthy, no errors in application logs
+- CPU / memory fine, network policies correct
+- Load testing with **K6** couldn't reproduce it
+- Errors correlate with request volume — more traffic, more 502s
+- But the **rate** stays constant: ~6 per million
 
 </div>
-<div>
+<div class="col-span-2 flex flex-col items-center justify-center">
 
-**The stakes**
+TODO: Add QR code image (`qr-claper-502-poll.png`) linking to Claper poll
 
-- Financial regulatory compliance
-- Customer trust and satisfaction
-- Every 502 = a potentially denied transaction
-- 6 per million sounds small, until you calculate the daily volume
+<div class="mt-2 text-center text-sm">
 
-<div v-click class="mt-4 p-4 bg-orange-100 bg-opacity-80 border-l-4 border-orange-500 rounded backdrop-filter backdrop-blur-md">
-
-**~10M requests/day × 6/million = ~60 failed requests/day** 💸
+**Vote now!** Scan to answer 👆
 
 </div>
 
@@ -686,117 +680,147 @@ layout: default
 </div>
 
 <!--
-And now for the fun part - let's do some live debugging together.
-6 per million sounds negligible, but at scale it's 60 failed requests per day.
+Show the QR code, give the audience 30 seconds to vote on where they'd look.
+Then reveal the results and continue with the investigation.
 -->
 
 ---
 layout: default
 ---
 
-# 502 Errors: The Investigation
+# The Investigation
 
-<div class="grid grid-cols-2 gap-8 h-85 items-start">
-<div class="flex flex-col justify-start">
+The breakthrough: finding the right log line
 
-**What we tried first**
+<div class="mt-4">
 
-- Checked application logs - no errors
-- Checked pod resource usage - normal
-- Checked node health - all green
-- Checked network policies - correct
-
-**The breakthrough**
-
-- 502 = upstream server closed connection
-- nginx proxy sitting between client and backend
-- The error happens during connection reuse
+ingress-nginx error logs contain the **FQDN**, not the ingress name — we were searching for the wrong thing.
 
 </div>
-<div class="flex flex-col justify-start">
 
-TODO: Add diagram showing the request flow through nginx
+<div v-click class="mt-4 p-4 bg-gray-100 bg-opacity-80 rounded font-mono text-sm border border-gray-300">
+
+upstream prematurely closed connection while reading response header from upstream
 
 </div>
+
+<div v-click class="mt-6">
+
+This tells us:
+
+- nginx **had** an open connection to the upstream (backend pod)
+- It sent a request on that connection
+- The backend **closed the connection** before responding
+- nginx has no response to return → **502 Bad Gateway**
+
 </div>
 
 <!--
-We went through the usual debugging checklist and everything looked fine.
-The breakthrough came when we looked at the connection lifecycle.
+Once we found the right log line, the picture became clearer. This is about
+keepalive connection reuse, not about the backend being unhealthy.
 -->
 
 ---
 layout: default
 ---
 
-# 502 Errors: Root Cause
+# The Race Condition
 
-## Mismatched connection timeouts
+##
 
-<div class="grid grid-cols-2 gap-8 h-80 items-start">
-<div class="flex flex-col justify-start">
+<div class="grid grid-cols-5 gap-6">
+<div class="col-span-2">
 
-**The race condition**
+Two conflicting keepalive timeouts:
 
-1. nginx keeps connections open for **X seconds**
-2. Backend closes idle connections after **Y seconds**
-3. When **Y < X**: nginx sends request on a connection the backend just closed
-4. Result: **502 Bad Gateway**
+- **nginx**: keeps connections open for **60s** (default)
+- **Tomcat**: closes idle connections after **20s** (default)
 
-**The fix**
+<div v-click="1" class="mt-4">
 
-- Ensure upstream `keepalive_timeout` > nginx `keepalive_timeout`
-- Or: configure nginx to handle upstream connection resets gracefully
+The race window:
+
+1. Connection sits idle for ~20s
+2. Tomcat sends **FIN** to close it
+3. At the same moment, nginx sends a **new request** on that connection
+4. → **502 Bad Gateway**
 
 </div>
-<div class="flex flex-col justify-start">
 
-TODO: Add Excalidraw diagram showing the timeout mismatch race condition
+</div>
+<div v-click="1" class="col-span-3 flex justify-center" style="max-height: 380px;">
+
+```mermaid {scale: 0.60}
+sequenceDiagram
+    participant N as ingress-nginx<br/>(keepalive: 60s)
+    participant T as Tomcat<br/>(keepalive: 20s)
+
+    N->>T: Request #1
+    T-->>N: 200 OK
+    Note over N,T: Connection kept alive.<br/>Idle timer starts...
+
+    Note over N: ⏱️ t ≈ 19.9s
+    Note over T: ⏱️ t = 20s
+
+    rect rgb(255, 235, 235)
+        Note over N,T: ⚡ RACE WINDOW
+        T--)N: TCP FIN (closing)
+        N->>T: Request #2 (reusing conn)
+    end
+
+    T--xN: TCP RST
+    Note over N: No response → 502
+```
 
 </div>
 </div>
 
 <!--
-The root cause was a classic timeout mismatch. The backend was closing
-connections slightly before nginx expected, creating a tiny race window.
+This is the aha moment. Two perfectly reasonable defaults — 60s and 20s —
+create a tiny race window. The K6 script reproduces it by sending bursts
+followed by pauses of increasing duration, sweeping through the timeout window.
 -->
 
 ---
 layout: default
 ---
 
-# 502 Errors: The Fix & Lessons
+# The Fix[^blog-502]
 
-<div class="grid grid-cols-2 gap-8 h-85 items-start">
+One environment variable:
+
+```bash
+export TC_HTTP_KEEPALIVETIMEOUT="75000"  # 75s > nginx's 60s
+```
+
+<div class="grid grid-cols-2 gap-8 mt-4">
 <div>
 
-**The configuration change**
+**The rule:** upstream `keepalive_timeout` must be **greater** than the reverse proxy's
 
-TODO: Add specific nginx/backend timeout configuration
-
-**Validation**
-
-- Deployed fix to staging
-- Monitored for 48 hours
-- 502 rate dropped to zero
-- Rolled out to all clusters
+- nginx default: **60s**
+- Tomcat was: **20s** → now **75s**
+- Backend always outlives the proxy's connection → no more race
 
 </div>
 <div>
 
-**Lessons learned**
+**Lessons**
 
-1. **Measure everything** - without SLOs we might never have noticed 6/million
-2. **Connection lifecycle matters** - timeouts must be coordinated end-to-end
-3. **Small errors compound** - 6/million × millions of daily requests = real impact
-4. **Banking context amplifies risk** - every failed request has financial implications
+- K6 load tests failed because they didn't test **idle + burst** patterns
+- Connection lifecycle timeouts must be coordinated **end-to-end**
+- The fix is trivial — finding it is the hard part
 
 </div>
 </div>
+
+
+[^blog-502]: <https://clement.n8r.ch/en/articles/502-upstream-errors/>
 
 <!--
-The fix was a simple configuration change, but finding it required
-understanding the full request lifecycle. This is why SLOs matter.
+The fix was a single environment variable. But the journey to get there
+required understanding keepalive semantics, reproducing with specific
+idle+burst load patterns, and coordinating timeouts end-to-end.
 -->
 
 ---

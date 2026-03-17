@@ -2,8 +2,17 @@
   display: none;
 }
 
+.footnotes-sep {
+  display: none;
+}
+
 .footnotes {
-  margin-top: 10px;
+  position: absolute;
+  bottom: 1rem;
+  left: 2rem;
+  right: 2rem;
+  border-top: 1px dashed rgba(255, 127, 21, 0.35);
+  padding-top: 0.4rem;
 }
 
 .footnotes .footnote-item {
