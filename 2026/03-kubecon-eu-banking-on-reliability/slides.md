@@ -385,185 +385,134 @@ layout: default
 
 # Part 2: Open-Source Monitoring Tools
 
-## Built from production needs, improved by the community
+Built from production needs, improved by the community
 
-<br>
+<div class="grid grid-cols-2 gap-8 mt-4">
+<div class="bg-white bg-opacity-70 backdrop-filter backdrop-blur-md rounded-lg p-6 border border-white border-opacity-20">
 
-<div class="grid grid-cols-2 gap-8">
-<div class="bg-white bg-opacity-10 backdrop-filter backdrop-blur-md rounded-lg p-6 border border-white border-opacity-20">
+## 🏥 **kubenurse**[^kubenurse]
 
-## 🔍 **DNS Monitoring**
-
-- Continuous DNS resolution checks
-- Detect silent failures
-- Track resolution latency
-- Alert before users notice
+- DaemonSet performing continuous network health checks
+- Node-to-node, apiserver, ingress, service & DNS connectivity
+- Latency histograms + error counters with httptrace events
 
 </div>
-<div class="bg-white bg-opacity-10 backdrop-filter backdrop-blur-md rounded-lg p-6 border border-white border-opacity-20">
+<div class="bg-white bg-opacity-70 backdrop-filter backdrop-blur-md rounded-lg p-6 border border-white border-opacity-20">
 
-## 🏥 **kubenurse**
+## 🔍 **hostlookuper**[^hostlookuper]
 
-- Node-to-node mesh checks
-- Network latency monitoring
-- Ingress & service connectivity
-- DaemonSet-based, always-on
-
-🔗 github.com/postfinance/kubenurse
+- Periodically resolves DNS targets, exports latency + errors as Prometheus metrics
+- DNS is an excellent **network congestion indicator**: UDP packets are not retried and result in errors
 
 </div>
 </div>
+
+[^kubenurse]: <https://github.com/postfinance/kubenurse>
+[^hostlookuper]: <https://github.com/postfinance/hostlookuper>
 
 <!--
-Now let's look at two monitoring tools we built and open-sourced.
-Both were born from real production incidents.
+Two open-source tools we built at PostFinance. hostlookuper is simpler — just DNS checks —
+but surprisingly useful because DNS failures are often the first sign of network congestion.
+kubenurse is more advanced and is what we'll focus on.
 -->
 
 ---
 layout: default
 ---
 
-# DNS Monitoring Tool
+# kubenurse: 5 Request Types
 
-<div class="grid grid-cols-2 gap-8 h-85 items-start">
-<div class="flex flex-col justify-start">
+A single DaemonSet, $n$ network paths checked every $x$ seconds
 
-**Why monitor DNS?**
 
-- DNS is the most common point of failure
-- Silent degradation goes unnoticed
-- In banking: DNS failure = service outage = denied payments
-
-**How it works**
-
-- Golang service running in-cluster
-- Periodically resolves configured domains
-- Exposes Prometheus metrics for latency & errors
-- Alerts on degradation thresholds
-
-</div>
-<div class="flex flex-col justify-start">
-
-TODO: Add architecture diagram or code snippet
-
+<div class="">
+<div class="flex justify-center items-start">
+  <div style="transform: scale(0.70); transform-origin: top center;" class="bg-white bg-opacity-80 rounded-lg p-8 shadow-lg">
+    <Excalidraw
+      drawFilePath="./drawings/kubenurse-request-types.excalidraw"
+    />
+  </div>
 </div>
 </div>
 
 <!--
-DNS monitoring - because DNS is always the problem, and you want to know
-before your customers do.
+kubenurse validates 5 different network paths from every node: apiserver direct,
+apiserver DNS, me-ingress, me-service, and neighborhood checks. The drawing
+shows how a single pod reaches out to all these paths.
 -->
 
 ---
 layout: default
 ---
 
-# kubenurse: Node-to-Node Mesh
+# kubenurse: httptrace Instrumentation
 
-<div class="grid grid-cols-5 gap-4 h-85 items-start">
-<div class="col-span-2 flex flex-col justify-start">
+##
 
-**What kubenurse monitors**
+<div class="grid grid-cols-5 gap-6">
+<div class="col-span-2">
 
-- 🌐 **Node-to-node** network latencies
-- 🔌 **Pod-to-apiserver** communication
-- 🎯 **Ingress & service** connectivity
-- 🔍 **DNS resolution** performance
+Metrics are labeled with **httptrace event types** — precise breakdown of each request phase:
 
-```yaml
-# Deploy with Helm
-helm repo add kubenurse \
-  https://postfinance.github.io/kubenurse
-helm install kubenurse kubenurse/kubenurse
-```
+- `dns_start` / `dns_done`
+- `connect_start` / `connect_done`
+- `tls_handshake_start` / `tls_handshake_done`
+- `got_conn` / `got_first_response_byte`
 
-<div v-click class="mt-4 bg-white bg-opacity-10 backdrop-filter backdrop-blur-md rounded-lg p-4 border border-white border-opacity-20">
+<div v-click class="mt-4 p-3 bg-orange-100 bg-opacity-80 border-l-4 border-orange-500 rounded backdrop-filter backdrop-blur-md">
 
-💡 kubenurse runs as a DaemonSet and performs health checks every 5 seconds
+On errors, the **event label** tells you exactly which phase failed
 
 </div>
 
 </div>
-<div class="col-span-3 flex flex-col justify-start">
+<div class="col-span-3">
 
-TODO: Add kubenurse architecture diagram (Excalidraw)
+<img src="./images/kubenurse-dashboard.png" class="rounded-lg shadow-lg" alt="kubenurse Grafana dashboard">
 
 </div>
 </div>
 
 <!--
-kubenurse is our distributed mesh for node-to-node checks. It detects network
-problems and performance degradations that would otherwise go unnoticed.
+The httptrace integration is what makes kubenurse really powerful. You don't just
+know that a request failed — you know exactly which phase failed. Was it DNS? TCP?
+TLS? This makes debugging network issues much faster.
 -->
 
 ---
 layout: default
 ---
 
-# kubenurse metrics
+# kubenurse: $O(n²)$ → $O(n)$
 
-| metric name | labels | description |
-| --- | --- | --- |
-| `kubenurse_httpclient_requests_total` | `type, code` | counter for total HTTP requests, by code and type |
-| `kubenurse_errors_total` | `type, event` | error counter, by httptrace event and request type |
-| `kubenurse_httpclient_request_duration_seconds` | `type` | latency histogram, by request type |
+Community contribution via [GitHub issue #55](https://github.com/postfinance/kubenurse/issues/55)
 
-<br>
+<div class="grid grid-cols-5 gap-6 mt-2">
+<div class="col-span-2">
 
-<div v-click>
+**The problem:** every pod checked every other pod → $O(n^2)$
 
-**Real-world detection example:**
+**The fix:** deterministic neighbor filtering
 
-&rarr; How do you notice **random** packet drops?
-
-&rarr; How do you notice a slight latency increase on a single node?
-
-&rarr; kubenurse makes the invisible **visible**.
+- Node names are hashed → each pod checks **$n$ neighbors** based on hash order (default: $n=10$)
+- Distribution is random but deterministic → stable metrics across restarts
 
 </div>
-
-<!--
-These metrics give you full visibility into your cluster's network health.
-Let me show you a real-world example of what kubenurse can detect.
--->
-
----
-layout: default
----
-
-# Community Contributions: O(n²) to O(n)
-
-<div class="grid grid-cols-5 gap-4 h-85 items-start">
-<div class="col-span-2 flex flex-col justify-start">
-
-**The scaling problem**
-
-[GitHub issue #55](https://github.com/postfinance/kubenurse/issues/55)
-
-Two problems identified by the community:
-
-1. **No caching** of node discovery results
-2. **$O(n^2)$ neighbouring checks**
-
-Every kubenurse pod was checking every other pod, and rediscovering neighbours on each round.
-
-<div v-click class="mt-4 p-4 bg-orange-100 bg-opacity-80 border-l-4 border-orange-500 rounded backdrop-filter backdrop-blur-md">
-
-**After the fix:** $O(n)$ checks with cached discovery. Clusters with 500+ nodes now work smoothly.
-
+<div class="col-span-3">
+<div class="flex justify-start items-start">
+  <div style="transform: scale(.9); transform-origin: top center;" class="bg-white bg-opacity-80 rounded-lg p-4 shadow-lg">
+    <Excalidraw
+      drawFilePath="./drawings/kubenurse-neighbor-filtering.excalidraw"
+    />
+  </div>
 </div>
-
-</div>
-<div class="col-span-3 flex flex-col justify-start">
-
-TODO: Add screenshot of the GitHub issue or a before/after diagram
-
 </div>
 </div>
 
 <!--
-One of the best examples of why open-sourcing matters. A community contributor
-identified and fixed a quadratic scaling issue we hadn't hit yet at our scale.
+A community contributor identified the quadratic scaling issue before we hit it.
+The deterministic hashing approach is elegant — each node always checks the same
+neighbors, so metrics are stable and meaningful. This is why you open-source.
 -->
 
 ---
