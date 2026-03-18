@@ -493,13 +493,7 @@ Community discussion via [GitHub issue #55](https://github.com/postfinance/kuben
 
 </div>
 <div class="col-span-3">
-<div class="flex justify-start items-start">
-  <div style="transform: scale(.9); transform-origin: top center;" class="bg-white bg-opacity-80 rounded-lg p-4 shadow-lg">
-    <Excalidraw
-      drawFilePath="./drawings/kubenurse-neighbor-filtering.excalidraw"
-    />
-  </div>
-</div>
+  <HashRing />
 </div>
 </div>
 
