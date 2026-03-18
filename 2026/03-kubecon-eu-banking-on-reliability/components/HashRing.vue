@@ -2,9 +2,10 @@
 import { ref, computed, watch } from 'vue'
 
 const nodeCount = ref(15)
-const neighborCount = ref(10)
+const neighborCount = ref(5)
 const selectedNode = ref(null)
 const showAllToAll = ref(false)
+const hashOrder = ref(true)
 
 // FNV-1a hash
 function fnv1a(str) {
@@ -33,12 +34,16 @@ const nodes = computed(() => {
     const hash = fnv1a(name)
     arr.push({ name, hash, originalIndex: i })
   }
+  // Always sort by hash to assign stable ringIndex
   arr.sort((a, b) => a.hash - b.hash)
-  return arr.map((n, i) => {
-    const angle = (i / nodeCount.value) * 2 * Math.PI - Math.PI / 2
+  const withRingIndex = arr.map((n, i) => ({ ...n, ringIndex: i }))
+
+  return withRingIndex.map((n) => {
+    // Position on ring: by hash order or by original sequential order
+    const pos = hashOrder.value ? n.ringIndex : n.originalIndex
+    const angle = (pos / nodeCount.value) * 2 * Math.PI - Math.PI / 2
     return {
       ...n,
-      ringIndex: i,
       angle,
       x: CX + R * Math.cos(angle),
       y: CY + R * Math.sin(angle),
@@ -82,7 +87,7 @@ const neighborConnections = computed(() => {
 })
 
 const neighborArc = computed(() => {
-  if (showAllToAll.value || selectedNode.value === null) return ''
+  if (showAllToAll.value || !hashOrder.value || selectedNode.value === null) return ''
   const indices = getNeighborIndices(selectedNode.value)
   if (indices.length === 0) return ''
   const lastIdx = indices[indices.length - 1]
@@ -140,6 +145,12 @@ watch(nodeCount, (n) => {
         <input type="range" min="1" :max="nodeCount - 1" v-model.number="neighborCount" />
       </label>
       <button
+        :class="['toggle-btn', 'order-toggle', { active: hashOrder }]"
+        @click="hashOrder = !hashOrder"
+      >
+        {{ hashOrder ? '🔀 hash order' : '🔢 linear order' }}
+      </button>
+      <button
         :class="['toggle-btn', { active: showAllToAll }]"
         @click="showAllToAll = !showAllToAll"
       >
@@ -186,6 +197,7 @@ watch(nodeCount, (n) => {
         :x1="c.from.x" :y1="c.from.y"
         :x2="c.to.x" :y2="c.to.y"
         class="connection-neighbor"
+        style="transition: x1 0.6s ease, y1 0.6s ease, x2 0.6s ease, y2 0.6s ease"
       />
 
       <!-- Nodes -->
@@ -204,7 +216,7 @@ watch(nodeCount, (n) => {
         <circle
           :cx="node.x" :cy="node.y" r="10"
           class="node-dot"
-          :style="{ fill: node.color }"
+          :style="{ fill: node.color, transition: 'cx 0.6s ease, cy 0.6s ease' }"
         />
         <text
           :x="CX + (R + 24) * Math.cos(node.angle)"
@@ -212,27 +224,10 @@ watch(nodeCount, (n) => {
           class="node-label"
           text-anchor="middle"
           dominant-baseline="central"
+          :style="{ transition: 'x 0.6s ease, y 0.6s ease' }"
         >{{ node.name.replace('node-', '') }}</text>
       </g>
     </svg>
-
-    <!-- Ring order strip -->
-    <div class="ring-order">
-      <div class="order-row">
-        <span class="order-label">ring order:</span>
-        <span
-          v-for="node in nodes"
-          :key="'ro-' + node.name"
-          class="order-pill"
-          :class="{
-            'pill-selected': selectedNode === node.ringIndex,
-            'pill-neighbor': isNeighbor(node.ringIndex),
-          }"
-          :style="{ background: node.color }"
-          @click="selectNode(node.ringIndex)"
-        >{{ node.name.replace('node-', '') }}</span>
-      </div>
-    </div>
 
     <!-- Stats -->
     <div class="stats">
@@ -301,6 +296,10 @@ watch(nodeCount, (n) => {
   background: #dc2626;
   border-color: #dc2626;
   color: white;
+}
+.toggle-btn.order-toggle.active {
+  background: #ff7f15;
+  border-color: #ff7f15;
 }
 
 .ring-svg {
@@ -398,53 +397,6 @@ watch(nodeCount, (n) => {
   font-size: 10px;
   color: #aaa;
   margin-left: 6px;
-}
-
-.ring-order {
-  width: 100%;
-  max-width: 340px;
-}
-
-.order-row {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  flex-wrap: wrap;
-}
-
-.order-label {
-  font-size: 9px;
-  color: #999;
-  margin-right: 2px;
-  white-space: nowrap;
-}
-
-.order-pill {
-  font-size: 8px;
-  font-weight: 700;
-  color: white;
-  padding: 1px 4px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.2s;
-  line-height: 1.3;
-  opacity: 0.8;
-}
-
-.order-pill:hover {
-  opacity: 1;
-  transform: scale(1.15);
-}
-
-.order-pill.pill-selected {
-  opacity: 1;
-  transform: scale(1.25);
-  box-shadow: 0 0 0 2px rgba(0,0,0,0.3);
-}
-
-.order-pill.pill-neighbor {
-  opacity: 1;
-  transform: scale(1.1);
 }
 
 /* Dark/slidev overrides */

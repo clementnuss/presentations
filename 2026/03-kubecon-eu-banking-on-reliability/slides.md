@@ -55,7 +55,7 @@ that have been battle-tested in production.
 layout: default
 ---
 
-# Agenda
+# Outline
 
 <br>
 
@@ -65,6 +65,9 @@ layout: default
 ### 1. SLOs as a Driver for Improvement
 How Service Level Objectives cascaded into concrete platform fixes
 
+</div>
+<div>
+
 ### 2. Open-Source Monitoring Tools
 DNS monitoring and kubenurse: node-to-node mesh checks
 
@@ -73,6 +76,9 @@ DNS monitoring and kubenurse: node-to-node mesh checks
 
 ### 3. Continuous End-to-End Testing
 A Golang test suite covering all platform aspects
+
+</div>
+<div>
 
 ### 4. Interactive Debugging: The 502 Mystery
 Tracking down 6-per-million failed requests
@@ -138,7 +144,7 @@ financial institution where reliability is not just nice-to-have, it's regulated
 layout: default
 ---
 
-# Part 1: SLOs as a Driver
+# Part 1: Service Level Objectives (SLOs) as a Driver
 
 From "it feels slow" to data-driven reliability
 
@@ -492,7 +498,7 @@ Community discussion via [GitHub issue #55](https://github.com/postfinance/kuben
 - Distribution is random but deterministic → stable metrics across restarts
 
 </div>
-<div class="col-span-3">
+<div class="col-span-3 -mt-16 ml-28">
   <HashRing />
 </div>
 </div>
