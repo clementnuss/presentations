@@ -149,14 +149,14 @@ From "it feels slow" to data-driven reliability
 - Basic Grafana dashboards, but no clear target
 - Degraded performance for **months** — never properly investigated
 
-<div v-click class="mt-4 p-3 bg-orange-100 bg-opacity-80 border-l-4 border-orange-500 rounded backdrop-filter backdrop-blur-md">
+<div v-click="1" class="mt-4 p-3 bg-orange-100 bg-opacity-80 border-l-4 border-orange-500 rounded backdrop-filter backdrop-blur-md">
 
 Without a target and a timeline, "slow" is subjective and easy to ignore.
 
 </div>
 
 </div>
-<div v-click class="col-span-2 flex justify-center items-center">
+<div v-click="1" class="col-span-2 flex justify-center items-center">
 
 <img src="./images/skeleton computer.png" class="rounded-lg shadow-lg max-h-60 w-auto" alt="Slow cluster experience">
 
@@ -230,7 +230,7 @@ With SLOs in place, degradation was **measurable**, not just "a feeling."
 </div>
 <div class="col-span-3 flex justify-center items-center">
 
-TODO: Add Grafana screenshot (`slo-error-budget.png`)
+<img src="./images/k8s-slo-dashboard.png" class="rounded-lg shadow-lg" alt="Kubernetes SLO dashboard">
 
 </div>
 </div>
@@ -342,7 +342,7 @@ One CP node doing all the work, the other two idle.
 - **Long-lived HTTP/2 connections** never redistributed
 - Clients open a connection once → reuse it forever
 
-<div v-click>
+<div v-click="1">
 
 **The fix:** `--goaway-chance=0.001`[^goaway]
 
@@ -350,14 +350,8 @@ One CP node doing all the work, the other two idle.
 
 </div>
 
-<div v-click class="mt-2 p-3 bg-orange-100 bg-opacity-80 border-l-4 border-orange-500 rounded backdrop-filter backdrop-blur-md">
-
-Within hours: load balanced, caches filled. Next upgrades: smooth ✅
-
 </div>
-
-</div>
-<div v-click class="col-span-2 p-4 bg-gray-100 bg-opacity-80 rounded font-mono text-xs border border-gray-300 self-start mt-4">
+<div v-click="1" class="col-span-2 p-4 bg-gray-100 bg-opacity-80 rounded font-mono text-xs border border-gray-300 self-start mt-4">
 
 **RFC 7540 §6.8 — GOAWAY**[^rfc7540]
 
@@ -485,7 +479,7 @@ layout: default
 
 # kubenurse: $O(n²)$ → $O(n)$
 
-Community contribution via [GitHub issue #55](https://github.com/postfinance/kubenurse/issues/55)
+Community discussion via [GitHub issue #55](https://github.com/postfinance/kubenurse/issues/55) sparked the fix
 
 <div class="grid grid-cols-5 gap-6 mt-2">
 <div class="col-span-2">
@@ -510,9 +504,54 @@ Community contribution via [GitHub issue #55](https://github.com/postfinance/kub
 </div>
 
 <!--
-A community contributor identified the quadratic scaling issue before we hit it.
-The deterministic hashing approach is elegant — each node always checks the same
-neighbors, so metrics are stable and meaningful. This is why you open-source.
+The community pointed out the quadratic scaling issue and the discussion that
+followed sparked the deterministic hashing solution. Each node always checks
+the same neighbors, so metrics are stable and meaningful. This is why you open-source.
+-->
+
+---
+layout: default
+---
+
+# kubenurse: Graceful Shutdown
+
+SLOs on kubenurse revealed errors on the `me_ingress` check during upgrades/maintenance
+
+<div class="grid grid-cols-5 gap-6 mt-4">
+<div class="col-span-3">
+
+**The problem:**
+
+When a pod receives SIGTERM, the ingress controller doesn't yet know the pod is terminating — endpoint propagation takes a few seconds.
+
+Requests still routed to a dying pod → errors
+
+<div v-click>
+
+**The fix:** lameduck shutdown[^lameduck] (inspired by CoreDNS)
+
+- On SIGTERM: mark as **not ready**, but keep serving
+- Sleep `KUBENURSE_SHUTDOWN_DURATION` (default: **5s**)
+- Then stop the server — by now, endpoints have propagated
+
+</div>
+
+</div>
+<div v-click class="col-span-2 flex justify-center items-center">
+
+<img src="./images/meme-not-dead-yet.jpg" class="rounded-lg shadow-lg w-80" alt="I'm not dead yet meme">
+
+</div>
+</div>
+
+[^lameduck]: <https://github.com/postfinance/kubenurse/commit/cef5f2ef>
+
+<!--
+After introducing SLOs for kubenurse itself, we noticed errors during node
+maintenance. The ingress controller kept sending traffic to pods that were
+already shutting down. The fix is simple: sleep a few seconds before actually
+stopping, giving time for endpoint changes to propagate to the proxy/CNI.
+CoreDNS calls this "lameduck" mode.
 -->
 
 ---
@@ -618,9 +657,8 @@ layout: default
 
 - Tests run every **15 minutes** across all clusters
 - Results visualized per cluster, per test category
-- Historical trends reveal degradation patterns
 
-<div v-click class="mt-4 p-3 bg-orange-100 bg-opacity-80 border-l-4 border-orange-500 rounded backdrop-filter backdrop-blur-md">
+<div v-click="1" class="mt-4 p-3 bg-orange-100 bg-opacity-80 border-l-4 border-orange-500 rounded backdrop-filter backdrop-blur-md">
 
 Alert rules trigger on test failures → we know before users do
 
@@ -629,9 +667,13 @@ Alert rules trigger on test failures → we know before users do
 </div>
 <div class="col-span-3">
 
-TODO: Add screenshot of e2e test Grafana dashboard (`e2e-tests-dashboard.png`)
+<img src="./images/e2e-tests-dashboard.png" class="rounded-lg shadow-lg" alt="e2e tests Grafana dashboard">
 
 </div>
+</div>
+
+<div v-click="1" class="absolute right-15 bottom-24">
+  <img src="./images/meme-tests-everywhere.jpg" class="rounded-lg shadow-lg w-62" alt="Tests everywhere meme">
 </div>
 
 <!--
@@ -668,11 +710,11 @@ layout: default
 </div>
 <div class="col-span-2 flex flex-col items-center justify-center">
 
-TODO: Add QR code image (`qr-claper-502-poll.png`) linking to Claper poll
+<img src="./images/claper-kubecon-qr.png" class="rounded-lg shadow-md w-64" alt="Claper poll QR code">
 
-<div class="mt-2 text-center text-sm">
+<div class="mt-2 text-center">
 
-**Vote now!** Scan to answer 👆
+### **claper.n8r.ch** · code: **#KUBECON**
 
 </div>
 
@@ -775,10 +817,13 @@ sequenceDiagram
 </div>
 </div>
 
+<div v-click="2" class="absolute right-0 top-0 bottom-0 z-10 flex items-center justify-center" style="left: 40%;">
+  <img src="./images/meme-race-condition.jpg" class="rounded-lg shadow-xl w-90" alt="Race condition meme">
+</div>
+
 <!--
 This is the aha moment. Two perfectly reasonable defaults — 60s and 20s —
-create a tiny race window. The K6 script reproduces it by sending bursts
-followed by pauses of increasing duration, sweeping through the timeout window.
+create a tiny race window. The meme covers the diagram on purpose — it's funnier that way.
 -->
 
 ---
@@ -829,44 +874,45 @@ layout: default
 
 # Key Takeaways
 
-<br>
+<div class="grid grid-cols-2 gap-6 mt-4 text-sm">
+<div class="bg-white bg-opacity-70 backdrop-filter backdrop-blur-md rounded-lg p-5 border border-white border-opacity-20 shadow-md">
 
-<div class="grid grid-cols-2 gap-8">
-<div class="bg-white bg-opacity-10 backdrop-filter backdrop-blur-md rounded-lg p-6 border border-white border-opacity-20">
+### **SLOs are a forcing function**
 
-## **SLOs are a forcing function**
-
-They reveal hidden issues across your stack and give you the data to prioritize fixes.
+From "it feels slow" to data-driven fixes
 
 </div>
-<div class="bg-white bg-opacity-10 backdrop-filter backdrop-blur-md rounded-lg p-6 border border-white border-opacity-20">
+<div class="bg-white bg-opacity-70 backdrop-filter backdrop-blur-md rounded-lg p-5 border border-white border-opacity-20 shadow-md">
 
-## **Open-source your tools**
+### **Open-source your tools**
 
-Community contributions can be transformative. The O(n²) → O(n) fix came from a user, not us.
+The best fixes and discussions come from the community — not always code, sometimes just the right conversation
 
 </div>
 </div>
 
-<div class="grid grid-cols-2 gap-8 mt-6">
-<div class="bg-white bg-opacity-10 backdrop-filter backdrop-blur-md rounded-lg p-6 border border-white border-opacity-20">
+<div class="grid grid-cols-2 gap-6 mt-4 text-sm">
+<div class="bg-white bg-opacity-70 backdrop-filter backdrop-blur-md rounded-lg p-5 border border-white border-opacity-20 shadow-md">
 
-## **Test continuously**
+### **Test continuously, in-cluster**
 
-Not just in CI, but in production. Your end users should not be your end-to-end tests.
+Your end users should not be your e2e tests
 
 </div>
-<div class="bg-white bg-opacity-10 backdrop-filter backdrop-blur-md rounded-lg p-6 border border-white border-opacity-20">
+<div class="bg-white bg-opacity-70 backdrop-filter backdrop-blur-md rounded-lg p-5 border border-white border-opacity-20 shadow-md">
 
-## **Every error matters**
+### **Every error matters**
 
-6 per million is too many in banking. Measure, investigate, fix.
+8 out of 1.7M — still worth fixing
 
 </div>
 </div>
 
 <!--
-Let me wrap up with the key takeaways from today's session.
+Each takeaway maps directly to what we covered: SLOs drove the etcd/goaway fixes,
+open-source tools gave us kubenurse and community contributions, continuous testing
+catches regressions, and the 502 story — found through a customer ticket — shows
+why even tiny error rates matter and deserve investigation.
 -->
 
 ---
@@ -875,48 +921,51 @@ layout: default
 
 <div class="flex flex-col justify-center items-center h-full text-center">
 
-<h1 class="mt-8">Thank You! 🙏</h1>
+<h1 class="mt-4">Thank You!</h1>
 
-<div class="text-xl font-bold mt-4 mb-6">
+<div class="text-lg mt-4 mb-6">
 Questions?
 </div>
 
-<div class="grid grid-cols-2 gap-12 w-full max-w-3xl items-start mt-8">
+<div class="grid grid-cols-3 gap-6 w-full max-w-3xl mt-4">
+<div class="bg-white bg-opacity-70 backdrop-filter backdrop-blur-md rounded-lg p-4 border border-white border-opacity-20 shadow-md text-sm">
 
-<div class="flex flex-col items-center">
-<div class="text-center">
+**[kubenurse](https://github.com/postfinance/kubenurse)**
 
-**Links**
+Network monitoring DaemonSet
 
-- 🏥 github.com/postfinance/kubenurse
-- 🧪 github.com/clementnuss/e2e-tests
-- 📝 clement.n8r.ch
+</div>
+<div class="bg-white bg-opacity-70 backdrop-filter backdrop-blur-md rounded-lg p-4 border border-white border-opacity-20 shadow-md text-sm">
+
+**[e2e-tests](https://github.com/clementnuss/e2e-tests)**
+
+K8s cluster validation CronJob
+
+</div>
+<div class="bg-white bg-opacity-70 backdrop-filter backdrop-blur-md rounded-lg p-4 border border-white border-opacity-20 shadow-md text-sm">
+
+**[502 blog post](https://clement.n8r.ch/en/articles/502-upstream-errors/)**
+
+Full debugging walkthrough
 
 </div>
 </div>
 
-<div class="flex flex-col justify-start">
-<div class="text-center">
-
-<a href="https://clement.n8r.ch/en/articles/" target="_blank" class="text-2xl font-bold hover:underline">clement.n8r.ch</a>
-
-<div class="mt-6 flex justify-center space-x-4">
-<a href="https://www.linkedin.com/in/clement-j-m-nussbaumer/" target="_blank" class="text-xl">
-<carbon-logo-linkedin />
+<div class="mt-8 flex items-center gap-4">
+<a href="https://clement.n8r.ch/en/articles/" style="font-size: 1.3rem; color: #1a1a2e;" target="_blank">clement.n8r.ch</a>
+<img src="./images/Jura.png" width="23rem" alt="Jura flag">
+<a href="https://www.linkedin.com/in/clement-j-m-nussbaumer/" target="_blank" style="color: #1a1a2e;"
+  class="text-xl icon-btn opacity-100 !border-none"><carbon-logo-linkedin />
 </a>
-<a href="https://github.com/clementnuss" target="_blank" class="text-xl">
-<carbon-logo-github />
+<a href="https://github.com/clementnuss" target="_blank" style="color: #1a1a2e;"
+  class="text-xl icon-btn opacity-100 !border-none"><carbon-logo-github />
 </a>
-</div>
-
-</div>
-</div>
 </div>
 
 </div>
 
 <!--
-Thank you! I'm happy to take any questions about SLOs, kubenurse,
-e2e testing, or debugging connection issues.
+Thank you! Happy to take questions on SLOs, kubenurse, e2e testing,
+or debugging connection lifecycle issues.
 -->
 <!-- prettier-ignore-end -->
