@@ -60,28 +60,28 @@ layout: default
 <br>
 
 <div class="grid grid-cols-2 gap-8">
-<div>
+<div class="bg-white bg-opacity-80 rounded-lg p-6 border border-gray-200 shadow-md">
 
-### 1. SLOs as a Driver for Improvement
-How Service Level Objectives cascaded into concrete platform fixes
-
-</div>
-<div>
-
-### 2. Open-Source Monitoring Tools
-DNS monitoring and kubenurse: node-to-node mesh checks
+### 1. SLOs as a Driver
+Data-driven reliability improvements
 
 </div>
-<div>
+<div class="bg-white bg-opacity-80 rounded-lg p-6 border border-gray-200 shadow-md">
 
-### 3. Continuous End-to-End Testing
-A Golang test suite covering all platform aspects
+### 2. Open-Source Monitoring
+DNS monitoring & kubenurse mesh checks
 
 </div>
-<div>
+<div class="bg-white bg-opacity-80 rounded-lg p-6 border border-gray-200 shadow-md">
 
-### 4. Interactive Debugging: The 502 Mystery
-Tracking down 6-per-million failed requests
+### 3. End-to-End Testing
+In-cluster Golang test suite
+
+</div>
+<div class="bg-white bg-opacity-80 rounded-lg p-6 border border-gray-200 shadow-md">
+
+### 4. The 502 Mystery
+Tracking down 6-per-million errors
 
 </div>
 </div>
@@ -98,7 +98,7 @@ layout: default
 # About Me
 
 <div class="grid grid-cols-3 gap-8 h-85 items-start">
-<div class="bg-white bg-opacity-70 backdrop-filter backdrop-blur-md rounded-lg p-6 border border-white border-opacity-0">
+<div class="bg-white bg-opacity-80 rounded-lg p-6 border border-gray-200 shadow-md">
 
 ## 👨‍💻 **Clément Nussbaumer**
 
@@ -108,7 +108,7 @@ layout: default
 - Father of 1 👶
 
 </div>
-<div class="bg-white bg-opacity-70 backdrop-filter backdrop-blur-md rounded-lg p-6 border border-white border-opacity-20">
+<div class="bg-white bg-opacity-80 rounded-lg p-6 border border-gray-200 shadow-md">
 
 ## 🏦 **PostFinance**
 
@@ -118,7 +118,7 @@ layout: default
 - Strict regulatory requirements
 
 </div>
-<div class="bg-white bg-opacity-70 backdrop-filter backdrop-blur-md rounded-lg p-6 border border-white border-opacity-20">
+<div class="bg-white bg-opacity-80 rounded-lg p-6 border border-gray-200 shadow-md">
 
 ## 🖥️ **The Platform**
 
@@ -129,7 +129,7 @@ layout: default
 </div>
 </div>
 
-<div v-click class="p-2 bg-orange-100 bg-opacity-80 border-l-4 border-orange-500 rounded backdrop-filter backdrop-blur-md text-center">
+<div v-click class="p-2 bg-orange-100 bg-opacity-80 border-l-4 border-orange-500 rounded  text-center">
 
 **Every failed request = potential denied payment** 💸
 
@@ -155,7 +155,7 @@ From "it feels slow" to data-driven reliability
 - Basic Grafana dashboards, but no clear target
 - Degraded performance for **months** — never properly investigated
 
-<div v-click="1" class="mt-4 p-3 bg-orange-100 bg-opacity-80 border-l-4 border-orange-500 rounded backdrop-filter backdrop-blur-md">
+<div v-click="1" class="mt-4 p-3 bg-orange-100 bg-opacity-80 border-l-4 border-orange-500 rounded ">
 
 Without a target and a timeline, "slow" is subjective and easy to ignore.
 
@@ -218,27 +218,12 @@ layout: default
 # SLOs Reveal the Truth
 ##
 
-<div class="grid grid-cols-5 gap-6">
-<div class="col-span-2">
+<img src="./images/k8s-slo-dashboard.png" class="rounded-lg shadow-lg w-full" alt="Kubernetes SLO dashboard">
 
-With SLOs in place, degradation was **measurable**, not just "a feeling."
+<div v-click class="mt-3 p-3 bg-orange-100 bg-opacity-80 border-l-4 border-orange-500 rounded">
 
-- Error budget burning during cluster upgrades
-- Latency violations correlating with specific events
+"the cluster feels slow" → "we burned 40% of our error budget during Tuesday's upgrade"
 
-<div v-click class="mt-4 p-3 bg-orange-100 bg-opacity-80 border-l-4 border-orange-500 rounded backdrop-filter backdrop-blur-md">
-
-**The shift:** "the cluster feels slow" \
-↳ "we burned 40% of our error budget during last Tuesday's upgrade"
-
-</div>
-
-</div>
-<div class="col-span-3 flex justify-center items-center">
-
-<img src="./images/k8s-slo-dashboard.png" class="rounded-lg shadow-lg" alt="Kubernetes SLO dashboard">
-
-</div>
 </div>
 
 <!--
@@ -320,7 +305,7 @@ Moving leader away before maintenance
 
 ```bash
 # move etcd leadership away from the node being upgraded
-etcdctl move-leader <target-member-id>
+etcdctl move-leader $NEW_LEADER_ID
 ```
 
 </div>
@@ -388,7 +373,7 @@ layout: default
 Built from production needs, improved by the community
 
 <div class="grid grid-cols-2 gap-8 mt-4">
-<div class="bg-white bg-opacity-70 backdrop-filter backdrop-blur-md rounded-lg p-6 border border-white border-opacity-20">
+<div class="bg-white bg-opacity-80 rounded-lg p-6 border border-gray-200 shadow-md">
 
 ## 🏥 **kubenurse**[^kubenurse]
 
@@ -397,18 +382,34 @@ Built from production needs, improved by the community
 - Latency histograms + error counters with httptrace events
 
 </div>
-<div class="bg-white bg-opacity-70 backdrop-filter backdrop-blur-md rounded-lg p-6 border border-white border-opacity-20">
+<div class="bg-white bg-opacity-80 rounded-lg p-6 border border-gray-200 shadow-md relative overflow-visible">
 
 ## 🔍 **hostlookuper**[^hostlookuper]
 
 - Periodically resolves DNS targets, exports latency + errors as Prometheus metrics
 - DNS is an excellent **network congestion indicator**: UDP packets are not retried and result in errors
 
+<img v-click src="./images/meme-always-dns.jpg" class="absolute -right-8 -bottom-8 w-72 rounded-lg shadow-xl" style="z-index: 10;" alt="It's always DNS meme">
+
 </div>
 </div>
 
 [^kubenurse]: <https://github.com/postfinance/kubenurse>
 [^hostlookuper]: <https://github.com/postfinance/hostlookuper>
+
+<style>
+img.slidev-vclick-target {
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+img.slidev-vclick-hidden {
+  transform: rotate(8deg) scale(3) !important;
+  opacity: 0 !important;
+}
+img.slidev-vclick-target:not(.slidev-vclick-hidden) {
+  transform: rotate(8deg) scale(1);
+  opacity: 1;
+}
+</style>
 
 <!--
 Two open-source tools we built at PostFinance. hostlookuper is simpler — just DNS checks —
@@ -459,7 +460,7 @@ Metrics are labeled with **httptrace event types** — precise breakdown of each
 - `tls_handshake_start` / `tls_handshake_done`
 - `got_conn` / `got_first_response_byte`
 
-<div v-click class="mt-4 p-3 bg-orange-100 bg-opacity-80 border-l-4 border-orange-500 rounded backdrop-filter backdrop-blur-md">
+<div v-click class="mt-4 p-3 bg-orange-100 bg-opacity-80 border-l-4 border-orange-500 rounded ">
 
 On errors, the **event label** tells you exactly which phase failed
 
@@ -513,26 +514,24 @@ the same neighbors, so metrics are stable and meaningful. This is why you open-s
 layout: default
 ---
 
-# kubenurse: Graceful Shutdown
+# Graceful Shutdown: a Generic Problem
 
 SLOs on kubenurse revealed errors on the `me_ingress` check during upgrades/maintenance
 
 <div class="grid grid-cols-5 gap-6 mt-4">
 <div class="col-span-3">
 
-**The problem:**
+**The problem:** not specific to ingress-nginx — affects **any** process behind a load balancer
 
-When a pod receives SIGTERM, the ingress controller doesn't yet know the pod is terminating — endpoint propagation takes a few seconds.
-
-Requests still routed to a dying pod → errors
+`SIGTERM` arrives, but the LB doesn't know yet → requests still routed to a dying process → errors
 
 <div v-click>
 
 **The fix:** lameduck shutdown[^lameduck] (inspired by CoreDNS)
 
-- On SIGTERM: mark as **not ready**, but keep serving
-- Sleep `KUBENURSE_SHUTDOWN_DURATION` (default: **5s**)
-- Then stop the server — by now, endpoints have propagated
+- On `SIGTERM`: **keep serving** for a few seconds (default: **5s**)
+- LB / proxies / CNI (hopefully) catch up and stop sending traffic
+- Then stop the server
 
 </div>
 
@@ -633,7 +632,7 @@ An analogous open-source implementation you can try today
 - Runs in-cluster: creates a namespace, provisions test resources, validates everything works
 - Metrics stream to OTLP endpoint → VictoriaMetrics / Grafana
 
-<div v-click class="mt-4 p-3 bg-orange-100 bg-opacity-80 border-l-4 border-orange-500 rounded backdrop-filter backdrop-blur-md">
+<div v-click class="mt-4 p-3 bg-orange-100 bg-opacity-80 border-l-4 border-orange-500 rounded ">
 
 Fork it, adapt the tests to your platform, deploy as a CronJob → instant cluster health monitoring
 
@@ -658,7 +657,7 @@ layout: default
 - Tests run every **15 minutes** across all clusters
 - Results visualized per cluster, per test category
 
-<div v-click="1" class="mt-4 p-3 bg-orange-100 bg-opacity-80 border-l-4 border-orange-500 rounded backdrop-filter backdrop-blur-md">
+<div v-click="1" class="mt-4 p-3 bg-orange-100 bg-opacity-80 border-l-4 border-orange-500 rounded ">
 
 Alert rules trigger on test failures → we know before users do
 
@@ -693,6 +692,8 @@ layout: default
 ---
 
 # Part 4: The 502 Mystery
+
+Tomcat-based e-finance app — 502s caused real user impact when retrieving e-banking resources
 
 ~1.7M requests/day on one ingress. **8–10 failures per day.** Where would you look?
 
@@ -790,30 +791,8 @@ The race window:
 </div>
 
 </div>
-<div v-click="1" class="col-span-3 flex justify-center" style="max-height: 380px;">
-
-```mermaid {scale: 0.60}
-sequenceDiagram
-    participant N as ingress-nginx<br/>(keepalive: 60s)
-    participant T as Tomcat<br/>(keepalive: 20s)
-
-    N->>T: Request #1
-    T-->>N: 200 OK
-    Note over N,T: Connection kept alive.<br/>Idle timer starts...
-
-    Note over N: ⏱️ t ≈ 19.9s
-    Note over T: ⏱️ t = 20s
-
-    rect rgb(255, 235, 235)
-        Note over N,T: ⚡ RACE WINDOW
-        T--)N: TCP FIN (closing)
-        N->>T: Request #2 (reusing conn)
-    end
-
-    T--xN: TCP RST
-    Note over N: No response → 502
-```
-
+<div class="col-span-3">
+  <RaceCondition502 />
 </div>
 </div>
 
@@ -874,32 +853,29 @@ layout: default
 
 # Key Takeaways
 
-<div class="grid grid-cols-2 gap-6 mt-4 text-sm">
-<div class="bg-white bg-opacity-70 backdrop-filter backdrop-blur-md rounded-lg p-5 border border-white border-opacity-20 shadow-md">
+<div class="grid grid-cols-2 gap-8 mt-10 text-sm">
+<div class="bg-white bg-opacity-80 rounded-lg p-5 border border-gray-200 shadow-md">
 
 ### **SLOs are a forcing function**
 
 From "it feels slow" to data-driven fixes
 
 </div>
-<div class="bg-white bg-opacity-70 backdrop-filter backdrop-blur-md rounded-lg p-5 border border-white border-opacity-20 shadow-md">
+<div class="bg-white bg-opacity-80 rounded-lg p-5 border border-gray-200 shadow-md">
 
 ### **Open-source your tools**
 
 The best fixes and discussions come from the community — not always code, sometimes just the right conversation
 
 </div>
-</div>
-
-<div class="grid grid-cols-2 gap-6 mt-4 text-sm">
-<div class="bg-white bg-opacity-70 backdrop-filter backdrop-blur-md rounded-lg p-5 border border-white border-opacity-20 shadow-md">
+<div class="bg-white bg-opacity-80 rounded-lg p-5 border border-gray-200 shadow-md">
 
 ### **Test continuously, in-cluster**
 
 Your end users should not be your e2e tests
 
 </div>
-<div class="bg-white bg-opacity-70 backdrop-filter backdrop-blur-md rounded-lg p-5 border border-white border-opacity-20 shadow-md">
+<div class="bg-white bg-opacity-80 rounded-lg p-5 border border-gray-200 shadow-md">
 
 ### **Every error matters**
 
@@ -919,30 +895,27 @@ why even tiny error rates matter and deserve investigation.
 layout: default
 ---
 
-<div class="flex flex-col justify-center items-center h-full text-center">
+<div class="grid grid-cols-5 gap-6 h-full items-center">
+<div class="col-span-3">
 
-<h1 class="mt-4">Thank You!</h1>
+# Thank you!
 
-<div class="text-lg mt-4 mb-6">
-Questions?
-</div>
-
-<div class="grid grid-cols-3 gap-6 w-full max-w-3xl mt-4">
-<div class="bg-white bg-opacity-70 backdrop-filter backdrop-blur-md rounded-lg p-4 border border-white border-opacity-20 shadow-md text-sm">
+<div class="grid grid-cols-3 gap-4 mt-4">
+<div class="bg-white bg-opacity-80 rounded-lg p-4 border border-gray-200 shadow-md text-sm">
 
 **[kubenurse](https://github.com/postfinance/kubenurse)**
 
 Network monitoring DaemonSet
 
 </div>
-<div class="bg-white bg-opacity-70 backdrop-filter backdrop-blur-md rounded-lg p-4 border border-white border-opacity-20 shadow-md text-sm">
+<div class="bg-white bg-opacity-80 rounded-lg p-4 border border-gray-200 shadow-md text-sm">
 
 **[e2e-tests](https://github.com/clementnuss/e2e-tests)**
 
 K8s cluster validation CronJob
 
 </div>
-<div class="bg-white bg-opacity-70 backdrop-filter backdrop-blur-md rounded-lg p-4 border border-white border-opacity-20 shadow-md text-sm">
+<div class="bg-white bg-opacity-80 rounded-lg p-4 border border-gray-200 shadow-md text-sm">
 
 **[502 blog post](https://clement.n8r.ch/en/articles/502-upstream-errors/)**
 
@@ -951,9 +924,9 @@ Full debugging walkthrough
 </div>
 </div>
 
-<div class="mt-8 flex items-center gap-4">
-<a href="https://clement.n8r.ch/en/articles/" style="font-size: 1.3rem; color: #1a1a2e;" target="_blank">clement.n8r.ch</a>
-<img src="./images/Jura.png" width="23rem" alt="Jura flag">
+<div class="mt-6 flex items-center gap-4">
+<a href="https://clement.n8r.ch/en/articles/" style="font-size: 1.1rem; color: #1a1a2e;" target="_blank">clement.n8r.ch</a>
+<img src="./images/Jura.png" width="20rem" alt="Jura flag">
 <a href="https://www.linkedin.com/in/clement-j-m-nussbaumer/" target="_blank" style="color: #1a1a2e;"
   class="text-xl icon-btn opacity-100 !border-none"><carbon-logo-linkedin />
 </a>
@@ -962,6 +935,15 @@ Full debugging walkthrough
 </a>
 </div>
 
+</div>
+<div class="col-span-2 flex flex-col items-center text-center">
+
+<img src="./images/claper-kubecon-qr.png" class="rounded-lg shadow-md w-52" alt="Claper QR code">
+
+<div class="mt-3 text-lg font-bold">Questions? Ask here!</div>
+<div class="mt-1 text-sm"><strong>claper.n8r.ch</strong> · code: <strong>#KUBECON</strong></div>
+
+</div>
 </div>
 
 <!--

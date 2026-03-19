@@ -5,7 +5,7 @@
   "scripts": {
     "build": "slidev build",
     "dev": "slidev",
-    "export": "slidev export"
+    "export": "slidev export --per-slide --timeout 10000 --wait 1000"
   },
   "dependencies": {
     "@excalidraw/excalidraw": "^0.18.0",
