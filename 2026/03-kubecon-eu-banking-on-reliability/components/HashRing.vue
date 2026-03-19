@@ -1,45 +1,56 @@
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 
 const nodeCount = ref(15)
 const neighborCount = ref(5)
 const selectedNode = ref(null)
 const showAllToAll = ref(false)
+const showAllFiltered = ref(false)
 const hashOrder = ref(true)
 
-// FNV-1a hash
-function fnv1a(str) {
-  let hash = 2166136261
-  for (let i = 0; i < str.length; i++) {
-    hash ^= str.charCodeAt(i)
-    hash = (hash * 16777619) >>> 0
-  }
-  return hash
+// SHA-256 via Web Crypto — returns first 32 bits as uint32
+async function sha256_32(str) {
+  const data = new TextEncoder().encode(str)
+  const buf = await crypto.subtle.digest('SHA-256', data)
+  return new DataView(buf).getUint32(0)
 }
 
 const CX = 170
 const CY = 170
 const R = 140
 
-// Color palette for node IDs — gives each original index a stable hue
 function nodeColor(originalIndex, total) {
   const hue = (originalIndex / total) * 360
   return `hsl(${hue}, 70%, 55%)`
 }
 
+// Precomputed hash cache: "node-01" → uint32
+const hashCache = ref(new Map())
+
+async function computeHashes(count) {
+  const map = new Map()
+  for (let i = 0; i < count; i++) {
+    const name = `node-${String(i + 1).padStart(2, '0')}`
+    map.set(name, await sha256_32(name))
+  }
+  hashCache.value = map
+}
+
+onMounted(() => computeHashes(nodeCount.value))
+watch(nodeCount, (n) => computeHashes(n))
+
 const nodes = computed(() => {
+  if (hashCache.value.size < nodeCount.value) return []
   const arr = []
   for (let i = 0; i < nodeCount.value; i++) {
     const name = `node-${String(i + 1).padStart(2, '0')}`
-    const hash = fnv1a(name)
+    const hash = hashCache.value.get(name)
     arr.push({ name, hash, originalIndex: i })
   }
-  // Always sort by hash to assign stable ringIndex
   arr.sort((a, b) => a.hash - b.hash)
   const withRingIndex = arr.map((n, i) => ({ ...n, ringIndex: i }))
 
   return withRingIndex.map((n) => {
-    // Position on ring: by hash order or by original sequential order
     const pos = hashOrder.value ? n.ringIndex : n.originalIndex
     const angle = (pos / nodeCount.value) * 2 * Math.PI - Math.PI / 2
     return {
@@ -79,30 +90,35 @@ const connections = computed(() => {
 })
 
 const neighborConnections = computed(() => {
-  if (showAllToAll.value || selectedNode.value === null) return []
+  if (showAllToAll.value) return []
+  if (showAllFiltered.value) {
+    // Show every node's neighbor connections
+    const lines = []
+    for (let ri = 0; ri < nodes.value.length; ri++) {
+      const from = nodes.value[ri]
+      const indices = getNeighborIndices(ri)
+      for (const i of indices) {
+        lines.push({ from, to: nodes.value[i], id: `${from.name}-${nodes.value[i].name}` })
+      }
+    }
+    return lines
+  }
+  if (selectedNode.value === null) return []
   const sel = nodes.value[selectedNode.value]
   if (!sel) return []
   const indices = getNeighborIndices(selectedNode.value)
-  return indices.map(i => ({ from: sel, to: nodes.value[i] }))
+  return indices.map(i => ({ from: sel, to: nodes.value[i], id: `${sel.name}-${nodes.value[i].name}` }))
 })
 
-const neighborArc = computed(() => {
-  if (showAllToAll.value || !hashOrder.value || selectedNode.value === null) return ''
-  const indices = getNeighborIndices(selectedNode.value)
-  if (indices.length === 0) return ''
-  const lastIdx = indices[indices.length - 1]
-  const startAngle = nodes.value[selectedNode.value].angle
-  const endAngle = nodes.value[lastIdx].angle
-  let sweep = endAngle - startAngle
-  if (sweep <= 0) sweep += 2 * Math.PI
-  const largeArc = sweep > Math.PI ? 1 : 0
-  const arcR = R + 12
-  const x1 = CX + arcR * Math.cos(startAngle)
-  const y1 = CY + arcR * Math.sin(startAngle)
-  const x2 = CX + arcR * Math.cos(endAngle)
-  const y2 = CY + arcR * Math.sin(endAngle)
-  return `M ${x1} ${y1} A ${arcR} ${arcR} 0 ${largeArc} 1 ${x2} ${y2}`
-})
+// Shorten line so arrow doesn't overlap the target node dot
+function shortenedLine(from, to, margin = 12) {
+  const dx = to.x - from.x
+  const dy = to.y - from.y
+  const len = Math.sqrt(dx * dx + dy * dy)
+  if (len < margin * 2) return { x1: from.x, y1: from.y, x2: to.x, y2: to.y }
+  const ratio = (len - margin) / len
+  return { x1: from.x, y1: from.y, x2: from.x + dx * ratio, y2: from.y + dy * ratio }
+}
 
 const totalChecks = computed(() => {
   const n = nodeCount.value
@@ -119,9 +135,13 @@ function selectNode(ringIndex) {
   selectedNode.value = selectedNode.value === ringIndex ? null : ringIndex
 }
 
-// Reset selection when toggling mode
-watch(showAllToAll, () => {
+// Reset selection when toggling modes; keep them mutually exclusive
+watch(showAllToAll, (val) => {
   selectedNode.value = null
+  if (val) showAllFiltered.value = false
+})
+watch(showAllFiltered, (val) => {
+  if (val) showAllToAll.value = false
 })
 
 // Clamp neighbor count when node count decreases
@@ -150,16 +170,30 @@ watch(nodeCount, (n) => {
       >
         {{ hashOrder ? '🔀 hash order' : '🔢 linear order' }}
       </button>
+    </div>
+    <div class="controls">
+      <button
+        :class="['toggle-btn', 'order-toggle', { active: showAllFiltered }]"
+        @click="showAllFiltered = !showAllFiltered"
+      >
+        {{ showAllFiltered ? '✓ all O(n)' : '⊙ all O(n)' }}
+      </button>
       <button
         :class="['toggle-btn', { active: showAllToAll }]"
         @click="showAllToAll = !showAllToAll"
       >
-        {{ showAllToAll ? 'O(n²) all-to-all' : 'O(n) hash ring' }}
+        {{ showAllToAll ? 'O(n²) all-to-all' : 'O(n²)' }}
       </button>
     </div>
 
     <!-- SVG visualization -->
     <svg viewBox="0 0 340 340" class="ring-svg">
+      <defs>
+        <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#ff7f15" opacity="0.8" />
+        </marker>
+      </defs>
+
       <!-- Ring circle -->
       <circle :cx="CX" :cy="CY" :r="R" class="ring-circle" />
 
@@ -183,21 +217,16 @@ watch(nodeCount, (n) => {
         class="connection-all"
       />
 
-      <!-- Neighbor arc -->
-      <path
-        v-if="neighborArc"
-        :d="neighborArc"
-        class="neighbor-arc"
-      />
-
-      <!-- Neighbor connections -->
+      <!-- Neighbor connections with arrows -->
       <line
-        v-for="(c, i) in neighborConnections"
-        :key="'nb-' + i"
-        :x1="c.from.x" :y1="c.from.y"
-        :x2="c.to.x" :y2="c.to.y"
+        v-for="c in neighborConnections"
+        :key="c.id"
+        :x1="shortenedLine(c.from, c.to).x1"
+        :y1="shortenedLine(c.from, c.to).y1"
+        :x2="shortenedLine(c.from, c.to).x2"
+        :y2="shortenedLine(c.from, c.to).y2"
         class="connection-neighbor"
-        style="transition: x1 0.6s ease, y1 0.6s ease, x2 0.6s ease, y2 0.6s ease"
+        marker-end="url(#arrowhead)"
       />
 
       <!-- Nodes -->
@@ -322,14 +351,6 @@ watch(nodeCount, (n) => {
   stroke: #dc2626;
   stroke-width: 0.3;
   opacity: 0.35;
-}
-
-.neighbor-arc {
-  fill: none;
-  stroke: #ff7f15;
-  stroke-width: 3;
-  opacity: 0.5;
-  stroke-linecap: round;
 }
 
 .connection-neighbor {
