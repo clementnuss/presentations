@@ -349,8 +349,8 @@ watch(nodeCount, (n) => {
 
 .connection-all {
   stroke: #dc2626;
-  stroke-width: 0.3;
-  opacity: 0.35;
+  stroke-width: 0.8;
+  opacity: 0.45;
 }
 
 .connection-neighbor {
