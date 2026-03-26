@@ -950,4 +950,77 @@ Full debugging walkthrough
 Thank you! Happy to take questions on SLOs, kubenurse, e2e testing,
 or debugging connection lifecycle issues.
 -->
+
+---
+layout: default
+---
+
+# Appendix: Reproducing the 502 with K6
+
+The key: **idle → burst** stages with varying idle durations to hit the keepalive race window
+
+<div class="grid grid-cols-2 gap-6 mt-2 text-xs">
+<div>
+
+```js
+// Cycle: ramp up → sustain → ramp down → idle
+// Idle duration increases (4s→11s) to maximize
+// chance of hitting Tomcat's 20s timeout boundary
+function generate_stages() {
+    var stages = []
+    for (let i = 4; i < 12; i++) {
+        stages.push({ duration: "5s", target: 100 });
+        stages.push({ duration: "55s", target: 100 });
+        stages.push({ duration: "5s", target: 0 });
+        stages.push({ duration: i + "s", target: 0 });
+    }
+    return stages
+}
+```
+
+</div>
+<div>
+
+```js
+export let options = {
+    noConnectionReuse: true,
+    noVUConnectionReuse: true,
+    scenarios: {
+        http_502: {
+            stages: generate_stages(),
+            executor: 'ramping-vus',
+            gracefulRampDown: '1s',
+        },
+    },
+};
+
+export default function() {
+    let data = { data: 'Hello World' };
+    for (let i = 0; i < 10; i++) {
+        let res = http.post(
+          `${__ENV.URL}`, JSON.stringify(data));
+        check(res, {
+          "status was 200": (r) => r.status === 200
+        });
+    }
+    sleep(1);
+}
+```
+
+</div>
+</div>
+
+<style>
+.slidev-code {
+  font-size: 0.7rem !important;
+  line-height: 1.3 !important;
+}
+</style>
+
+<!--
+This K6 script reproduces the 502 by cycling through load → idle → load phases.
+The varying idle durations (4s to 11s) increase the chance of hitting the exact
+moment when Tomcat's 20s keepalive timer fires while nginx still thinks the
+connection is alive. noConnectionReuse ensures fresh connections on each VU iteration.
+-->
 <!-- prettier-ignore-end -->
