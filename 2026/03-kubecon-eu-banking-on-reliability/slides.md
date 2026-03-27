@@ -55,46 +55,6 @@ that have been battle-tested in production.
 layout: default
 ---
 
-# Outline
-
-<br>
-
-<div class="grid grid-cols-2 gap-8">
-<div class="bg-white bg-opacity-80 rounded-lg p-6 border border-gray-200 shadow-md">
-
-### 1. SLOs as a Driver
-Data-driven reliability improvements
-
-</div>
-<div class="bg-white bg-opacity-80 rounded-lg p-6 border border-gray-200 shadow-md">
-
-### 2. Open-Source Monitoring
-DNS monitoring & kubenurse mesh checks
-
-</div>
-<div class="bg-white bg-opacity-80 rounded-lg p-6 border border-gray-200 shadow-md">
-
-### 3. End-to-End Testing
-In-cluster Golang test suite
-
-</div>
-<div class="bg-white bg-opacity-80 rounded-lg p-6 border border-gray-200 shadow-md">
-
-### 4. The 502 Mystery
-Tracking down 6-per-million errors
-
-</div>
-</div>
-
-<!--
-Here's what we'll cover today - four stories from our journey building
-reliability into a banking Kubernetes platform.
--->
-
----
-layout: default
----
-
 # About Me
 
 <div class="grid grid-cols-3 gap-8 h-85 items-start">
