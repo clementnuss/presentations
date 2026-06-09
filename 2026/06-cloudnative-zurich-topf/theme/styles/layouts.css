@@ -22,6 +22,31 @@
   padding: 0.1em 0.35em;
 }
 
+.slidev-layout pre.topf-tree {
+  background-color: #fbf9f8;
+  border: 1px solid rgba(121, 86, 73, 0.25);
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 6px rgba(93, 64, 55, 0.12);
+  padding: 0.75rem 1rem;
+  font-family: var(--slidev-font-mono, ui-monospace, monospace);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  margin: 0.5rem 0;
+}
+
+.file-dot {
+  font-size: 0.7em;
+  vertical-align: middle;
+  margin-right: 0.35em;
+}
+
+.file-badge {
+  font-family: var(--slidev-font-mono, ui-monospace, monospace);
+  font-size: 0.85rem;
+  margin: 0.6rem 0 0.1rem;
+  opacity: 0.9;
+}
+
 
 .slidev-layout {
   h1 {

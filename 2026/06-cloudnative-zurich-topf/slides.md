@@ -26,7 +26,8 @@ layout: default
 exportFilename: topf-cloudnative-zurich-2026
 ---
 
-<img src="./images/topf-logo.png" class="absolute top-6 right-8 w-32 opacity-90" alt="TOPF">
+<img src="./images/postfinance-logo.png" class="absolute left-8" style="top: 50%; transform: translateY(-50%); width: 12rem;" alt="PostFinance">
+<img src="./images/topf-logo.png" class="absolute right-8" style="top: 50%; transform: translateY(-50%); width: 10rem;" alt="TOPF">
 
 <div class="flex flex-col justify-start items-center" style="min-height: 45vh; padding-top: 0;">
 
@@ -49,7 +50,7 @@ exportFilename: topf-cloudnative-zurich-2026
 
 </div>
 
-<img src="./images/zurihline.png" class="absolute bottom-0 left-0 w-full pointer-events-none" style="opacity: 0.9; transform: scaleY(0.75); transform-origin: bottom;" alt="Zurich skyline">
+<img src="./images/zurihline.png" class="absolute bottom-0 left-1/2 pointer-events-none" style="width: 68%; opacity: 0.9; transform: translateX(-50%);" alt="Zurich skyline">
 
 <!--
 Introduce myself: SRE at PostFinance, 5+ years operating Kubernetes platform.
@@ -57,6 +58,7 @@ Today: the story of how we ended up building and open-sourcing a tool for
 managing Talos Linux clusters.
 -->
 
+<!-- Outline slide removed — wastes time in a live talk. Restore by uncommenting.
 ---
 
 # Outline
@@ -89,11 +91,12 @@ And key takeaways
 
 </div>
 </div>
+-->
 
 ---
 
 # Talos Linux
-[The 12 binaries' O.S.](https://www.siderolabs.com/blog/there-are-only-12-binaries-in-talos-linux/)
+[A minimal O.S. — fewer than 50 binaries](https://www.siderolabs.com/talos-linux)
 
 <div class="grid grid-cols-4 gap-4">
 <div class="col-span-2 flex flex-col flex-items-start">
@@ -120,15 +123,17 @@ udevd                Running   OK
 ```
 
 </div>
-<div class="col-span-2">
-<figure>
-  <img border="rounded" src="./images/talos-overview.png" class="m-0" width="95%" alt="">
-</figure>
+<div class="col-span-2 h-full flex items-start justify-center">
+  <div style="transform: scale(0.9); transform-origin: top;">
+    <Excalidraw
+      drawFilePath="./drawings/talos-linux.excalidraw"
+    />
+  </div>
 </div>
 </div>
 
 <!--
-Talos is a Linux distribution designed for Kubernetes. Only 12 binaries.
+Talos is a Linux distribution designed for Kubernetes. Minimal — fewer than 50 binaries.
 Immutable root filesystem, no SSH, everything via gRPC API or declarative config.
 This is what drew us to Talos for our infrastructure.
 -->
@@ -136,41 +141,66 @@ This is what drew us to Talos for our infrastructure.
 ---
 
 # Starting Point
-kubeadm + Ansible — battle-tested, but imperative
+kubeadm + Ansible — battle-tested, but showing its age
 
-<div class="grid grid-cols-3 gap-4 mt-8">
+<div class="grid grid-cols-2 gap-8 mt-4">
+<div class="flex flex-col">
 
-<div class="bg-white bg-opacity-80 rounded-lg p-5 border border-gray-200 shadow-md text-center">
-<div class="text-4xl font-700" style="color: #795649;">3,161</div>
-<div class="text-base opacity-70 mt-1">commits · ~9.7k LOC</div>
+<pre class="topf-tree" style="font-size: 0.62rem; line-height: 1.3;">$ tree tasks
+tasks
+├── cri/
+├── etcd-restore.yml
+├── kernel/
+├── kubeadm_addons/
+├── kubeadm_master/
+├── kubeadm_prepare/
+├── kubeadm_worker/
+├── preflight_check_master/
+├── preflight_check_worker/
+├── sysctl/
+├── master.yml
+├── worker.yml
+├── reset-master.yml
+├── reset-worker.yml
+└── …
+
+10 directories, 32 files</pre>
+
+</div>
+<div class="flex flex-col justify-center">
+
+#### Infrastructure: Ansible + kubeadm
+
+<div class="mt-1 text-lg leading-relaxed">
+
+- **32** Ansible task files · **1,878** lines of playbooks
+- **20** Jinja2 templates — kubeadm, containerd, sysctl, …
+
 </div>
 
-<div class="bg-white bg-opacity-80 rounded-lg p-5 border border-gray-200 shadow-md text-center">
-<div class="text-4xl font-700" style="color: #795649;">340+</div>
-<div class="text-base opacity-70 mt-1">releases · K8s v1.15 → v1.35</div>
-</div>
+<div class="mt-4 p-3 bg-white bg-opacity-80 rounded-lg border-l-4 border-amber-800 shadow-md text-base">
 
-<div class="bg-white bg-opacity-80 rounded-lg p-5 border border-gray-200 shadow-md text-center">
-<div class="text-4xl font-700" style="color: #795649;">32</div>
-<div class="text-base opacity-70 mt-1">Ansible task files · 20 templates</div>
-</div>
+**mostly idempotent — but not always.** Actions gated on a template's `changed` flag could be silently skipped after a mid-run failure.
 
 </div>
 
-<div class="flex justify-center items-center gap-6 mt-10 text-2xl">
-<span class="opacity-70">imperative Ansible + kubeadm</span>
-<carbon-arrow-right style="color: #795649;" />
-<span class="font-700" style="color: #795649;">declarative Talos</span>
+</div>
 </div>
 
 <!--
-Our starting point: a hugely battle-tested kubeadm + Ansible system. 3000+
-commits, 340+ releases across two major Kubernetes versions, deep coverage —
-init, upgrades, resets, etcd, addons, preflight checks — all Ansible templating
-kubeadm configs.
+Our starting point was a battle-tested kubeadm + Ansible system: 32 task files,
+nearly 1,900 lines of playbooks, 20 Jinja2 templates for kubeadm, containerd,
+sysctl and more. Real coverage — init, joins, upgrades, resets, etcd, preflight.
 
-It works. But it's imperative, fragile, hard to audit, not fully idempotent.
-We wanted to move to Talos's declarative, opinionated node-image model.
+It was mostly idempotent, but not always. The classic trap: some actions — like
+regenerating static pod manifests — were gated on the `changed` attribute of a
+rendered template. If a job failed between rendering the template and running
+the dependent action, the file was already written. On the next run Ansible saw
+no change, the conditional didn't fire, and the action was silently skipped.
+
+It wasn't terrible. But it had grown large, it was slow to develop against, and
+it was getting harder and harder to maintain. We wanted Talos's declarative,
+opinionated node-image model instead.
 -->
 
 ---
@@ -188,10 +218,12 @@ We wanted to move to Talos's declarative, opinionated node-image model.
 - GitOps-friendly: ArgoCD watches the CRDs
 
 </div>
-<div class="col-span-3">
-<figure>
-  <img border="rounded" src="./images/clusterapi-overview.png" width="95%" alt="">
-</figure>
+<div class="col-span-3 h-full flex items-start justify-center">
+  <div style="transform: scale(0.85);">
+    <Excalidraw
+      drawFilePath="./drawings/capi-overview.excalidraw"
+    />
+  </div>
 </div>
 </div>
 
@@ -258,7 +290,7 @@ class: text-center
 
 <div class="flex flex-col items-center">
 <figure>
-  <img border="rounded" src="./images/topf-thing-drawing.jpeg" class="mx-auto" style="max-width: 75%; max-height: 65vh;" alt="">
+  <img border="rounded" src="./images/topf-thing-drawing.jpeg" class="mx-auto" style="max-width: 85%;" alt="">
   <footer><cite style="font-size: 70%;display: block;text-align: center;">The original whiteboard sketch of what would become TOPF</cite></footer>
 </figure>
 </div>
@@ -274,36 +306,34 @@ and handles upgrades. We didn't have a name yet. We just called it "the thing".
 # TOPF
 [Talos Orchestrator by PostFinance](https://github.com/postfinance/topf/)
 
-<div class="mt-10 text-3xl font-500" style="color: #795649;">
+<div class="grid grid-cols-3 gap-8 mt-6 items-center">
+<div class="flex flex-col col-span-1">
 
-Not an operator. Not a controller. A CLI tool.
+<div class="text-3xl font-500" style="color: #795649;">
 
-</div>
+Not an operator.
 
-<div class="grid grid-cols-3 gap-6 mt-10">
+Not a controller.
 
-<div class="bg-white bg-opacity-80 rounded-lg p-5 border border-gray-200 shadow-md">
-<div class="text-2xl font-700" style="color: #795649;"><carbon-data-collection /> gathers</div>
-<div class="mt-2 text-lg">inventory / secrets / layered config</div>
-</div>
-
-<div class="bg-white bg-opacity-80 rounded-lg p-5 border border-gray-200 shadow-md">
-<div class="text-2xl font-700" style="color: #795649;"><carbon-document /> renders</div>
-<div class="mt-2 text-lg">individual machine configs</div>
-</div>
-
-<div class="bg-white bg-opacity-80 rounded-lg p-5 border border-gray-200 shadow-md">
-<div class="text-2xl font-700" style="color: #795649;"><carbon-deploy /> applies</div>
-<div class="mt-2 text-lg">to nodes &mdash; apply / upgrade</div>
-</div>
+A CLI tool.
 
 </div>
 
-<div class="absolute bottom-10 right-10 text-base text-gray-500 text-right leading-relaxed">
+<div class="mt-2 text-base opacity-70 italic">
 
-MIT licensed<br>
-<code>brew install postfinance/tap/topf</code>
+🪴 *Topf* is also German for a **(plant) pot** — fitting, since it's where our clusters grow.
 
+</div>
+
+<!-- <img src="./images/topf-logo.png" class="w-40 mt-10" alt="TOPF"> -->
+
+</div>
+<div class="flex flex-col col-span-2">
+
+<img src="./images/topf-documentation.png" class="rounded-lg border border-gray-300 shadow-md w-full" alt="TOPF Documentation">
+<!-- <img src="./images/topf-github-repo.png" class="rounded-lg border border-gray-300 shadow-md w-full" alt="TOPF GitHub repository"> -->
+
+</div>
 </div>
 
 <!--
@@ -311,53 +341,76 @@ TOPF is born. A purpose-built tool for Talos. Stateless, minimal Go binary —
 no reconciliation loop.
 
 No talosctl dependency — uses the Talos Go SDK directly. Same operations as
-talosctl but automated, with pre-flight checks and dry-run diffs.
+talosctl but automated, with pre-flight checks and dry-run diffs. The docs site
+walks through all of it.
 
 MIT licensed. brew install postfinance/tap/topf
+
+Fun aside: "Topf" is German for a pot — a cooking pot or a plant pot. A nice
+coincidence for a tool that grows and tends our clusters.
 -->
 
 ---
 
-# What `topf` does
+# What TOPF adds to Talos
+
+<div class="text-xl opacity-70 mt-2">the verbs are familiar (<code>apply</code>, <code>upgrade</code>, <code>reset</code>…) — the workflow is the point</div>
 
 <div class="grid grid-cols-3 gap-6 mt-8">
 
 <div class="bg-white bg-opacity-80 rounded-lg p-5 border border-gray-200 shadow-md">
-<div class="text-2xl font-700" style="color: #795649;"><carbon-deploy /> apply</div>
-<div class="mt-2 text-lg">render + push machine configs to nodes</div>
+<div class="text-xl font-700" style="color: #795649;"><carbon-version /> GitOps patch management</div>
+<div class="mt-3 text-base leading-relaxed">
+
+- layered YAML patches, kept DRY
+- Go templating + sprig
+- every change is a reviewable PR
+
+</div>
 </div>
 
 <div class="bg-white bg-opacity-80 rounded-lg p-5 border border-gray-200 shadow-md">
-<div class="text-2xl font-700" style="color: #795649;"><carbon-document /> render</div>
-<div class="mt-2 text-lg">generate machine configs locally</div>
+<div class="text-xl font-700" style="color: #795649;"><carbon-data-table /> inventory &amp; secrets as data</div>
+<div class="mt-3 text-base leading-relaxed">
+
+- nodes from external providers
+- secrets resolved at render time
+- nothing hardcoded in the repo
+
+</div>
 </div>
 
 <div class="bg-white bg-opacity-80 rounded-lg p-5 border border-gray-200 shadow-md">
-<div class="text-2xl font-700" style="color: #795649;"><carbon-upgrade /> upgrade</div>
-<div class="mt-2 text-lg">Talos OS version, safely</div>
+<div class="text-xl font-700" style="color: #795649;"><carbon-checkmark-outline /> safe rollouts</div>
+<div class="mt-3 text-base leading-relaxed">
+
+- pre-flight checks before touching nodes
+- dry-run diffs of every change
+- controlled, parallel patch + OS upgrades
+
+</div>
 </div>
 
-<div class="bg-white bg-opacity-80 rounded-lg p-5 border border-gray-200 shadow-md">
-<div class="text-2xl font-700" style="color: #795649;"><carbon-reset /> reset</div>
-<div class="mt-2 text-lg">wipe a node back to maintenance</div>
 </div>
 
-<div class="bg-white bg-opacity-80 rounded-lg p-5 border border-gray-200 shadow-md">
-<div class="text-2xl font-700" style="color: #795649;"><carbon-id-management /> talosconfig</div>
-<div class="mt-2 text-lg">client config for <code>talosctl</code></div>
-</div>
+<div class="mt-6 text-base opacity-60">
 
-<div class="bg-white bg-opacity-80 rounded-lg p-5 border border-gray-200 shadow-md">
-<div class="text-2xl font-700" style="color: #795649;"><carbon-settings /> kubeconfig</div>
-<div class="mt-2 text-lg">client config for <code>kubectl</code></div>
-</div>
+Talos already gives you <code>apply</code> / <code>upgrade</code> / <code>reset</code>. TOPF wraps them in a config model, an inventory, and guardrails.
 
 </div>
 
 <!--
-The main verbs. apply and upgrade are the day-to-day ones. render is great for
-GitOps diffs in CI. reset for decommissioning. talosconfig/topfconfig are the
-helper commands to bootstrap your tooling.
+This is the important framing. If you know Talos, you already know apply,
+upgrade, reset — they're core Talos. So what does TOPF actually add?
+
+Three things. One: GitOps patch management — layered, DRY YAML patches with
+templating, where every change goes through a reviewable pull request. Two:
+inventory and secrets become data — nodes come from external providers, secrets
+are resolved at render time, nothing is hardcoded in the config repo. Three:
+safe rollouts — pre-flight checks, dry-run diffs, and controlled parallel
+rollouts for both patch changes and OS upgrades.
+
+The commands are familiar. The workflow around them is what TOPF brings.
 -->
 
 ---
@@ -367,12 +420,10 @@ helper commands to bootstrap your tooling.
 <div class="grid grid-cols-2 gap-8">
 <div class="flex flex-col">
 
-```text
-.
+<pre class="topf-tree">.
 ├── all/
-│   └── 01-install-disk.yaml
-└── topf.yaml
-```
+│   └── <span class="file-dot" style="color:#059669">●</span>01-install-disk.yaml
+└── <span class="file-dot" style="color:#2563eb">●</span>topf.yaml</pre>
 
 <div class="mt-4 text-lg opacity-70">
 
@@ -383,8 +434,22 @@ Start simple: one patch applied to **every** node.
 </div>
 <div class="flex flex-col">
 
+<div class="file-badge"><span class="file-dot" style="color:#2563eb">●</span>topf.yaml — the entry point</div>
+
 ```yaml
-# all/01-install-disk.yaml
+clusterName: my-cluster
+clusterEndpoint: https://192.168.1.80:6443
+talosVersion: 1.13.3
+kubernetesVersion: 1.35.5
+nodes:
+  - host: node1
+    ip: 192.168.1.11
+    role: control-plane
+```
+
+<div class="file-badge"><span class="file-dot" style="color:#059669">●</span>all/01-install-disk.yaml</div>
+
+```yaml
 machine:
   install:
     disk: /dev/sda
@@ -394,8 +459,10 @@ machine:
 </div>
 
 <!--
-Start with the simplest possible setup. Just topf.yaml and one patch in all/
-that every node gets — here, where to install Talos.
+Start with the simplest possible setup. topf.yaml is the entry point: cluster
+name, endpoint, Talos + Kubernetes versions, and the node list. Then one patch
+in all/ that every node gets — here, where to install Talos. That's a complete,
+working config.
 -->
 
 ---
@@ -405,16 +472,14 @@ that every node gets — here, where to install Talos.
 <div class="grid grid-cols-2 gap-8">
 <div class="flex flex-col">
 
-```text
-.
+<pre class="topf-tree">.
 ├── all/
-│   └── 01-install-disk.yaml
+│   └── <span class="file-dot" style="color:#059669">●</span>01-install-disk.yaml
 ├── control-plane/
-│   └── 01-allow-scheduling.yaml
+│   └── <span class="file-dot" style="color:#d97706">●</span>01-allow-scheduling.yaml
 ├── worker/
-│   └── 01-gpu.yaml
-└── topf.yaml
-```
+│   └── <span class="file-dot" style="color:#9333ea">●</span>01-gpu.yaml
+└── <span class="file-dot" style="color:#2563eb">●</span>topf.yaml</pre>
 
 <div class="mt-4 text-lg opacity-70">
 
@@ -425,14 +490,16 @@ Add **role** layers: control-plane and worker get their own patches.
 </div>
 <div class="flex flex-col">
 
+<div class="file-badge"><span class="file-dot" style="color:#d97706">●</span>control-plane/01-allow-scheduling.yaml</div>
+
 ```yaml
-# control-plane/01-allow-scheduling.yaml
 cluster:
   allowSchedulingOnControlPlanes: true
 ```
 
+<div class="file-badge"><span class="file-dot" style="color:#9333ea">●</span>worker/01-gpu.yaml</div>
+
 ```yaml
-# worker/01-gpu.yaml
 machine:
   kernel:
     modules:
@@ -456,34 +523,34 @@ patches for its role.
 <div class="grid grid-cols-2 gap-8">
 <div class="flex flex-col">
 
-```text
-.
+<pre class="topf-tree">.
 ├── all/
-│   ├── 01-install-disk.yaml
-│   └── 02-provider-id.yaml.tpl
+│   ├── <span class="file-dot" style="color:#059669">●</span>01-install-disk.yaml
+│   └── <span class="file-dot" style="color:#db2777">●</span>02-provider-id.yaml.tpl
 ├── control-plane/
-│   └── 01-allow-scheduling.yaml
+│   └── <span class="file-dot" style="color:#d97706">●</span>01-allow-scheduling.yaml
 ├── worker/
-│   └── 01-gpu.yaml
+│   └── <span class="file-dot" style="color:#9333ea">●</span>01-gpu.yaml
 ├── node/
 │   └── node1/
-│       └── 01-install-disk.yaml
-└── topf.yaml
-```
+│       └── <span class="file-dot" style="color:#0891b2">●</span>01-install-disk.yaml
+└── <span class="file-dot" style="color:#2563eb">●</span>topf.yaml</pre>
 
 </div>
 <div class="flex flex-col">
 
+<div class="file-badge"><span class="file-dot" style="color:#db2777">●</span>all/02-provider-id.yaml.tpl</div>
+
 ```yaml
-# all/02-provider-id.yaml.tpl
 machine:
   kubelet:
     extraArgs:
       provider-id: {{ .Node.Data.uuid }}
 ```
 
+<div class="file-badge"><span class="file-dot" style="color:#0891b2">●</span>node/node1/01-install-disk.yaml</div>
+
 ```yaml
-# node/node1/01-install-disk.yaml
 # node1 has different hardware → override
 machine:
   install:
@@ -493,11 +560,6 @@ machine:
 </div>
 </div>
 
-<div class="mt-6 p-4 bg-white bg-opacity-80 rounded-lg border-l-4 border-amber-800 shadow-md text-lg">
-
-<carbon-code class="inline" style="color: #795649;" /> Go templating (`.yaml.tpl`) and the **sprig** library are available in any layer, with cluster + node context (`.Node.Host`, `.Node.IP`, `.Node.Data.<key>`, …).
-
-</div>
 
 <!--
 Two things here. First, templating isn't a node/ thing — the provider-id
@@ -543,84 +605,182 @@ Live demo plan:
 
 <div class="text-xl opacity-70 mt-2">recent additions since the first release</div>
 
-<div class="grid grid-cols-3 gap-6 mt-8">
+<div class="grid grid-cols-2 gap-10 mt-8">
+<div class="flex flex-col">
 
-<div class="bg-white bg-opacity-80 rounded-lg p-5 border border-gray-200 shadow-md">
-<div class="text-2xl font-700" style="color: #795649;"><carbon-image-service /> Schematic resolution</div>
-<div class="mt-2 text-lg">reference <code>@schematic.yaml</code> instead of hashes — IDs computed locally, optional <code>--submit-to-factory</code></div>
-</div>
+#### <carbon-password class="inline" style="color: #795649;" /> <a href="https://github.com/helmfile/vals" target="_blank" style="color: #795649;">vals</a> secret resolution
 
-<div class="bg-white bg-opacity-80 rounded-lg p-5 border border-gray-200 shadow-md">
-<div class="text-2xl font-700" style="color: #795649;"><carbon-password /> <a href="https://github.com/helmfile/vals" target="_blank" style="color: #795649;">vals</a> secret resolution</div>
-<div class="mt-2 text-lg">pull secrets at render time via <code>ref+vault://</code>, <code>ref+gcpsecrets://</code>, <code>ref+file://</code>, … (alongside existing SOPS)</div>
-</div>
+<div class="text-base opacity-70 mt-1 mb-2">
 
-<div class="bg-white bg-opacity-80 rounded-lg p-5 border border-gray-200 shadow-md">
-<div class="text-2xl font-700" style="color: #795649;"><carbon-function /> sprig templating</div>
-<div class="mt-2 text-lg">full sprig function library in <code>.yaml.tpl</code> patches (<code>env</code>, <code>default</code>, <code>b64enc</code>, …)</div>
-</div>
+resolve secrets at render time [^vals]
 
 </div>
 
-<div class="mt-6 text-base opacity-60 text-center">
-
-also recent: concurrent apply / upgrade with <code>--max-parallel</code> · Talos v1.13 support
+```yaml
+network:
+  interfaces:
+    - interface: wg0
+      wireguard:
+        privateKey: ref+awsssm://secrets/wg.key
+```
 
 </div>
+<div class="flex flex-col">
+
+#### <carbon-function class="inline" style="color: #795649;" /> <a href="https://github.com/masterminds/sprig" target="_blank" style="color: #795649;">sprig</a> templating
+
+<div class="text-base opacity-70 mt-1 mb-2">
+
+full sprig function library in <code>.yaml.tpl</code> patches [^sprig]
+
+</div>
+
+```yaml
+machine:
+  nodeLabels:
+    region: {{ .Data.region | default "eu" }}
+    host: {{ .Node.Host | lower }}
+```
+
+</div>
+</div>
+
+[^vals]: <https://github.com/helmfile/vals>
+[^sprig]: <https://github.com/masterminds/sprig>
 
 <!--
-A quick tour of what's landed recently. Schematic resolution means you no longer
-juggle factory hashes — point at a manifest and TOPF computes the ID locally.
+A quick tour of what's landed recently.
 
 On secrets: SOPS has been there from the start, and we just added vals to pull
-secrets at render time from Vault and friends. Both run before patches are merged.
+secrets at render time from Vault, AWS SSM, files and more. Here a WireGuard
+private key is fetched from AWS SSM at render time — it never lives in the repo.
 
-Templating got the full sprig library, so patches can do real logic. And we
-just added concurrent apply/upgrade with --max-parallel for bigger clusters.
+Templating got the full sprig library, so patches can do real logic — defaults,
+string functions, and so on. And we just added concurrent apply/upgrade with
+--max-parallel for bigger clusters. Schematic resolution gets its own slide next.
+-->
+
+---
+
+# Schematic Resolution
+
+<div class="text-xl opacity-70 mt-2">
+
+stop juggling Talos Factory [^factory] image hashes
+
+</div>
+
+<div class="grid grid-cols-2 gap-8 mt-6">
+<div class="flex flex-col">
+
+<div class="text-xl font-500 mb-2" style="color: #795649;">Before — the Factory UI</div>
+
+<img src="./images/talos-factory.gif" class="rounded-lg border border-gray-300 shadow-md w-full" alt="clicking through factory.talos.dev">
+
+</div>
+<div class="flex flex-col">
+
+<div class="text-xl font-500 mb-2" style="color: #795649;">After — a manifest in Git</div>
+
+<div class="file-badge"><span class="file-dot" style="color:#db2777">●</span>manifest.yaml.tpl</div>
+
+```yaml
+customization:
+  extraKernelArgs:
+    - node-arg-{{ .Node.Host }}
+  systemExtensions:
+    officialExtensions:
+      - siderolabs/vmtoolsd-guest-agent
+```
+
+<div class="file-badge"><span class="file-dot" style="color:#2563eb">●</span>topf.yaml</div>
+
+```yaml
+schematicId: "@manifest.yaml.tpl"
+```
+
+</div>
+</div>
+
+[^factory]: <https://factory.talos.dev/>
+
+<!--
+This is the one that's hard to grok if you haven't used the Talos Image Factory.
+Normally you go to factory.talos.dev, click through a wizard to pick kernel args
+and system extensions, and it hands you back an opaque schematic hash that you
+paste into your config. One hash per combination of extensions.
+
+With TOPF you instead keep a manifest in Git — and because it's a .tpl, you can
+template it per node. TOPF computes the schematic ID locally from the manifest,
+so the source of truth is reviewable YAML, not a hash. Optionally it submits the
+schematic to the Factory for you.
 -->
 
 ---
 
 # Dynamic Providers
 
-<div class="text-xl opacity-70 mt-2">plug TOPF into your infrastructure — no node lists baked into the config repo</div>
+<div class="text-xl opacity-70 mt-2">resolve node lists and secrets at runtime from external sources</div>
 
-<div class="grid grid-cols-2 gap-8 mt-8">
+<div class="grid grid-cols-2 gap-8 mt-6">
 
-<div class="bg-white bg-opacity-80 rounded-lg p-6 border border-gray-200 shadow-md">
-<div class="text-2xl font-700" style="color: #795649;"><carbon-network-3 /> Nodes Provider</div>
-<div class="mt-2 text-lg">a binary that outputs the node list</div>
-<div class="mt-1 text-base opacity-70">cloud APIs · Terraform state · inventory systems</div>
+<div class="bg-white bg-opacity-80 rounded-lg p-5 border border-gray-200 shadow-md">
+<div class="text-xl font-700" style="color: #795649;"><carbon-network-3 /> Nodes Provider</div>
 
-```bash
-<nodes-provider> nodes <clusterName>
+<div class="mt-2 text-sm opacity-70">instead of a static list…</div>
+
+```yaml
+# topf.yaml
+nodes:
+  - host: node1
+    ip: 192.168.1.11
+    role: control-plane
 ```
 
-</div>
+<div class="mt-1 text-sm opacity-70">…point at a binary:</div>
 
-<div class="bg-white bg-opacity-80 rounded-lg p-6 border border-gray-200 shadow-md">
-<div class="text-2xl font-700" style="color: #795649;"><carbon-password /> Secrets Provider</div>
-<div class="mt-2 text-lg">a binary that manages the secrets bundle</div>
-<div class="mt-1 text-base opacity-70">Vault · corporate secrets management</div>
-
-```bash
-<secrets-provider> secrets get <clusterName>
+```yaml
+# topf.yaml
+nodesProvider: ./nodes-from-terraform
 ```
 
-</div>
+<div class="mt-2 text-sm opacity-70">e.g. read nodes from a Terraform output, cloud API, or inventory</div>
 
 </div>
 
-<div class="mt-6 p-4 bg-white bg-opacity-80 rounded-lg border-l-4 border-amber-800 shadow-md text-lg">
+<div class="bg-white bg-opacity-80 rounded-lg p-5 border border-gray-200 shadow-md">
+<div class="text-xl font-700" style="color: #795649;"><carbon-password /> Secrets Provider</div>
 
-<carbon-plug class="inline" style="color: #795649;" /> Nodes from a provider are **merged** with the static nodes in `topf.yaml`.
+<div class="mt-2 text-sm opacity-70">default: a local SOPS-encrypted bundle…</div>
+
+```yaml
+# secrets.yaml (SOPS-encrypted)
+secrets:
+  bootstrapToken: ENC[AES256_GCM,data:…]
+```
+
+<div class="mt-1 text-sm opacity-70">…or fetch it from an external store:</div>
+
+```yaml
+# topf.yaml
+secretsProvider: ./secrets-from-vault
+```
+
+<div class="mt-2 text-sm opacity-70">e.g. Vault, AWS, any external secret store</div>
+
+</div>
 
 </div>
 
 <!--
-Dynamic providers are TOPF's plugin system. Instead of hardcoding node lists,
-you point TOPF at a binary that returns nodes — from a cloud API, Terraform
-state, or an inventory system. Same idea for secrets. At PostFinance the nodes
+Dynamic providers are TOPF's plugin system. Instead of hardcoding a node list,
+you point TOPF at a binary that returns nodes — the obvious use case is reading
+them straight from a Terraform output, but it could be a cloud API or an
+inventory system. Provider nodes are merged with any static ones.
+
+Same idea for secrets. By default TOPF keeps a local secrets.yaml — the Talos
+secrets bundle — and transparently SOPS-encrypts it. Or you set a secretsProvider
+binary that fetches the bundle from an external store. At PostFinance the nodes
 provider hits our internal inventory and the secrets provider talks to Vault.
 -->
 
@@ -651,19 +811,22 @@ upgrade:
 ```
 
 </div>
-<div class="col-span-2 flex flex-col justify-center">
+<div class="col-span-2 flex flex-col">
 
-<div class="flex items-center gap-3 text-xl">
-<carbon-list style="color: #795649;" /> <span>pipeline runs <strong>dry-run</strong> diff</span>
-</div>
+```diff
+$ topf apply --dry-run
 
-<div class="flex items-center gap-3 text-xl mt-4">
-<carbon-checkmark-outline style="color: #795649;" /> <span>review the plan</span>
-</div>
+  node2  (Mode: NO_REBOOT)
+  machine:
+    install:
+-     disk: /dev/sda
++     disk: /dev/nvme0n1
+    kernel:
+      modules:
++       - name: nvidia
 
-<div class="flex items-center gap-3 text-xl mt-4">
-<carbon-rocket style="color: #795649;" /> <span><strong>apply</strong> &amp; <strong>upgrade</strong> are manual</span>
-</div>
+  1 node changed — exit code 2
+```
 
 </div>
 </div>
@@ -758,72 +921,68 @@ API server.
 
 ---
 
-# Key Takeaways
+# Takeaways
 
-<div class="grid grid-cols-2 gap-8 mt-10 text-sm">
-<div class="bg-white bg-opacity-80 rounded-lg p-5 border border-gray-200 shadow-md">
+<div class="text-xl opacity-70 mt-2">three lessons that outlast the tool</div>
 
-### **Talos is the future**
+<div class="flex flex-col gap-10 mt-14">
 
-Immutable, minimal, declarative. The right OS for Kubernetes nodes.
-
+<div class="flex items-baseline gap-5">
+<div class="text-3xl font-bold flex-shrink-0" style="color: #795649;">1</div>
+<div class="text-2xl font-500" style="color: #5d4037;">The hard part was never the OS — it was lifecycle</div>
 </div>
-<div class="bg-white bg-opacity-80 rounded-lg p-5 border border-gray-200 shadow-md">
 
-### **CAPI isn't the only path**
-
-Siderolabs deprioritized CAPI providers. Building purpose-built tools is a valid alternative.
-
+<div class="flex items-baseline gap-5">
+<div class="text-3xl font-bold flex-shrink-0" style="color: #795649;">2</div>
+<div class="text-2xl font-500" style="color: #5d4037;">You don't always need a control plane to manage one</div>
 </div>
-<div class="bg-white bg-opacity-80 rounded-lg p-5 border border-gray-200 shadow-md">
 
-### **Layered patches = DRY + reviewable**
-
-`all/` → `control-plane/` → `worker/` → `node/<host>/`. PRs are easy to review.
-
+<div class="flex items-baseline gap-5">
+<div class="text-3xl font-bold flex-shrink-0" style="color: #795649;">3</div>
+<div class="text-2xl font-500" style="color: #5d4037;">Layered, structured config is easy to work with and simple to review</div>
 </div>
-<div class="bg-white bg-opacity-80 rounded-lg p-5 border border-gray-200 shadow-md">
 
-### **TOPF is open source**
-
-MIT licensed. Single Go binary. Production-tested at PostFinance. Try it today.
-
-</div>
 </div>
 
 <!--
-Summarize the key points. Talos is the way forward. CAPI isn't the only option.
-TOPF's layered patch model is both DRY and PR-friendly. And it's open source —
-go try it.
+The take-2 framing: pull the camera back from TOPF's features to the
+transferable lessons. Even if you never touch Talos, these three hold:
+
+1. Talos solved the node; managing config and upgrades across many clusters is
+   the real work — that's where the time goes.
+2. A CLI + GitOps + dry-run diffs gave us safety without an operator to run and
+   secure. You don't need a control plane to manage one.
+3. Layered, templated patches turn every change into a diff a colleague can
+   actually review — far better than imperative scripts.
+
+And the meta-lesson: if existing tools don't fit, building your own is
+legitimate — and open-sourcing it is how it pays you back.
 -->
 
 ---
+layout: default
+---
 
-<div class="grid grid-cols-5 gap-6 h-full items-center">
-<div class="col-span-3">
+<img src="./images/postfinance-logo.png" class="absolute top-6 right-8" style="width: 11rem;" alt="PostFinance">
 
-## Thank you!
+<div class="flex flex-col items-center justify-center h-full text-center">
 
-<div class="grid grid-cols-2 gap-4 mt-4">
-<div class="bg-white bg-opacity-80 rounded-lg p-4 border border-gray-200 shadow-md text-sm">
+<img src="./images/topf-logo.png" style="width: 9rem;" alt="TOPF">
 
-**[TOPF on GitHub](https://github.com/postfinance/topf/)**
+<h1 class="text-6xl font-bold mt-6" style="color: #222831;">Thank you!</h1>
 
-Open-source Talos lifecycle manager
-
-</div>
-<div class="bg-white bg-opacity-80 rounded-lg p-4 border border-gray-200 shadow-md text-sm">
-
-**[Talos Linux](https://www.talos.dev/)**
-
-The Kubernetes OS
-
-</div>
+<div class="flex items-center gap-8 mt-10 text-lg">
+<a href="https://github.com/postfinance/topf/" target="_blank" style="color: #795649;" class="flex items-center gap-2 !border-none">
+<carbon-logo-github /> postfinance/topf
+</a>
+<a href="https://www.talos.dev/" target="_blank" style="color: #795649;" class="flex items-center gap-2 !border-none">
+<carbon-bare-metal-server /> talos.dev
+</a>
 </div>
 
-<div class="mt-6 flex items-center gap-4">
+<div class="mt-10 flex items-center gap-4">
 <a href="https://clement.n8r.ch/en/articles/" style="font-size: 1.1rem; color: #222831;" target="_blank">clement.n8r.ch</a>
-<img src="./images/Jura.png" width="20rem" alt="Jura flag">
+<img src="./images/Jura.png" style="width: 20px;" alt="Jura flag">
 <a href="https://www.linkedin.com/in/clement-j-m-nussbaumer/" target="_blank" style="color: #222831;"
   class="text-xl icon-btn opacity-100 !border-none"><carbon-logo-linkedin />
 </a>
@@ -832,14 +991,6 @@ The Kubernetes OS
 </a>
 </div>
 
-</div>
-<div class="col-span-2 flex flex-col items-center text-center">
+<div class="mt-12 text-2xl font-bold" style="color: #5d4037;">Questions? 🪴</div>
 
-<img src="./images/postfinance-logo.png" style="width: 22rem;" alt="PostFinance">
-
-<img src="./images/topf-logo.png" style="width: 11rem;" alt="TOPF" class="mt-8">
-
-<div class="mt-3 text-lg font-bold">Questions?</div>
-
-</div>
 </div>
