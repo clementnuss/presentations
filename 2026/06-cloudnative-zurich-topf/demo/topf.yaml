@@ -14,3 +14,5 @@ nodes:
   - host: talos-worker-1
     ip: 192.168.64.5
     role: worker
+    data:
+      gpu: false
