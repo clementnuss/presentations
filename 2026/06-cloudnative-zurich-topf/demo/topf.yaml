@@ -15,4 +15,4 @@ nodes:
     ip: 192.168.64.5
     role: worker
     data:
-      gpu: false
+      allow_ptrace: true
