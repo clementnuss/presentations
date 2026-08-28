@@ -7,7 +7,7 @@ flowchart TD
     C --> F[🖥️ Node 3]  
     C --> G[🖥️ Node 4]
     
-    D --> |Forwards to| H[⚖️ ingress-nginx<br/>LoadBalancer Service]
+    D --> |Forwards to| H[⚖️ traefik<br/>LoadBalancer Service]
     H --> I[🚀 Farm Applications<br/>Grafana, etc.]
     
     style A fill:#90EE90

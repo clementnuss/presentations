@@ -145,36 +145,6 @@ The 1883 painting contrasts traditional farming with the cloud-native approach.
 -->
 
 ---
-layout: default
----
-
-# The Biogas Cycle
-
-<div class="w-1/2 flex flex-col justify-center h-80">
-
-A complete **circular economy** on the farm:
-
-- Waste becomes energy
-- Residual heat is used to heat up the digesters
-- ... and to dry up crops
-- Solid digestate is used as fertilizer to further grow crops
-
-</div>
-
-<div class="absolute right-0 top-0 w-1/2 h-full flex justify-center items-center">
-  <div style="transform: scale(0.8); transform-origin: center;">
-    <Excalidraw
-      drawFilePath="./drawings/farm.excalidraw"
-    />
-  </div>
-</div>
-
-
-<!--
-The complete biogas cycle showing how waste becomes energy and fertilizer in a closed loop
--->
-
----
 layout: image-right
 image: ./images/cow.jpg
 ---
@@ -192,25 +162,28 @@ layout: default
 # Infrastructure Foundation
 
 <div class="grid grid-cols-2 gap-8 h-full items-start">
-<div class="flex justify-center mt-6">
+<div class="flex justify-center mt-6 relative">
 
-<img src="./images/cloud-cave-analogy.jpg" class="rounded-lg shadow-lg max-h-96 w-auto" alt="Cloud cave analogy">
+<img v-click-hide src="./images/cloud-cave-analogy.jpg" class="rounded-lg shadow-lg max-h-96 w-auto" alt="Cloud cave analogy">
+
+<img v-after src="./images/k8s-cluster-photo.jpg" class="rounded-lg shadow-lg max-h-96 w-auto absolute top-0 left-0" alt="The actual cluster">
 
 </div>
 
 <div>
 
-**Kubernetes Cluster**
+**Cluster**
+
 - 4x HP EliteDesk Mini PCs
-- Intel i5/i7 processors
-- 16GB RAM each
-- 256GB-512GB NVMe storage
-- Talos Linux OS
+- 16GB RAM, 512GiB NVMe each
+- Talos Linux
 
 **Operating Costs**
-- Power: 1.4 kWh/day @ 26.87¢ = **137 CHF/year**
-- Hardware amortization: **250 CHF/year** (=1 node)
-- **Total: 387 CHF/year (~32 CHF/month)**
+
+- Power: 60 Wh = 1.4 kWh/day = 137 CHF/year
+- Hardware amortization: **350 CHF/year** (=1 node)
+- **Total: 487 CHF/year (~40 CHF/month)**
+
 
 </div>
 </div>
@@ -224,16 +197,42 @@ layout: default
 layout: default
 ---
 
-# Home Operations Community
+# Talos Linux
+
+<div class="grid grid-cols-2 h-80 items-start">
+<div class="flex flex-col justify-start">
+
+- < 50 OS binaries, < 80 MB footprint
+- Immutable root filesystem, no package manager
+- No SSH, no shell — interaction via gRPC API
+- Declarative configuration
+
+Managed with **TOPF**[^topf]
+
+[^topf]: <https://github.com/postfinance/topf>
+
+</div>
+<div class="h-full flex items-start justify-center">
+  <div style="transform: scale(0.8); transform-origin: top;">
+    <Excalidraw
+      drawFilePath="./drawings/talos-linux.excalidraw"
+    />
+  </div>
+</div>
+</div>
+
+---
+layout: default
+---
+
+# Configuring the cluster
 
 <div class="grid grid-cols-2 gap-8 h-95 items-start">
 <div class="flex flex-col justify-start mt-8">
 
-**Inspired by Home Operations[^1]**
-- "We love to break production at home" 🏠
-- Key contributors: `bjw-s`, `onedr0p`
+**Inspired by home-ops[^1]**
+
 - **GitOps**-first approach with FluxCD
-- Encrypted secrets with SOPS
 - Open-source home lab configurations
 - Active Discord & GitHub community
 
@@ -255,68 +254,22 @@ layout: default
 layout: default
 ---
 
-# Talos Linux
-The 12 binaries' O.S.[^12-bin]
-
-<div class="grid grid-cols-2 h-80 items-start">
-<div class="flex flex-col justify-start">
-
-> immutable, minimal, secure \
-> declarative configuration file and gRPC API [^talos-philosophy]
-
-[^talos-philosophy]: <https://www.talos.dev/v1.11/learn-more/philosophy/>
-[^12-bin]: <https://www.siderolabs.com/blog/there-are-only-12-binaries-in-talos-linux/>
-
-<br>
-
-```console
-$ talosctl services
-SERVICE              STATE     HEALTH
-apid                 Running   OK    
-containerd           Running   OK    
-cri                  Running   OK    
-etcd                 Running   OK    
-kubelet              Running   OK    
-machined             Running   OK    
-syslogd              Running   OK    
-trustd               Running   OK    
-udevd                Running   OK    
-```
-
-</div>
-<div class="h-full flex items-start justify-center">
-  <div style="transform: scale(0.8); transform-origin: top;">
-    <Excalidraw
-      drawFilePath="./drawings/talos-linux.excalidraw"
-    />
-  </div>
-</div>
-</div>
-
----
-layout: default
----
-
 # Network Architecture
 
-<div class="grid grid-cols-2 gap-8 h-full items-start">
+<div class="grid grid-cols-2 gap-8 items-start">
 <div class="flex flex-col justify-start">
 
-**Dual-Stack Cluster**
+**Dual-stack IPv4 / IPv6**
 
-- Init7 🐇 copper connection 250/70MBps 
-- IPv6 `2001:1620:5386::/48` range: `2001:1620:5386:0000:0000:0000:0000:0000` - `2001:1620:5386:ffff:ffff:ffff:ffff:ffff`
+MetalLB exposes the ingress on an IPv6 address via NDP[^ndp] — no NAT needed
 
-**MetalLB Load Balancer**
-
-- Routable IPv6 service range
-- L2 Advertisement via NDP protocol
-- Zero-cost HA with node failover
-- no need for port-forwarding/NAT with IPv6
+For IPv4-only clients:
+- Cloudflare proxy in front of the IPv6 address
+- Or a small VPS proxying IPv4 → IPv6
 
 </div>
-<div class="h-full flex items-start justify-center">
-  <div style="transform: scale(1); transform-origin: top;">
+<div class="flex items-start justify-center">
+  <div style="transform: scale(1); transform-origin: top center;">
     <Excalidraw
       drawFilePath="./drawings/network-ipv6.excalidraw"
     />
@@ -324,42 +277,7 @@ layout: default
 </div>
 </div>
 
----
-layout: default
----
-
-# Stateful Storage
-
-<div class="grid grid-cols-2 gap-12">
-<div class="flex justify-center items-center">
-
-<!-- Image placeholder for storage diagram -->
-<img src="./images/k8s-cluster-photo.jpg" class="rounded-lg shadow-lg max-h-96 w-auto" alt="Kubernetes cluster overview">
-
-</div>
-<div>
-
-**Distributed Storage**
-
-- Longhorn for replicated block storage
-- VictoriaMetrics PVCs for time-series data
-- HA MariaDB & PostgreSQL databases
-
-**Backup Strategy**
-
-- PVC snapshots via Velero and copied to offsite S3
-- Database-specific backups[^db-backup]:
-
-```bash
-mariadb-dump | gzip --rsyncable && restic backup
-```
-
-- Incremental backups every 15 minutes
-
-[^db-backup]: https://clement.n8r.ch/en/articles/backing-up-mariadb-on-kubernetes/
-
-</div>
-</div>
+[^ndp]: Neighbor Discovery Protocol — the IPv6 equivalent of ARP
 
 ---
 layout: default
@@ -370,20 +288,19 @@ layout: default
 <div class="grid grid-cols-2 gap-8 h-full items-start">
 <div class="flex flex-col justify-start mt-6">
 
-**Why VictoriaMetrics?**
-- Better resource usage than Prometheus
-- Simple architecture
-- Easy horizontal scaling
-- Long-term data retention
-- Drop-in Prometheus replacement
+**VictoriaMetrics**
 
-**Grafana Integration**
-- Farm operations dashboards
-- Custom alerting rules
+- **Simple architecture**
+- Drop-in Prometheus replacement
+- Better resource usage
+- Long-term retention
+
+**Grafana**
+- Dashboards + alerting
 
 </div>
-<div class="h-full flex items-start justify-center">
-  <div style="transform: scale(1); transform-origin: top;">
+<div class="flex items-start justify-center">
+  <div style="transform: scale(0.9); transform-origin: top center;">
     <Excalidraw
       drawFilePath="./drawings/victoriametrics.excalidraw"
     />
@@ -393,41 +310,6 @@ layout: default
 
 <!--
 VictoriaMetrics cluster architecture showing separation of concerns and scalability
--->
-
----
-layout: default
----
-
-# Long-term Storage Strategy
-
-<div class="grid grid-cols-2 gap-8 h-95 items-start">
-<div class="flex flex-col justify-start ">
-
-**Two VictoriaMetrics Clusters[^vm-config]**
-- **Short-term**: 3 months retention
-- **Long-term**: 10 years retention
-
-**Smart Routing**
-- vmagent sends to long-term only if `retention_period=long-term`
-
-**vmselect Proxy**
-- Distributes and deduplicates queries across clusters
-
-[^vm-config]: https://github.com/clementnuss/k8s-gitops/tree/main/workloads/metrics
-
-</div>
-<div class="h-full flex items-start justify-center">
-  <div style="transform: scale(1.15); transform-origin: top;">
-    <Excalidraw
-      drawFilePath="./drawings/victoriametrics-long-term.excalidraw"
-    />
-  </div>
-</div>
-</div>
-
-<!--
-Two-tier VictoriaMetrics setup with smart routing and query deduplication
 -->
 
 ---
@@ -620,6 +502,35 @@ Individual cow stats - Jura (#33) 🐄
 </div>
 
 
+
+---
+layout: default
+---
+
+# The Biogas Cycle
+
+<div class="w-1/2 flex flex-col justify-center h-80">
+
+A complete **circular economy** on the farm:
+
+- Waste becomes energy
+- Residual heat is used to heat up the digesters
+- ... and to dry up crops
+- Solid digestate is used as fertilizer to further grow crops
+
+</div>
+
+<div class="absolute right-0 top-0 w-1/2 h-full flex justify-center items-center">
+  <div style="transform: scale(0.8); transform-origin: center;">
+    <Excalidraw
+      drawFilePath="./drawings/farm.excalidraw"
+    />
+  </div>
+</div>
+
+<!--
+The complete biogas cycle showing how waste becomes energy and fertilizer in a closed loop
+-->
 
 ---
 layout: default
