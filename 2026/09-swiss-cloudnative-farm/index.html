@@ -1,0 +1,122 @@
+<!-- Custom HTML injected into each slide page by Slidev v52.
+     See node/setups/indexHtml.ts: body content from every root's index.html
+     is concatenated into the rendered page. -->
+<body>
+<style>
+/* ContainerDays Hamburg 2026 — Swiss Cloud-Native Farm theme overrides
+ * Applied on top of @slidev/theme-seriph.
+ *
+ * Color palette (from containerdays.io):
+ *   #1a3b89  navy   (primary text / buttons)
+ *   #37bcfc  blue   (gradient start)
+ *   #e5ff71  lime   (gradient end / accent)
+ *   #3c4146  gray   (secondary text)
+ */
+
+/* Global background for all slides: subtle navy→white wash */
+.slidev-layout {
+  background: linear-gradient(135deg, #f6fbff 0%, #eaf4fb 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Hamburg skyline along the bottom (CDS 2026 hero asset).
+ * Full opacity on the cover slide; much fainter on content slides. */
+.slidev-layout::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 30%;
+  background: url("./images/cds2026-hero-skyline.svg") no-repeat center bottom;
+  background-size: cover;
+  opacity: 0.1;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Cover slide: bring the skyline back to full strength */
+.slidev-layout.cover::before {
+  opacity: 0.55;
+}
+
+/* Keep content above the skyline */
+.slidev-layout > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Cover slide: full blue-yellow gradient (the CDS signature) */
+.slidev-layout.cover {
+  background: linear-gradient(135deg, #37bcfc 0%, #e5ff71 100%);
+}
+
+/* Cover text stays readable on the gradient */
+.slidev-layout.cover h1,
+.slidev-layout.cover h2 {
+  color: #1a3b89;
+}
+
+/* Footnotes — solid bg (no blur: breaks PDF export) */
+.footnotes {
+  background: rgba(255, 255, 255, 0.85);
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-top: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.footnotes .footnotes-list {
+  margin: 0;
+  padding-left: 16px;
+}
+
+.footnotes .footnote-item {
+  font-size: 0.65rem;
+}
+
+.footnotes .footnote-item p {
+  margin: 0;
+  font-size: 0.65rem;
+  color: #374151;
+}
+
+.footnotes .footnote-backref {
+  display: none;
+}
+
+.footnotes-sep {
+  display: none;
+}
+
+/* Image captions — solid bg (no blur) */
+.text-xs.text-gray-600.mt-2.text-center.italic {
+  background: rgba(255, 255, 255, 0.85);
+  padding: 4px 8px;
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  margin-top: 8px;
+}
+
+/* Headings pick up the navy primary */
+.slidev-layout h1,
+.slidev-layout h2,
+.slidev-layout h3 {
+  color: #1a3b89;
+}
+
+/* Links match the conf navy */
+.slidev-layout a {
+  color: #1a3b89;
+}
+
+/* Inline code gets a subtle blue tint */
+.slidev-layout :not(pre) > code {
+  color: #1a3b89;
+  background: rgba(55, 188, 252, 0.12);
+  padding: 0.1em 0.3em;
+  border-radius: 4px;
+}
+</style>
+</body>
