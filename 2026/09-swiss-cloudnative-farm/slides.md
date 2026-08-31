@@ -197,6 +197,36 @@ layout: default
 layout: default
 ---
 
+# Infrastructure as Code with OpenTofu
+
+<div class="grid grid-cols-2 gap-8 items-start">
+<div class="flex flex-col justify-start">
+
+Network config managed with **OpenTofu**[^tofu]:
+- MikroTik routers (official provider)
+- IPAM (phpIPAM)
+- Cloudflare DNS
+- WireGuard tunnels
+- Secrets in OpenBao[^bao]
+
+[^tofu]: <https://opentofu.org>
+[^bao]: <https://openbao.org>
+
+</div>
+<div class="flex flex-col justify-center items-center gap-8">
+
+<img src="./images/opentofu.svg" style="width: 10rem;" alt="OpenTofu logo">
+
+<img src="./images/openbao.svg" style="width: 8rem;" alt="OpenBao logo">
+
+</div>
+</div>
+
+
+---
+layout: default
+---
+
 # Talos Linux
 
 <div class="grid grid-cols-2 h-80 items-start">
@@ -264,6 +294,7 @@ layout: default
 MetalLB exposes the ingress on an IPv6 address via NDP[^ndp] — no NAT needed
 
 For IPv4-only clients:
+
 - Cloudflare proxy in front of the IPv6 address
 - Or a small VPS proxying IPv4 → IPv6
 
@@ -341,7 +372,7 @@ Remote control & monitoring
 </div>
 </div>
 
-<div class="grid grid-cols-2 gap-8 mt-8">
+<div class="grid grid-cols-3 gap-6 mt-8">
 <div class="text-center">
 
 ## 📊 **Milk Vending Machine**
@@ -350,8 +381,14 @@ LiDAR sensor integration
 </div>
 <div class="text-center">
 
-## 🧾 **Invoicing Solution**
-Billing for e.g.silage work
+## 🧾 **Self-Hosted Apps**
+Invoicing, PDF archive, SSO
+
+</div>
+<div class="text-center">
+
+## 📈 **Uptime Monitoring**
+All farm devices, status page
 
 </div>
 </div>
@@ -362,23 +399,15 @@ Billing for e.g.silage work
 layout: default
 ---
 
-# DeLaval Milking Robot
-##
+# Milking at the Farm
 
 <div class="grid grid-cols-5 gap-8 h-90 items-start">
 <div class="col-span-2 flex flex-col justify-start">
 
-**DeLaval VMS™ Installed December 2024**
-
-- Automated milking system
-- 65 cows, 2.4 milkings per day average
-
-**DelPro Farm Manager Software**
-
-- Individual cow tracking & health monitoring
-- Centralized herd management system
-- Health & reproduction tracking
-- Feeding optimization
+- Holstein cows 🐄
+- 65 cows, ~2.3 milkings/day
+- DeLaval VMS voluntary milking system
+- Cows choose when to be milked
 
 </div>
 <div class="col-span-3 flex flex-col justify-center items-center">
@@ -386,7 +415,7 @@ layout: default
 <img src="./images/milk-robot.jpg" class="mt-2 rounded-lg shadow-lg w-auto" alt="Milking robot">
 
 <p class="text-xs text-gray-600 mt-2 text-center italic">
-Milking Robot
+DeLaval VMS milking robot
 </p>
 
 </div>
@@ -415,7 +444,6 @@ DelPro Farm Manager GUI
 
 - Traditional Windows-based application
 - Limited real-time capabilities
-- Manual data export processes
 
 **Key Limitations**
 
@@ -434,41 +462,33 @@ layout: default
 <div class="grid grid-cols-2 gap-8 h-90 items-start">
 <div class="flex flex-col justify-start">
 
-**Custom-Built DelPro Exporter[^delpro-exporter]**
-- Golang service that queries MS SQL database
+Custom Go service: MS SQL → Prometheus format[^delpro-exporter]
 
-**Live Mode: `/metrics`**
-
-- Real-time Prometheus exposition format
-- Current milking data and cow status
-
-**Historical Mode: `/historical-metrics`**
-
-- Prometheus format with timestamps
-- Backfilling historical data into VictoriaMetrics[^vm-import]
+- `/metrics` — live data
+- `/historical-metrics` — backfill into VictoriaMetrics
 
 [^delpro-exporter]: https://github.com/clementnuss/delpro-exporter
-[^vm-import]: https://docs.victoriametrics.com/victoriametrics/#how-to-import-data-in-prometheus-exposition-format
 
 </div>
 <div class="flex flex-col justify-center">
 
-```go
-// Query DelPro MS SQL database
-records := db.Query(`
-  SELECT animal_number, milk_yield, duration
-  FROM milking_sessions 
-  WHERE session_end > ?
-`, lastUpdate)
-
-// Convert to Prometheus metrics
-for _, r := range records {
-  metrics.GetOrCreateGauge(
-    "milk_yield_liters", 
-    map[string]string{
-      "animal": r.AnimalNumber,
-    }).Set(r.Yield)
-}
+```json
+delpro_milk_last_somatic_cell{
+  animal_number="77",animal_name="Lovely",
+  breed="Holstein",destination="Tank",
+  lactation="1"} 34
+delpro_milk_last_somatic_cell{
+  animal_number="78",animal_name="Jessie",
+  breed="Holstein",destination="Divert1",
+  lactation="3"} 265
+delpro_milk_last_yield_liters{
+  animal_number="1",animal_name="Jade",
+  breed="Holstein",destination="Tank",
+  lactation="3"} 14.3
+delpro_milk_last_yield_liters{
+  animal_number="9",animal_name="Marine",
+  breed="Montbéliarde",destination="Tank",
+  lactation="1"} 13.2
 ```
 
 </div>
@@ -509,23 +529,26 @@ layout: default
 
 # The Biogas Cycle
 
-<div class="w-1/2 flex flex-col justify-center h-80">
+<div class="grid grid-cols-2 gap-8 items-start">
+<div class="flex flex-col justify-center">
 
-A complete **circular economy** on the farm:
+A complete circular economy on the farm:
 
-- Waste becomes energy
-- Residual heat is used to heat up the digesters
-- ... and to dry up crops
-- Solid digestate is used as fertilizer to further grow crops
+- Cows eat crops → produce manure
+- Manure produces methane (CH₄)
+- Methane fuels engines → electricity + heat
+- Residual heat heats the digesters
+- ... and dries crops
+- Digestate fertilizes crops
 
 </div>
-
-<div class="absolute right-0 top-0 w-1/2 h-full flex justify-center items-center">
-  <div style="transform: scale(0.8); transform-origin: center;">
+<div class="flex justify-center items-center">
+  <div style="transform: scale(0.8); transform-origin: top center;">
     <Excalidraw
       drawFilePath="./drawings/farm.excalidraw"
     />
   </div>
+</div>
 </div>
 
 <!--
@@ -544,13 +567,13 @@ layout: default
 <img src="./images/biogas-digester-overview.jpeg" class="rounded-lg shadow-lg max-h-94 w-auto" alt="Biogas plant exterior view">
 
 <p class="text-xs text-gray-600 mt-2 text-center italic">
-External biogas facility
+Digesters and feed mixer
 </p>
 
 </div>
 <div class="flex flex-col justify-start items-center">
 
-<img src="./images/saia-pcd.JPG" class="rounded-lg shadow-lg max-h-48 w-auto" alt="Biogas plant interior systems">
+<img src="./images/saia-pcd.jpg" class="rounded-lg shadow-lg max-h-48 w-auto" alt="Biogas plant interior systems">
 
 <p class="text-xs text-gray-600 mt-2 text-center italic">
 Control systems & monitoring
@@ -565,18 +588,10 @@ Engine overview
 </div>
 <div class="flex flex-col justify-start">
 
-**Energy Production**
+**SAIA PCD**
+Programmable Control Device — the biogas plant's controller
 
-- 2x220 kW electrical capacity
-- Waste-to-energy conversion
-- Grid-connected power generation
-- Heat recovery for farm operations
-
-**Key Metrics to Monitor**
-
-- Temperature profiles
-- Electrical output
-- Digester volume
+<img src="./images/saia-pcd-software.png" class="rounded-lg shadow-lg mt-4 max-h-48 w-auto" alt="SAIA PCD programming software">
 
 </div>
 </div>
@@ -611,14 +626,9 @@ layout: default
 
 **Legacy Control Interface**
 
-- Windows-based management software
+- Windows-based
 - Manual data export only
-
-**Key Limitations**
-
 - Limited remote capabilities (VNC only)
-- Data locked in legacy system
-- Outdated dashboard capabilities
 
 </div>
 </div>
@@ -635,13 +645,11 @@ layout: default
 **SAIA PCD Communication**
 
 - Proprietary EtherSBus protocol
-- Network-based communication (UDP, port 5050)
+- Serial or Ethernet (UDP, port 5050)
 
 **Existing Python Library**
 
-- Found `digimat-saia` library
-- Implements EtherSBus protocol
-
+- `digimat-saia` implements EtherSBus
 
 </div>
 <div class="flex flex-col justify-center items-center mt-2">
@@ -665,119 +673,53 @@ pump_running = server.flags[10].value
 </div>
 
 <div class="flex justify-center mt-8">
-<div v-click class="p-6 bg-orange-100 bg-opacity-80 border-l-4 border-orange-500 rounded  text-center max-w-3xl">
+<div v-click class="p-6 bg-orange-100 bg-opacity-80 border-l-4 border-orange-500 rounded text-center max-w-3xl">
 
-**Problem: I don't want to implement a prometheus exporter in Python again.[^alpro]**
+**Problem: I don't want to implement a Prometheus exporter in Python again.**
 
 </div>
 </div>
-
-[^alpro]: <https://github.com/clementnuss/alpro-openmetrics-exporter>
 
 ---
 layout: default
 ---
 
-# gRPC Service Implementation
+# gRPC Bridge & Go Exporter
 
-<div class="grid grid-cols-2 gap-8 h-90 items-start">
+<div class="grid grid-cols-2 gap-8 items-start">
 <div class="flex flex-col justify-start">
 
-**SAIA gRPC Service[^saia-grpc]**
+**gRPC Service (Python)**
 
-- Python service using digimat-saia
+- Wraps `digimat-saia`
 - ConnectRPC framework (CNCF sandbox)
+- Reads/writes registers & flags
 
-**ConnectRPC Benefits**
+**Prometheus Exporter (Go)**
 
-- Simplified gRPC development
-
-**Service Capabilities**
-
-- Real-time parameter reading/setting
-- Error handling & retries
-
-[^saia-grpc]: https://github.com/clementnuss/saia-grpc-service/blob/main/saia_grpc_service.py
-
-</div>
-<div class="flex flex-col justify-center items-center">
-
-```python
-# gRPC service using ConnectRPC
-class SaiaService(SaiaServiceServicer):
-    def ReadFlag(
-        self, 
-        request: saia_pb2.ReadFlagRequest, 
-        context: grpc.ServicerContext
-    ) -> saia_pb2.ReadFlagResponse:
-        r = typing.cast(
-            SAIAItemFlag, 
-            server.flags[request.address]
-        )
-
-        if r is None or not r.isAlive():
-            context.abort(
-                grpc.StatusCode.INTERNAL, 
-                "unable to read register value"
-            )
-
-        return saia_pb2.ReadFlagResponse(value=r.bool)
-```
-
-</div>
-</div>
-
----
-layout: default
----
-
-# Prometheus Metrics Exporter
-
-<div class="grid grid-cols-2 gap-8 h-90 items-start">
-<div class="flex flex-col justify-start">
-
-**SAIA PCD Exporter[^saia-exporter]**
-
-- Golang service for metrics collection
-- Queries gRPC service periodically
-- uses `VictoriaMetrics/metrics` go library
-
-**Data Pipeline Flow**
-
-1. SAIA PCD → EtherSBus protocol
-2. gRPC service → JSON/Protobuf
-3. delpro-exporter → metrics format
-4. VictoriaMetrics → storage
-5. Grafana → visualization
-
-[^saia-exporter]: https://github.com/clementnuss/saia-pcd-exporter
+- Polls the gRPC service periodically
+- Uses `VictoriaMetrics/metrics` library
 
 </div>
 <div class="flex flex-col justify-center">
 
-```go
-// Query gRPC service and export metrics
-func (e *Exporter) collectMetrics() {
-  resp, err := e.grpcClient.GetBiogasMetrics(ctx)
-  if err != nil {
-    log.Printf("gRPC error: %v", err)
-    return
-  }
-
-  gasFlowGauge.Set(resp.GasFlow)
-  powerOutputGauge.Set(resp.PowerOutput)
-  temperatureGauge.WithLabelValues(
-    resp.Sensor
-  ).Set(resp.Temperature)
-}
+```
+biogaz_poids_balance_kg 13467
+biogaz_pression_stockage_gaz_mbar 0.8393750190734863
+biogaz_puissance_ccf1_echelonnee 190
+biogaz_puissance_ccf2_echelonnee 200
+biogaz_reservoir_separateur_vide 1
+biogaz_retour_auto_brasseur_fermenteur1_inf 1
+biogaz_retour_auto_brasseur_fermenteur1_sup 1
 ```
 
-**Monitoring Benefits**
-
-- Real-time biogas performance, custom alerts
-
 </div>
 </div>
+
+Both open source: saia-grpc-service[^saia-grpc], saia-pcd-exporter[^saia-exporter]
+
+[^saia-grpc]: https://github.com/clementnuss/saia-grpc-service
+[^saia-exporter]: https://github.com/clementnuss/saia-pcd-exporter
 
 ---
 layout: default
@@ -806,13 +748,13 @@ layout: default
 
 **Remote Fence Management**
 
-- Shelly MQTT relays for power control
-- Kubernetes-hosted MQTT cluster
+- Shelly relays for power control
+- Kubernetes-hosted MQTT server
 - Home Assistant integration
 
 **Use Cases**
 
-- Emergency fence shutdown / repairs
+- Repairs / emergency fence shutdown
 
 </div>
 <div class="flex flex-col justify-center items-center">
@@ -838,7 +780,7 @@ Home Assistant fence control
 <div class="flex justify-center mt-6">
 <div class="p-3 bg-blue-100 bg-opacity-30 border-l-4 border-blue-500 rounded  max-w-md">
   <p class="font-bold text-blue-800 text-center">
-    🔌 Shelly → MQTT ← Home Assistant
+    Shelly → MQTT ← Home Assistant
   </p>
 </div>
 </div>
@@ -852,17 +794,15 @@ layout: default
 <div class="grid grid-cols-2 gap-8 h-90 items-center">
 <div class="flex flex-col justify-start">
 
-**Self-Service Farm Shop**
-- Fresh eggs, flour, sausages, and milk
+**Measuring Milk Levels**
 
-**LiDAR Integration Challenge**
-
-- Monitor milk levels in the 40L tank
-- Automated alerts when machine is empty
+- No level sensor in the tank
+- LiDAR measures the milk surface
+- Alerts when the machine is empty
 
 <div v-click class="mt-6 p-4 bg-blue-100 bg-opacity-30 border-l-4 border-blue-500 rounded ">
 <p class="text-sm font-bold text-blue-800 text-center mb-3">
-Tank Geometry: 1cm height = 1 liter 🧮
+Tank Geometry: 1cm height = 1 liter
 </p>
 
 $$
@@ -889,36 +829,53 @@ Milk vending machine monitoring dashboard
 layout: default
 ---
 
-# Farm Invoicing System
+# Self-Hosted Services
 
-<div class="grid grid-cols-2 gap-8 h-90 items-center">
-<div class="flex flex-col justify-start">
+<div class="grid grid-cols-2 gap-8 items-center">
+<div class="flex flex-col justify-center">
 
-**InvoiceNinja[^invoiceninja] - Open Source Invoicing**
+A nice side-effect of running k8s: self-hosting regular apps is easy
 
-- Complete invoicing and billing solution
-- Customer management and payment tracking
-
-**Farm Use Cases**
-
-- Silage work for third parties
-- Hay sales and crop drying
-
-**Cloud-Native Deployment**
-- MariaDB Operator[^mariadb-operator] → HA MariaDB
-- InvoiceNinja Helm Chart
+- **InvoiceNinja**[^invoiceninja] — invoicing: silage work, hay sales, crop drying
+- **Paperless-ngx**[^paperless] — PDF archival & document management
+- **PocketID**[^pocketid] — OIDC SSO for all of the above
 
 [^invoiceninja]: https://invoiceninja.com/
-[^mariadb-operator]: https://github.com/mariadb-operator/mariadb-operator
+[^paperless]: https://docs.paperless-ngx.io/
+[^pocketid]: https://github.com/pocket-id/pocket-id
+
+</div>
+<div v-click class="flex flex-col justify-center items-center">
+
+<img src="./images/xkcd-cloud.png" class="rounded-lg bg-white p-2 shadow-lg max-h-72 w-auto" alt="xkcd: The Cloud">
+
+<p class="text-xs text-gray-600 mt-2 text-center italic">
+xkcd 908 — "The Cloud"
+</p>
+
+</div>
+</div>
+
+---
+layout: default
+---
+
+# Uptime Monitoring with Gatus
+
+<div class="grid grid-cols-2 gap-8 items-start">
+<div class="flex flex-col justify-start">
+
+**Gatus**[^gatus] monitors all farm devices:
+- Routers, antennas, peripherals
+- HTTP, TCP, ICMP checks
+- Status page + alerts
+
+[^gatus]: <https://github.com/TwiN/gatus>
 
 </div>
 <div class="flex flex-col justify-center items-center">
 
-<img src="./images/invoiceninja.png" class="rounded-lg shadow-lg mt-14 max-h-64 w-auto" alt="InvoiceNinja dashboard">
-
-<p class="text-xs text-gray-600 mt-2 text-center italic">
-InvoiceNinja dashboard
-</p>
+<img src="./images/gatus-screenshot.png" class="rounded-lg shadow-lg max-h-96 w-auto" alt="Gatus status page">
 
 </div>
 </div>
