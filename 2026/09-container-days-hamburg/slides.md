@@ -514,79 +514,13 @@ Do you want to apply the above changes to node1 (Mode: NO_REBOOT)? [y/n]: <span 
 </div>
 
 <!--
-* In the beginning was the YAML. Start off with a single config file.
-* We define...
-* List of nodes, which we have provisioned before
-* This is basically everything we have to do for a Hello World, because Talos has a pretty good default Configuration but...
-* One part where Talos doesn't make any assumption
-* Install Disk, doesn't want to wipe your data
-* Brings us to the first Configuration Patch
-* Important: Patches are not something we invented. Straight from Talos Documentation
+Assume you've downloaded the installer image and booted up your first node, waiting for it to be configured.
 
-* Last thing: topf apply, renders out, sends it to node, bootstrap you cluster
-* auto-bootstrap
--->
+We start with a single control plane node.
 
----
+The only thing that is missing now is a first Patch, because even though Talos has a lot of sane defaults, it doesn't want to guess on which disk you want to install this.
 
-# Upgrading Talos
-
-<div class="grid grid-cols-2 gap-8">
-<div class="flex flex-col">
-
-<pre class="topf-tree">
-├── all/
-│   └── <span class="file-dot" style="color:#059669">●</span>disk.yaml
-└── <span class="file-dot" style="color:#2563eb">●</span>topf.yaml</pre>
-
-<div class="mt-4 text-lg opacity-70">
-
-Track the desired Talos version in `topf.yaml`, use `topf ugprade` to upgrade.
-
-</div>
-
-</div>
-<div class="flex flex-col">
-
-<div class="file-badge"><span class="file-dot" style="color:#2563eb">●</span>topf.yaml</div>
-
-```yaml{3}
-clusterName: my-cluster
-clusterEndpoint: https://192.168.1.11:6443
-talosVersion: 1.13.7
-nodes:
-  - host: node1
-    ip: 192.168.1.11
-    role: control-plane
-```
-
-</div>
-
-
-</div>
-
-<div v-click class="mt-6">
-  <pre style="background:#0d1117;color:#c9d1d9;padding:0.75rem 1rem;border-radius:0.5rem;font-size:0.85rem;line-height:1.5;overflow-x:auto;"><span style="color:#7ee787">$</span> topf upgrade
-<span style="color:#8b949e">level=INFO</span> msg="upgrade required" version_actual=1.13.7 version_desired=1.13.8
-Do you want to upgrade node node1 with installer factory.talos.dev..:v1.13.8? [y/n]: y
-<span style="color:#8b949e">level=INFO</span> msg="upgrade artifacts installed"
-<span style="color:#8b949e">level=INFO</span> msg="draining kubernetes node"
-<span style="color:#8b949e">level=INFO</span> msg="reboot initiated"
-<span style="color:#8b949e">level=INFO</span> msg="machine ready, waiting for stabilization..."
-<span style="color:#8b949e">level=INFO</span> msg="kubernetes node uncordoned"
-</pre>
-
-</div>
-
-<!--
-Track talos version in topf.yaml
-
-Topf will check the current version against the desired.
-
-Lots of flags around it
-* doing in parallel (percentage or absolute)
-* configure draining behavior
-* cool new feature: --stage
+So we need a first patch.
 -->
 
 ---
@@ -814,12 +748,8 @@ Knowing that, let's refactor our setting a bit...
 <pre class="topf-tree">
 ├── all/
 │   ├── <span class="file-dot" style="color:#059669">●</span>disk.yaml.tpl
-│   └── <span class="opacity-40">hostname.yaml.tpl</span>
-├── control-plane/
-│   └── <span class="opacity-40">vip.yaml</span>
 ├── worker/
 │   ├── <span class="file-dot" style="color:#9333ea">●</span>gpu.yaml.tpl
-│   └── <span class="opacity-40">kernel-params.yaml</span>
 └── <span class="file-dot" style="color:#2563eb">●</span>topf.yaml</pre>
 
 Use any data from `topf.yaml`. Full go templating with sprig support as you know it from Helm (math and string functions, defaults, json, etc)
@@ -835,6 +765,7 @@ nodes:
   - host: node4
     data: # <-- arbitrary k/v data
       disk: /dev/sda
+      gpu: true
 ```
 
 <div v-click="1">
@@ -878,6 +809,69 @@ Segway: so let's say you're convinced wanna try that. Put your cluster config in
 -->
 
 ---
+
+# Upgrading Talos
+
+<div class="grid grid-cols-2 gap-8">
+<div class="flex flex-col">
+
+<pre class="topf-tree">
+├── all/
+│   └── <span class="file-dot" style="color:#059669">●</span>disk.yaml
+└── <span class="file-dot" style="color:#2563eb">●</span>topf.yaml</pre>
+
+<div class="mt-4 text-lg opacity-70">
+
+Track the desired Talos version in `topf.yaml`, use `topf ugprade` to upgrade.
+
+</div>
+
+</div>
+<div class="flex flex-col">
+
+<div class="file-badge"><span class="file-dot" style="color:#2563eb">●</span>topf.yaml</div>
+
+```yaml{3}
+clusterName: my-cluster
+clusterEndpoint: https://192.168.1.11:6443
+talosVersion: 1.13.7
+nodes:
+  - host: node1
+    ip: 192.168.1.11
+    role: control-plane
+```
+
+</div>
+
+
+</div>
+
+<div v-click class="mt-6">
+  <pre style="background:#0d1117;color:#c9d1d9;padding:0.75rem 1rem;border-radius:0.5rem;font-size:0.85rem;line-height:1.5;overflow-x:auto;"><span style="color:#7ee787">$</span> topf upgrade
+<span style="color:#8b949e">level=INFO</span> msg="upgrade required" version_actual=1.13.7 version_desired=1.13.8
+Do you want to upgrade node node1 with installer factory.talos.dev..:v1.13.8? [y/n]: y
+<span style="color:#8b949e">level=INFO</span> msg="upgrade artifacts installed"
+<span style="color:#8b949e">level=INFO</span> msg="draining kubernetes node"
+<span style="color:#8b949e">level=INFO</span> msg="reboot initiated"
+<span style="color:#8b949e">level=INFO</span> msg="machine ready, waiting for stabilization..."
+<span style="color:#8b949e">level=INFO</span> msg="kubernetes node uncordoned"
+</pre>
+
+</div>
+
+<!--
+Track talos version in topf.yaml
+
+Topf will check the current version against the desired.
+
+Lots of flags around it
+* doing in parallel (percentage or absolute)
+* configure draining behavior
+* cool new feature: --stage
+-->
+
+---
+
 
 # Secrets Management
 
