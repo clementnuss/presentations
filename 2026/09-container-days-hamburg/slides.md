@@ -657,7 +657,7 @@ Patches in `control-plane/` and `worker/` folders only apply to nodes with that 
 
 <div style="--slidev-code-font-size: 0.78rem; --slidev-code-line-height: 1.35;">
 
-```console {1-16|1,16|5-7|10-14|13-14}
+```console
 $ talosctl gen secrets -o secrets.yaml
 
 $ talosctl gen config my-cluster https://192.168.1.100:6443 \
@@ -723,7 +723,7 @@ machine:
 
 <div class="mt-4 text-lg opacity-70">
 
-node4 would get patches from `all/`, `worker/` and `nodes/node4/`.
+node4 gets patches from `all/`, `worker/` and `nodes/node4/`.
 
 Patches are overlayed from least specific to specific, so things can be overridden.
 
@@ -752,15 +752,7 @@ This is good for single node differences, but what if ALL your nodes need differ
 
 <pre class="topf-tree">
 ├── all/
-│   ├── <span class="opacity-40">disk.yaml</span>
 │   └── <span class="file-dot" style="color:#db2777">●</span>hostname.yaml.tpl
-├── control-plane/
-│   └── <span class="opacity-40">vip.yaml</span>
-├── worker/
-│   └── <span class="opacity-40">kernel-params.yaml</span>
-├── node/
-│   └── node4/
-│       └── <span class="opacity-40">disk.yaml</span>
 └── <span class="file-dot" style="color:#2563eb">●</span>topf.yaml</pre>
 
 </div>
@@ -894,32 +886,27 @@ Segway: so let's say you're convinced wanna try that. Put your cluster config in
 <div class="flex flex-col">
 
 <pre class="topf-tree">
-├── <span class="opacity-40">all/</span>
-│   └── <span class="opacity-40">disk.yaml</span>
-├── <span class="file-dot" style="color:#dc2626">●</span>secrets.yaml
-└── <span class="file-dot" style="color:#2563eb">●</span>topf.yaml</pre>
+├── all/
+│   └── <span class="file-dot" style="color:black">●</span>wireguard.yaml
+├── secrets.yaml <span class="opacity-40"><-- auto generated</span>
+└── topf.yaml
+</pre>
 
-<div v-click="1">
+<div class="flex flex-col gap-1">
 
-<a href="https://github.com/getsops/sops" target="_blank" style="color: #795649;">SOPS</a>[^1] support.
-
-</div>
-
-<div v-click="2">
-
-<a href="https://github.com/helmfile/vals" target="_blank" style="color: #795649;">Vals</a>[^2] support.
-
-</div>
-
-<div v-click="3">
-
-Pipeline Friendly: Dry-run outputs are redacted.
+<span v-click="1" style="display: inline-block; margin-bottom: 0.6rem;">• <a href="https://github.com/getsops/sops" target="_blank" style="color: #795649;">SOPS</a>[^1] support.</span><br>
+<span v-click="2" style="display: inline-block; margin-bottom: 0.6rem;">• <a href="https://github.com/helmfile/vals" target="_blank" style="color: #795649;">Vals</a>[^2] support.</span><br>
+<span v-click="3" style="display: inline-block; margin-bottom: 0.6rem;">• Custom logic: `secretsProvider`</span><br>
+<span v-click="4" style="display: inline-block; margin-bottom: 0.6rem;">• Secrets anywhere</span><br>
+<span v-click="5" style="display: inline-block;">• secrets are redacted in dry-run outputs</span>
 
 </div>
 
 </div>
 
 <div class="flex flex-col">
+
+<div v-if="$clicks < 2">
 
 <div class="file-badge"><span class="file-dot" style="color:#dc2626">●</span>secrets.yaml <span v-if="$clicks >= 1">(SOPS-encrypted)</span></div>
 
@@ -930,6 +917,7 @@ cluster:
     secret: +JClynQIf1DiEFGF6csvRpNqRHAnNVLzUfScH9W78=
 certs:
     etcd:
+        crt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1...
         key: LS0tLS1CRUdJTiBFQyBQUklWQVRFIEtFWS1IY0B...
 
 ```
@@ -940,30 +928,58 @@ certs:
 
 ```yaml
 cluster:
-    secret: ENC[AES256_GCM,data:…]
+    secret: ENC[AES256_GCM,data:j8n2nXuB2LB3...
 certs:
     etcd:
-      key: ENC[AES256_GCM,data:…]
+        crt: ENC[AES256_GCM,data:Pztj+Dnhy2WWl...
+        key: ENC[AES256_GCM,data:I42ky3FK7BfRa...
 ```
 
 </div>
 
-<div v-click="2">
+</div>
+
+<div v-if="$clicks == 2">
+
+<div class="file-badge"><span class="file-dot" style="color:#dc2626">●</span>secrets.yaml <span>(Vals refs)</span></div>
+
+```yaml
+cluster:
+    secret: ref+awsssm://secrets/cluster-secret
+certs:
+    etcd:
+        crt: ref+vault://secret/data/etcd#crt
+        key: ref+vault://secret/data/etcd#key
+```
+
+</div>
+
+<div v-if="$clicks == 3">
 <div class="file-badge"><span class="file-dot" style="color:#2563eb">●</span>topf.yaml</div>
 
 ```yaml
 …
-nodes:
-  - host: node1
-    data:
-      key: ref+awsssm://secrets/node1.key
+# secretsProvider: stores and retrieves "secrets.yaml"
+secretsProvider: my-custom-secrets-storage.sh
 ```
 
 </div>
 
-<div v-click="3">
+<div v-if="$clicks >= 4">
 
-<div class="file-badge">$ topf apply --dry-run</div>
+<div class="file-badge"><span class="file-dot" style="color:#16a34a">●</span>wireguard.yaml <span>(Vals ref)</span></div>
+
+```yaml
+kind: WireguardConfig
+name: wg.int
+privateKey: ref+awsssm://secrets/wg-int-private-key
+peers:
+    - publicKey: 735jkJdcVDninU...
+```
+
+</div>
+
+<div v-click="5">
 
 ```console
  +kind: WireguardConfig
@@ -974,6 +990,7 @@ nodes:
 ```
 
 </div>
+
 
 </div>
 </div>
@@ -1041,6 +1058,51 @@ Live demo plan:
 
 ---
 
+# Nodes Provider
+
+<div class="text-xl opacity-70 mt-2">Resolve node lists and secrets at runtime from external sources.</div>
+
+<div class="mt-6">
+
+<div class="bg-white bg-opacity-80 rounded-lg p-5 border border-gray-200 shadow-md">
+
+<div class="mt-2 text-sm opacity-70">instead of a static list…</div>
+
+```yaml
+# topf.yaml
+nodes:
+  - host: node1
+    ip: 192.168.1.11
+    role: control-plane
+```
+
+<div class="mt-1 text-sm opacity-70">…point at a binary:</div>
+
+```yaml
+# topf.yaml
+nodesProvider: ./nodes-from-terraform.sh
+```
+
+<div class="mt-2 text-sm opacity-70">e.g. read nodes from a Terraform output, cloud API, or inventory</div>
+
+</div>
+
+</div>
+
+<!--
+Dynamic providers are TOPF's plugin system. Instead of hardcoding a node list,
+you point TOPF at a binary that returns nodes — the obvious use case is reading
+them straight from a Terraform output, but it could be a cloud API or an
+inventory system. Provider nodes are merged with any static ones.
+
+Same idea for secrets. By default TOPF keeps a local secrets.yaml — the Talos
+secrets bundle — and transparently SOPS-encrypts it. Or you set a secretsProvider
+binary that fetches the bundle from an external store. At PostFinance the nodes
+provider hits our internal inventory and the secrets provider talks to Vault.
+-->
+
+---
+
 # Schematic Resolution
 
 <div class="text-xl opacity-70 mt-2">
@@ -1096,73 +1158,6 @@ schematic to the Factory for you.
 
 ---
 
-# Dynamic Providers
-
-<div class="text-xl opacity-70 mt-2">resolve node lists and secrets at runtime from external sources</div>
-
-<div class="grid grid-cols-2 gap-8 mt-6">
-
-<div class="bg-white bg-opacity-80 rounded-lg p-5 border border-gray-200 shadow-md">
-<div class="text-xl font-700" style="color: #795649;"><carbon-network-3 /> Nodes Provider</div>
-
-<div class="mt-2 text-sm opacity-70">instead of a static list…</div>
-
-```yaml
-# topf.yaml
-nodes:
-  - host: node1
-    ip: 192.168.1.11
-    role: control-plane
-```
-
-<div class="mt-1 text-sm opacity-70">…point at a binary:</div>
-
-```yaml
-# topf.yaml
-nodesProvider: ./nodes-from-terraform
-```
-
-<div class="mt-2 text-sm opacity-70">e.g. read nodes from a Terraform output, cloud API, or inventory</div>
-
-</div>
-
-<div class="bg-white bg-opacity-80 rounded-lg p-5 border border-gray-200 shadow-md">
-<div class="text-xl font-700" style="color: #795649;"><carbon-password /> Secrets Provider</div>
-
-<div class="mt-2 text-sm opacity-70">default: a local SOPS-encrypted bundle…</div>
-
-```yaml
-# secrets.yaml (SOPS-encrypted)
-secrets:
-  bootstrapToken: ENC[AES256_GCM,data:…]
-```
-
-<div class="mt-1 text-sm opacity-70">…or fetch it from an external store:</div>
-
-```yaml
-# topf.yaml
-secretsProvider: ./secrets-from-vault
-```
-
-<div class="mt-2 text-sm opacity-70">e.g. Vault, AWS, any external secret store</div>
-
-</div>
-
-</div>
-
-<!--
-Dynamic providers are TOPF's plugin system. Instead of hardcoding a node list,
-you point TOPF at a binary that returns nodes — the obvious use case is reading
-them straight from a Terraform output, but it could be a cloud API or an
-inventory system. Provider nodes are merged with any static ones.
-
-Same idea for secrets. By default TOPF keeps a local secrets.yaml — the Talos
-secrets bundle — and transparently SOPS-encrypts it. Or you set a secretsProvider
-binary that fetches the bundle from an external store. At PostFinance the nodes
-provider hits our internal inventory and the secrets provider talks to Vault.
--->
-
----
 
 # TOPF in GitLab CI
 
@@ -1219,28 +1214,26 @@ plan/apply, but for Talos.
 
 ---
 
-# Takeaways
+# Give it a Try
 
 <div class="flex flex-col gap-10 mt-14">
 
 <div class="flex items-baseline gap-5">
-<div class="text-3xl font-bold flex-shrink-0" style="color: #795649;">1</div>
+<div class="text-3xl font-bold flex-shrink-0" style="color: #795649;">•</div>
 <div class="text-2xl font-500" style="color: #5d4037;">Kubernetes with Talos is so easy, you might not need a managed Service.</div>
 </div>
 
-<div class="flex items-baseline gap-5" v-click>
-<div class="text-3xl font-bold flex-shrink-0" style="color: #795649;">2</div>
-<div class="text-2xl font-500" style="color: #5d4037;">Simple tool beats Operator</div>
-</div>
-
 <div class="flex items-baseline gap-5" v-click=2>
-<div class="text-3xl font-bold flex-shrink-0" style="color: #795649;">3</div>
+<div class="text-3xl font-bold flex-shrink-0" style="color: #795649;">•</div>
 <div class="text-2xl font-500" style="color: #5d4037;">Play around with Talos and TOPF in your Homelab!</div>
 </div>
 
 </div>
 
-<img src="./images/homelab.jpeg" class="mt-8" style="max-width: 100%; max-height: 150px;" alt="Homelab Sebastian" v-click=2>
+<div class="flex gap-4 mt-8" v-click=2>
+<img src="./images/homelab.jpeg" style="max-width: 50%; max-height: 150px;" alt="Homelab Sebastian">
+<img src="./images/homelab-clement.jpg" style="max-width: 50%; max-height: 150px;" alt="Homelab Clement">
+</div>
 
 <!--
 The take-2 framing: pull the camera back from TOPF's features to the
