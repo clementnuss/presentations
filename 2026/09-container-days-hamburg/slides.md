@@ -439,15 +439,14 @@ _Topf_ is also German for a **(plant) pot**
 </div>
 
 <!--
-TOPF was born.
+Hello, ... taht "thing" that you saw before now has a name: It's called TOPF and stands for Talos Orchestator by PostFinance.
 
-* Simple CLI Tool to manage a Talos clusters
-* Stands for Talos Orchestrator...
-* For the german speaking: TOPF means pot, like a plant pot in english.
-* It Not an operator, you run it by hand or in a pipeline
-* Talks to the Talos API of your nodes
-* Similar to talosctl
-* To showcase the features let's walk through some examples...
+POT, PLANT POT
+
+As the name suggests, it's not an operator
+it's a simple CLI Tool
+
+I'm going to show you what TOPF can do, and for that I'm going to start .....with a simple Hello world.
 -->
 
 ---
@@ -898,7 +897,7 @@ Segway: so let's say you're convinced wanna try that. Put your cluster config in
 <span v-click="2" style="display: inline-block; margin-bottom: 0.6rem;">• <a href="https://github.com/helmfile/vals" target="_blank" style="color: #795649;">Vals</a>[^2] support.</span><br>
 <span v-click="3" style="display: inline-block; margin-bottom: 0.6rem;">• Custom logic: `secretsProvider`</span><br>
 <span v-click="4" style="display: inline-block; margin-bottom: 0.6rem;">• Secrets anywhere</span><br>
-<span v-click="5" style="display: inline-block;">• secrets are redacted in dry-run outputs</span>
+<span v-click="5" style="display: inline-block;">• Secrets are redacted in dry-run outputs</span>
 
 </div>
 
@@ -906,7 +905,7 @@ Segway: so let's say you're convinced wanna try that. Put your cluster config in
 
 <div class="flex flex-col">
 
-<div v-if="$clicks < 2">
+<div v-if="$clicks < 4">
 
 <div class="file-badge"><span class="file-dot" style="color:#dc2626">●</span>secrets.yaml <span v-if="$clicks >= 1">(SOPS-encrypted)</span></div>
 
@@ -939,7 +938,7 @@ certs:
 
 </div>
 
-<div v-if="$clicks == 2">
+<div v-if="$clicks >= 2 && $clicks < 4">
 
 <div class="file-badge"><span class="file-dot" style="color:#dc2626">●</span>secrets.yaml <span>(Vals refs)</span></div>
 
@@ -948,13 +947,12 @@ cluster:
     secret: ref+awsssm://secrets/cluster-secret
 certs:
     etcd:
-        crt: ref+vault://secret/data/etcd#crt
-        key: ref+vault://secret/data/etcd#key
+        key: ref+azurekeyvault://my-vault/etcd-key
 ```
 
 </div>
 
-<div v-if="$clicks == 3">
+<div v-if="$clicks >= 3 && $clicks < 4">
 <div class="file-badge"><span class="file-dot" style="color:#2563eb">●</span>topf.yaml</div>
 
 ```yaml
@@ -972,9 +970,16 @@ secretsProvider: my-custom-secrets-storage.sh
 ```yaml
 kind: WireguardConfig
 name: wg.int
-privateKey: ref+awsssm://secrets/wg-int-private-key
-peers:
-    - publicKey: 735jkJdcVDninU...
+privateKey: ref+gitlab://gitlab.com/projects/42/privkey
+```
+
+<div class="file-badge"><span class="file-dot" style="color:#2563eb">●</span>topf.yaml <span>(SOPS-encrypted)</span></div>
+
+```yaml
+nodes:
+  - host: node1
+    data:
+      privkey: ENC[AES256_GCM,data:Qk9wl3ZmVzcVpsVU...
 ```
 
 </div>
@@ -1223,14 +1228,14 @@ plan/apply, but for Talos.
 <div class="text-2xl font-500" style="color: #5d4037;">Kubernetes with Talos is so easy, you might not need a managed Service.</div>
 </div>
 
-<div class="flex items-baseline gap-5" v-click=2>
+<div class="flex items-baseline gap-5" v-click=1>
 <div class="text-3xl font-bold flex-shrink-0" style="color: #795649;">•</div>
 <div class="text-2xl font-500" style="color: #5d4037;">Play around with Talos and TOPF in your Homelab!</div>
 </div>
 
 </div>
 
-<div class="flex gap-4 mt-8" v-click=2>
+<div class="flex gap-4 mt-8" v-click=1>
 <img src="./images/homelab.jpeg" style="max-width: 50%; max-height: 150px;" alt="Homelab Sebastian">
 <img src="./images/homelab-clement.jpg" style="max-width: 50%; max-height: 150px;" alt="Homelab Clement">
 </div>
