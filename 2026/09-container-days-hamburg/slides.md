@@ -699,6 +699,8 @@ Good for single nodes. But reality is even more messy. And for that we need the 
 │   └── <span class="file-dot" style="color:#db2777">●</span>hostname.yaml.tpl
 └── <span class="file-dot" style="color:#2563eb">●</span>topf.yaml</pre>
 
+Use any data from `topf.yaml`.
+
 </div>
 <div class="flex flex-col">
 
@@ -749,7 +751,7 @@ Patches using go templating must end in `.tpl`.
 │   ├── <span class="file-dot" style="color:#9333ea">●</span>gpu.yaml.tpl
 └── <span class="file-dot" style="color:#2563eb">●</span>topf.yaml</pre>
 
-Use any data from `topf.yaml`. Full go templating with sprig support as you know it from Helm (math and string functions, defaults, json, etc)
+Add arbitrary data to your nodes.
 
 </div>
 
@@ -817,7 +819,7 @@ We now focused on patches, but what we haven't talked about is the Talos Version
 
 <div class="mt-4 text-lg opacity-70">
 
-Track the desired Talos version in `topf.yaml`, use `topf ugprade` to upgrade.
+Track the desired Talos version in `topf.yaml`, use `topf upgrade` to upgrade.
 
 </div>
 
