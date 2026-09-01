@@ -105,7 +105,7 @@ Debian + kubeadm + Ansible
 
 - **32** Ansible task files · **1,878** lines of playbooks
 - **20** Jinja2 templates — kubeadm, containerd, sysctl, …
-- **Brittle, not idempotent.** Actions gated on a template's `changed` flag could be silently skipped after a mid-run failure.
+- not idempotent
 
 </div>
 
