@@ -346,7 +346,7 @@ Baremetal: Future workstream, goodbye vSphere
 <div class="mt-2">manual</div>
 </div>
 
-<div class="flex flex-col items-center">
+<div class="flex flex-col items-center" style="transition: opacity 0.5s ease, filter 0.5s ease;" :style="$clicks >= 1 ? 'opacity: 0.4; filter: grayscale(1);' : ''">
 <div class="w-4 h-4 rounded-full border-2 border-white shadow" style="background: #9a8478;"></div>
 <div class="mt-2">config generator</div>
 </div>
@@ -368,10 +368,16 @@ Baremetal: Future workstream, goodbye vSphere
 <v-click at="1">
 <div class="absolute" style="left: 50%; bottom: 3.5rem; width: 42rem; transform: translateX(-50%) rotate(-1.5deg); background: #ffffff; border: 1px solid rgba(121, 86, 73, 0.25); border-radius: 4px; box-shadow: 0 8px 22px rgba(0, 0, 0, 0.3); padding: 0.5rem 0.55rem 0.4rem;">
 
-<img src="./images/talhelper-archived.png" alt="Talhelper repository archived notice" style="width: 100%; border: 1px solid #ddd; border-radius: 2px;">
+<div class="flex items-center gap-3">
 
-<div class="text-center" style="font-size: 0.72rem; color: #5d4037; margin-top: 0.3rem;">
-Archived on <strong>Aug 26th, 2026</strong> — the README now suggests migrating to <strong>topf</strong> or <strong>talstomize</strong>
+<img src="./images/talhelper-archived.png" alt="Talhelper repository archived notice" style="flex: 1; min-width: 0; border: 1px solid #ddd; border-radius: 2px;">
+
+<img src="./images/so-long-thanks-for-all-the-fish.jpg" alt="So long, and thanks for all the fish" style="height: 7.4rem; border-radius: 2px;">
+
+</div>
+
+<div class="text-center" style="font-size: 0.72rem; margin-top: 0.3rem;">
+Archived on <strong>Aug 26th, 2026</strong>
 </div>
 
 </div>
@@ -890,14 +896,18 @@ So at this point you're convinced you wanna try this out. As soon as you have bo
 <span v-click="1" style="display: inline-block; margin-bottom: 0.6rem;">• <a href="https://github.com/getsops/sops" target="_blank" style="color: #795649;">SOPS</a>[^1] support.</span><br>
 <span v-click="2" style="display: inline-block; margin-bottom: 0.6rem;">• <a href="https://github.com/helmfile/vals" target="_blank" style="color: #795649;">Vals</a>[^2] support.</span><br>
 <span v-click="3" style="display: inline-block; margin-bottom: 0.6rem;">• Custom logic: `secretsProvider`</span><br>
-<span v-click="4" style="display: inline-block; margin-bottom: 0.6rem;">• Secrets anywhere</span><br>
-<span v-click="5" style="display: inline-block;">• Secrets are redacted in dry-run outputs</span>
+<span v-click="4" style="display: inline-block; margin-bottom: 0.6rem;">• Secrets are redacted in dry-run outputs</span>
+<span v-click="5" style="display: inline-block;">• Secrets everywhere</span><br>
 
 </div>
 
 </div>
 
 <div class="flex flex-col">
+
+<div class="absolute" style="right: 5.5%; bottom: 7%; width: 27rem; transform: rotate(2deg); background: #ffffff; border: 1px solid rgba(121, 86, 73, 0.25); border-radius: 4px; box-shadow: 0 8px 22px rgba(0, 0, 0, 0.3); padding: 0.4rem; z-index: 10; opacity: 0; transition: opacity 0.4s ease;" :style="$clicks >= 5 ? 'opacity: 1;' : ''">
+<img src="./images/secrets-everywhere.jpg" alt="Secrets everywhere meme" style="width: 100%; border-radius: 2px;">
+</div>
 
 <div v-if="$clicks < 4">
 
@@ -978,7 +988,7 @@ nodes:
 
 </div>
 
-<div v-click="5">
+<div v-click="4">
 
 ```console
  +kind: WireguardConfig
@@ -989,7 +999,6 @@ nodes:
 ```
 
 </div>
-
 
 </div>
 </div>
