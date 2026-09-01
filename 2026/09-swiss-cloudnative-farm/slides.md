@@ -35,19 +35,19 @@ exportFilename: a-swiss-cloud-native-farm
 
 **Clément Nussbaumer**
 
-<a href="https://clement.n8r.ch/en/articles/" style="font-size: 1.5rem;" target="_blank" alt="Blog" class="absolute right-8rem top-20rem m-6 text-xl">clement.n8r.ch</a>
+<a href="https://clement.n8r.ch/en/articles/" style="font-size: 1.5rem;" target="_blank" alt="Blog" class="absolute right-6rem top-17rem m-6 text-xl">clement.n8r.ch</a>
 
-<img src="./images/Jura.png" style="width: 1rem;" class="absolute right-6rem top-20rem m-6 text-xl" alt="Jura flag">
+<img src="./images/Jura.png" style="width: 1rem;" class="absolute right-4rem top-17rem m-6 text-xl" alt="Jura flag">
 
 <a href="https://www.linkedin.com/in/clement-j-m-nussbaumer/" target="_blank" alt="Blog"
-  class="absolute right-4rem top-20rem m-6  text-xl icon-btn opacity-100 !border-none "><carbon-logo-linkedin />
+  class="absolute right-2rem top-17rem m-6  text-xl icon-btn opacity-100 !border-none "><carbon-logo-linkedin />
 </a>
 
 <a href="https://github.com/clementnuss" target="_blank" alt="GitHub"
-  class="absolute right-2rem top-20rem m-6 text-xl icon-btn opacity-100 !border-none"><carbon-logo-github />
+  class="absolute right-0rem top-17rem m-6 text-xl icon-btn opacity-100 !border-none"><carbon-logo-github />
 </a>
 
-<img src="./images/cds2026-hero-text.svg" width="38%" class="absolute top-10rem left-3rem m-0" alt="ContainerDays Hamburg 2026">
+<img src="./images/cds2026-hero-text.svg" width="38%" class="absolute top-9rem left-3rem m-0" alt="ContainerDays Hamburg 2026">
 
 <!--
 Speaker notes for the first slide
