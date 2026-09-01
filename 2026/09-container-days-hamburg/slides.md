@@ -268,16 +268,13 @@ That property is what made building tooling on top of it possible.
 <br>
 
 - Declarative cluster lifecycle
-- MachineDeployments  (deployments, but for nodes)
-- Talos provider for machine config
+- CRDs for clusters/nodes
 
 **but...**
 
 - Siderolabs shifted away from CAPI[^talos-capi-community]
 - Kubernetes to manage Kubernetes
 - CAPI complexity vs simplicity goal
-- Shorter migration path
-- Maybe soon: baremetal
 
 </div>
 <div class="col-span-3 h-full flex items-start justify-center">
@@ -322,12 +319,12 @@ Baremetal: Future workstream, goodbye vSphere
 
 </div>
 
-<div class="rounded-lg p-3 min-h-28 flex flex-col items-center justify-center gap-2">
+<div class="rounded-lg p-3 min-h-28 flex flex-col items-center justify-center gap-2" style="transition: opacity 0.5s ease, filter 0.5s ease;" :style="$clicks >= 1 ? 'opacity: 0.4; filter: grayscale(1);' : ''">
 <img src="./images/talhelper-logo.svg" style="height: 2.5rem;" alt="Talhelper logo">
 <span class="text-sm">Talhelper</span>
 </div>
 
-<v-click at="1">
+<v-click at="2">
 <div class="rounded-lg p-3 min-h-28 flex items-center justify-center">
 <span class="text-5xl font-700" style="color: #795649;">?</span>
 </div>
@@ -354,7 +351,7 @@ Baremetal: Future workstream, goodbye vSphere
 <div class="mt-2">config generator</div>
 </div>
 
-<v-click at="1">
+<v-click at="2">
 <div class="flex flex-col items-center">
 <div class="w-6 h-6 rounded-full border-2 border-white shadow-lg" style="background: #795649;"></div>
 </div>
@@ -367,6 +364,18 @@ Baremetal: Future workstream, goodbye vSphere
 
 </div>
 </div>
+
+<v-click at="1">
+<div class="absolute" style="left: 50%; bottom: 3.5rem; width: 42rem; transform: translateX(-50%) rotate(-1.5deg); background: #ffffff; border: 1px solid rgba(121, 86, 73, 0.25); border-radius: 4px; box-shadow: 0 8px 22px rgba(0, 0, 0, 0.3); padding: 0.5rem 0.55rem 0.4rem;">
+
+<img src="./images/talhelper-archived.png" alt="Talhelper repository archived notice" style="width: 100%; border: 1px solid #ddd; border-radius: 2px;">
+
+<div class="text-center" style="font-size: 0.72rem; color: #5d4037; margin-top: 0.3rem;">
+Archived on <strong>Aug 26th, 2026</strong> — the README now suggests migrating to <strong>topf</strong> or <strong>talstomize</strong>
+</div>
+
+</div>
+</v-click>
 </div>
 
 <!--
@@ -378,6 +387,9 @@ The dealbreaker with Omni: it inserts itself as an authentication proxy in
 front of the Kubernetes API server — every client request flows
 client → Omni → apiserver. We didn't want Omni in the critical path for all
 cluster access.
+
+By the way: Talhelper was archived on August 26th, 2026 — its README now
+points users to topf and talstomize.
 
 References:
 - GitHub issue siderolabs/cluster-api-bootstrap-provider-talos#193
