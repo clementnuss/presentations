@@ -1,18 +1,22 @@
-kubernetesVersion: 1.35.5
-talosVersion: 1.13.3
-clusterEndpoint: https://192.168.64.4:6443
 clusterName: topf-demo
 
 data:
   region: zurich
+kubernetesVersion: 1.35.6
+talosVersion: 1.13.7
+clusterEndpoint: https://192.168.64.100:6443
 
 nodes:
-  - host: talos-cp-1
-    ip: 192.168.64.4
+  - host: node1
+    ip: 192.168.64.2
     role: control-plane
-
-  - host: talos-worker-1
-    ip: 192.168.64.5
+  - host: node2
+    ip: 192.168.64.3
     role: worker
     data:
-      allow_ptrace: true
+      region: hamburg
+  - host: node3
+    ip: 192.168.64.4
+    role: worker
+    data:
+      region: hamburg

@@ -1,0 +1,89 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/siderolabs/talos/refs/heads/release-1.12/website/content/v1.12/schemas/config.schema.json
+---
+apiVersion: v1alpha1
+kind: RegistryMirrorConfig
+name: docker.io
+endpoints:
+  - url: http://192.168.64.1:5000/v2/docker-io
+    overridePath: true
+skipFallback: true
+---
+apiVersion: v1alpha1
+kind: RegistryMirrorConfig
+name: quay.io
+endpoints:
+  - url: http://192.168.64.1:5000/v2/quay-io
+    overridePath: true
+skipFallback: true
+---
+apiVersion: v1alpha1
+kind: RegistryMirrorConfig
+name: ghcr.io
+endpoints:
+  - url: http://192.168.64.1:5000/v2/ghcr-io
+    overridePath: true
+skipFallback: true
+---
+apiVersion: v1alpha1
+kind: RegistryMirrorConfig
+name: registry.k8s.io
+endpoints:
+  - url: http://192.168.64.1:5000/v2/registry-k8s-io
+    overridePath: true
+skipFallback: true
+---
+apiVersion: v1alpha1
+kind: RegistryMirrorConfig
+name: gcr.io
+endpoints:
+  - url: http://192.168.64.1:5000/v2/gcr-io
+    overridePath: true
+skipFallback: true
+---
+apiVersion: v1alpha1
+kind: RegistryMirrorConfig
+name: eu.gcr.io
+endpoints:
+  - url: http://192.168.64.1:5000/v2/eu-gcr-io
+    overridePath: true
+skipFallback: true
+---
+apiVersion: v1alpha1
+kind: RegistryMirrorConfig
+name: public.ecr.aws
+endpoints:
+  - url: http://192.168.64.1:5000/v2/public-ecr-aws
+    overridePath: true
+skipFallback: true
+---
+apiVersion: v1alpha1
+kind: RegistryMirrorConfig
+name: ecr-public.aws.com
+endpoints:
+  - url: http://192.168.64.1:5000/v2/public-ecr-aws
+    overridePath: true
+skipFallback: true
+---
+apiVersion: v1alpha1
+kind: RegistryMirrorConfig
+name: cgr.dev
+endpoints:
+  - url: http://192.168.64.1:5000/v2/cgr-dev
+    overridePath: true
+skipFallback: true
+---
+apiVersion: v1alpha1
+kind: RegistryMirrorConfig
+name: nvcr.io
+endpoints:
+  - url: http://192.168.64.1:5000/v2/nvcr-io
+    overridePath: true
+skipFallback: true
+---
+apiVersion: v1alpha1
+kind: RegistryMirrorConfig
+name: factory.talos.dev
+endpoints:
+  - url: http://192.168.64.1:5000/v2/factory-talos-dev
+    overridePath: true
+skipFallback: true

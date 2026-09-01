@@ -1,3 +1,3 @@
 machine:
   nodeLabels:
-    postfinance.ch/region: {{.Data.region}}
+    postfinance.ch/region: {{ default "noregion" (index .Node.Data "region") }}
