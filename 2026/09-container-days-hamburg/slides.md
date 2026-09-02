@@ -69,6 +69,11 @@ exportFilename: topf-container-days-hamburg-2026
 
 </div>
 
+<div class="absolute text-center" style="top: 1.5rem; right: 1.5rem; width: 10rem; color: #795649;">
+<img src="./images/cds-slido-qr.png" style="width: 10rem; border-radius: 0.5rem; transform: rotate(-4deg);" alt="Slides QR code">
+<div class="text-base font-700 mt-1" style="transform: rotate(-4deg);">questions?</div>
+</div>
+
 <img src="./images/CDS2026-hero-skyline.svg" class="absolute bottom-0 left-1/2 pointer-events-none" style="width: 92%; opacity: 0.9; transform: translateX(-50%);" alt="ContainerDays Hamburg skyline">
 
 ---
@@ -837,7 +842,7 @@ Track the desired Talos version in `topf.yaml`, use `topf upgrade` to upgrade.
 ```yaml{3}
 clusterName: my-cluster
 clusterEndpoint: https://192.168.1.11:6443
-talosVersion: 1.13.7
+talosVersion: 1.13.8
 nodes:
   - host: node1
     ip: 192.168.1.11
@@ -1066,6 +1071,54 @@ Live demo plan:
 
 ---
 
+# Migration
+
+<div class="grid grid-cols-2 gap-10 mt-8">
+
+<div class="flex flex-col">
+
+
+<ol class="text-lg leading-9 list-decimal pl-6">
+<li>match config</li>
+<li>import PKI material</li>
+<li>add control-plane nodes <span class="opacity-60">(one by one)</span></li>
+<li>add worker nodes</li>
+<li>remove old kubeadm nodes</li>
+</ol>
+
+</div>
+
+<div class="flex flex-col items-center gap-4">
+
+<a href="https://media.n8r.ch/pdfs/2025/2025-09-day2000-migration.pdf" target="_blank" class="!border-none">
+<img src="https://clement.n8r.ch/images/talks/2025-09-containerdays-hamburg.jpg" style="width: 20rem; border-radius: 0.4rem; box-shadow: 0 4px 12px rgba(0,0,0,0.25);" alt="Day 2000 migration talk">
+</a>
+
+<div class="text-sm text-center" style="color: #5d4037;">
+<div><a href="https://media.n8r.ch/pdfs/2025/2025-09-day2000-migration.pdf" target="_blank" class="!border-none" style="color: #795649; text-decoration: underline;">Day 2000 Migration.pdf</a></div>
+<div class="mt-1"><a href="https://www.youtube.com/watch?v=AhR_JsXCu_k" target="_blank" class="!border-none" style="color: #795649; text-decoration: underline;">YouTube recording</a></div>
+</div>
+
+</div>
+
+</div>
+
+<!--
+We covered the migration in depth last year at ContainerDays Hamburg 2025.
+The talk walks through the full kubeadm → Talos migration, node by node.
+
+Migration path with TOPF:
+0. match the existing cluster config in topf.yaml, import secrets
+1. add new Talos control-plane nodes one at a time (etcd join, reconfigure)
+2. add Talos workers, drain & remove the old kubeadm nodes
+
+Refer to last year's talk for the gory details:
+- slides: https://media.n8r.ch/pdfs/2025/2025-09-day2000-migration.pdf
+- recording: https://www.youtube.com/watch?v=AhR_JsXCu_k
+-->
+
+---
+
 # Nodes Provider
 
 <div class="text-xl opacity-70 mt-2">Resolve node lists and secrets at runtime from external sources.</div>
@@ -1264,6 +1317,11 @@ transferable lessons. Even if you never touch Talos, these three hold:
 ---
 
 <img src="./images/postfinance-logo.png" class="absolute top-6 right-8" style="width: 11rem;" alt="PostFinance">
+
+<div class="absolute text-center" style="top: 3.5rem; left: 3.5rem; width: 10rem; color: #795649;">
+<img src="./images/cds-slido-qr.png" style="width: 10rem; border-radius: 0.5rem; transform: rotate(-4deg);" alt="Slides QR code">
+<div class="text-base font-700 mt-1" style="transform: rotate(-4deg);">questions?</div>
+</div>
 
 <div class="flex flex-col items-center justify-center h-full text-center">
 
