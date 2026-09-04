@@ -354,19 +354,19 @@ layout: default
 <div class="grid grid-cols-3 gap-6">
 <div class="text-center">
 
-## 🥛 **Milking Data**
+## **Milking Data**
 Real-time collection & analysis
 
 </div>
 <div class="text-center">
 
-## ⚡ **Biogas Plant**
+## **Biogas Plant**
 Performance metrics & alerts
 
 </div>
 <div class="text-center">
 
-## 🚧 **Electric Fences**
+## **Electric Fences**
 Remote control & monitoring
 
 </div>
@@ -375,19 +375,19 @@ Remote control & monitoring
 <div class="grid grid-cols-3 gap-6 mt-8">
 <div class="text-center">
 
-## 📊 **Milk Vending Machine**
+## **Milk Vending Machine**
 LiDAR sensor integration
 
 </div>
 <div class="text-center">
 
-## 🧾 **Self-Hosted Apps**
+## **Self-Hosted Apps**
 Invoicing, PDF archive, SSO
 
 </div>
 <div class="text-center">
 
-## 📈 **Uptime Monitoring**
+## **Uptime Monitoring**
 All farm devices, status page
 
 </div>
@@ -404,7 +404,7 @@ layout: default
 <div class="grid grid-cols-5 gap-8 h-90 items-start">
 <div class="col-span-2 flex flex-col justify-start">
 
-- Holstein cows 🐄
+- Holstein cows
 - 65 cows, ~2.3 milkings/day
 - DeLaval VMS voluntary milking system
 - Cows choose when to be milked
@@ -515,7 +515,7 @@ Production trends and analytics
 <img src="./images/milk-dashboard-individual-cow.png" class="rounded-lg shadow-lg max-h-80 w-auto" alt="Individual cow dashboard for Jura">
 
 <p class="text-xs text-gray-600 mt-2 text-center italic">
-Individual cow stats - Jura (#33) 🐄
+Individual cow stats - Jura (#33)
 </p>
 
 </div>
@@ -897,10 +897,10 @@ layout: default
 
 **Security Considerations**
 
-- One IT guy 👨‍💻
-- Managing electric fences ⚡
-- Remotely controlling livestock barriers 🐄
-- What could possibly go wrong? 🦕 🦖
+- One IT guy
+- Managing electric fences
+- Remotely controlling livestock barriers
+- What could possibly go wrong?
 
 </div>
 <div class="flex flex-col justify-center items-center">
@@ -931,7 +931,7 @@ layout: center
 <div class="grid grid-cols-2 gap-8 mt-12">
 <div>
 
-## ✅ **What Worked**
+## **What Worked**
 
 - On-premises cost savings
 - Talos Linux stability
@@ -940,7 +940,7 @@ layout: center
 </div>
 <div>
 
-## 🔄 **Challenges**
+## **Challenges**
 
 - Legacy system integration
 - Reverse engineering
@@ -954,7 +954,7 @@ layout: default
 
 <div class="flex flex-col justify-center items-center h-full text-center">
 
-<h1 class="mt-8">Thank You! 🙏</h1>
+<h1 class="mt-8">Thank You!</h1>
 
 <div class="text-xl font-bold mt-4 mb-6">
 Questions?
@@ -962,7 +962,7 @@ Questions?
 
 <div class="text-lg text-gray-700 mb-12">
 Cloud-native principles work everywhere, 
-even on Swiss farms! 🐄
+even on Swiss farms!
 </div>
 
 <div class="grid grid-cols-3 gap-12 w-full max-w-4xl items-start">
@@ -986,7 +986,7 @@ even on Swiss farms! 🐄
 
 <div class="mt-8 p-4 bg-green-100 bg-opacity-30 border-l-4 border-green-500 rounded ">
 <p class="text-sm font-bold text-green-800">
-From Kubernetes to Cows - Happy to discuss both! 🚀🐄
+From Kubernetes to Cows - Happy to discuss both!
 </p>
 </div>
 </div>
