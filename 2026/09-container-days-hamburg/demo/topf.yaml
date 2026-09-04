@@ -16,6 +16,6 @@ nodes:
       region: hamburg
   - host: node3
     ip: 192.168.64.4
-    role: control-plane
+    role: worker
     data:
       region: hamburg
