@@ -69,12 +69,8 @@ exportFilename: topf-container-days-hamburg-2026
 
 </div>
 
-<div class="absolute text-center" style="top: 1.5rem; right: 1.5rem; width: 10rem; color: #795649;">
-<img src="./images/cds-slido-qr.png" style="width: 10rem; border-radius: 0.5rem; transform: rotate(-4deg);" alt="Slides QR code">
-<div class="text-base font-700 mt-1" style="transform: rotate(-4deg);">questions?</div>
-</div>
-
-<img src="./images/CDS2026-hero-skyline.svg" class="absolute bottom-0 left-1/2 pointer-events-none" style="width: 92%; opacity: 0.9; transform: translateX(-50%);" alt="ContainerDays Hamburg skyline">
+<!-- source <a target="_blank" href="https://www.vexels.com/png-svg/preview/129224/amsterdam-skyline-silhouette">www.vexels.com</a> -->
+<img src="./images/amsterdam-skyline-silhouette-by-Vexels.svg" class="absolute left-1/2 pointer-events-none" style="width: 92%; top: 1rem; opacity: 0.9; transform: translateX(-50%);" alt="ContainerDays Hamburg skyline">
 
 ---
 
@@ -84,7 +80,7 @@ exportFilename: topf-container-days-hamburg-2026
 <img src="./images/postfinance-logo.png" class="absolute top-6 right-8" style="width: 11rem;" alt="PostFinance">
 
 - Systemic Swiss bank
-- ~35 vanilla (kubeadm) Kubernetes clusters
+- ~35 __Talos Linux__ Kubernetes clusters
 - ~55 TiB Memory, largest cluster 133 Nodes
 - Air-gapped environment
 - 2 on-prem datacenters - VSphere Virtualization
@@ -94,7 +90,7 @@ exportFilename: topf-container-days-hamburg-2026
 ```console
 k get ns kube-system
 NAME          STATUS   AGE
-kube-system   Active   7y53d
+kube-system   Active   7y83d
 ```
 
 ---
@@ -1277,18 +1273,18 @@ plan/apply, but for Talos.
 <div class="flex flex-col gap-10 mt-14">
 
 <div class="flex items-baseline gap-5">
-<div class="text-3xl font-bold flex-shrink-0" style="color: #795649;">•</div>
-<div class="text-2xl font-500" style="color: #5d4037;">Kubernetes with Talos is so easy, you might not need a managed Service.</div>
+<div class="text-3xl font-bold flex-shrink-0" >•</div>
+<div class="text-2xl font-500">Kubernetes with Talos is so easy, you might not need a managed Service.</div>
 </div>
 
 <div class="flex items-baseline gap-5" v-click=1>
-<div class="text-3xl font-bold flex-shrink-0" style="color: #795649;">•</div>
-<div class="text-2xl font-500" style="color: #5d4037;">Play around with Talos and TOPF in your Homelab!</div>
+<div class="text-3xl font-bold flex-shrink-0">•</div>
+<div class="text-2xl font-500" >Play around with Talos and TOPF in your Homelab!</div>
 </div>
 
 </div>
 
-<div class="flex gap-4 mt-8" v-click=1>
+<div class="flex gap-4 mt-8 justify-center" v-click=1>
 <img src="./images/homelab.jpeg" style="max-width: 50%; max-height: 150px;" alt="Homelab Sebastian">
 <img src="./images/homelab-clement.jpg" style="max-width: 50%; max-height: 150px;" alt="Homelab Clement">
 </div>
@@ -1317,11 +1313,6 @@ transferable lessons. Even if you never touch Talos, these three hold:
 ---
 
 <img src="./images/postfinance-logo.png" class="absolute top-6 right-8" style="width: 11rem;" alt="PostFinance">
-
-<div class="absolute text-center" style="top: 3.5rem; left: 3.5rem; width: 10rem; color: #795649;">
-<img src="./images/cds-slido-qr.png" style="width: 10rem; border-radius: 0.5rem; transform: rotate(-4deg);" alt="Slides QR code">
-<div class="text-base font-700 mt-1" style="transform: rotate(-4deg);">questions?</div>
-</div>
 
 <div class="flex flex-col items-center justify-center h-full text-center">
 
