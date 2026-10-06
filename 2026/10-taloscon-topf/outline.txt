@@ -1,0 +1,34 @@
+# Presentation Outline
+
+## 1. Why Talos Linux
+- Talos intro: 12 binaries, immutable, minimal, secure
+- Declarative config, gRPC API, no SSH
+- talosctl services overview
+
+## 2. The ClusterAPI Dead-End
+- Our migration plan: kubeadm+Ansible → CAPI+Talos
+- Siderolabs deprioritized CAPI providers (low priority, focus on Omni)
+- Technical concerns: K8s as dependency, in-place upgrades, CAPI complexity
+- Alternative approaches: Omni, Ansible, purpose-built tool
+
+## 3. Introducing TOPF
+- The "thing" — early whiteboard sketch
+- What TOPF is: single Go binary, full lifecycle management
+- Layered YAML patch model: all/ → control-plane/ → worker/ → node/<host>/
+- `topf.yaml` configuration
+- Dry-run & pre-flight checks
+- Upgrades with TOPF
+- GitLab CI integration (dry-run on PR, apply on merge)
+- TOPF vs alternatives (talosctl scripts, Ansible, Omni)
+
+## 4. Demo
+- topf render
+- topf apply --dry-run
+- topf apply
+- topf upgrade
+
+## 5. Key Takeaways & Questions
+- Talos is the future
+- CAPI isn't the only path
+- Layered patches = DRY + reviewable
+- TOPF is open source (MIT)
