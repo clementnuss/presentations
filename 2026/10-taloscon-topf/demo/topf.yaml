@@ -1,6 +1,6 @@
 clusterName: topf-demo
-talosVersion: 1.13.7
 kubernetesVersion: 1.35.9
+talosVersion: 1.14.2
 clusterEndpoint: https://192.168.64.100:6443
 
 nodes:
