@@ -1,0 +1,26 @@
+flowchart TD
+    A["📊 Farm Equipment
+Metrics"] --> B["🔀 vmagent
+Collection Agent"]
+    
+    B --> |All metrics| C["⚡ Short-term Cluster
+3 months retention"]
+    B --> |retention_period=long-term| D["🗄️ Long-term Cluster
+10 years retention"]
+    
+    C --> E["🔍 vmselect Proxy
+Query Distribution"]
+    D --> E
+    
+    E --> |Deduplicated Results| F["📈 Grafana
+Dashboards"]
+    E --> |Deduplicated Results| G["🚨 AlertManager
+Alerts"]
+    
+    style A fill:#90EE90
+    style B fill:#FFE4B5
+    style C fill:#87CEEB
+    style D fill:#DDA0DD
+    style E fill:#FFA07A
+    style F fill:#FFB6C1
+    style G fill:#F0E68C

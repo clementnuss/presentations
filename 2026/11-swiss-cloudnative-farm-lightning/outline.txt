@@ -1,0 +1,142 @@
+# A Swiss Cloud-Native Farm 🐄 - Final Presentation Outline
+**Duration: 45 minutes (40 min presentation + 5 min Q&A)**
+
+## 1. Introduction & Overview (5 minutes)
+### Cover & About Me
+- Personal introduction: Platform Engineer at PostFinance, Kubernetes enthusiast, musician
+- Wife's family farm context: 65 cows, 250 chickens, biogas plant
+- Selfie with Jura (cow #33) - personal connection to the farm
+
+### The Challenge
+- Legacy systems with old protocols, outdated GUIs, limited monitoring
+- Goal: Real-time data collection, modern interfaces, customized alerting
+- Traditional farming (1883 painting) vs. modern cloud-native approach
+
+### The Farm Overview
+- Main site: dairy operation and milk vending machine
+- Biogas plant site: energy production facility
+- Biogas cycle: complete circular economy demonstration
+
+## 2. Infrastructure Foundation (7 minutes)
+### Infrastructure Foundation
+- 4x HP EliteDesk Mini PCs, Talos Linux OS
+- Operating costs: 137 CHF/year power + 250 CHF/year hardware = ~32 CHF/month
+- Cloud cave analogy for on-premises benefits
+
+### Home Operations Community
+- GitOps-first approach with FluxCD, inspired by k8s-at-home/home-operations
+- SOPS encrypted secrets, active Discord community
+
+### Talos Linux
+- "The 12 binaries O.S." - immutable, minimal, secure
+- Declarative configuration and gRPC API
+
+### Network Architecture
+- Dual-stack IPv4/IPv6 cluster with Init7 connection
+- MetalLB load balancer with L2 Advertisement via NDP
+- Zero-cost HA with routable IPv6 service range
+
+### Stateful Storage
+- Longhorn distributed storage, VictoriaMetrics PVCs
+- Velero PVC snapshots + database-specific backups
+- Incremental backups every 15 minutes with restic
+
+## 3. Monitoring Stack (8 minutes)
+### VictoriaMetrics Architecture
+- Better resource usage than Prometheus, simple architecture
+- Cluster components: vminsert, vmstorage, vmselect
+- Excalidraw diagrams showing data flow
+
+### Long-term Storage Strategy
+- Two VM clusters: 3 months vs. 10 years retention
+- Smart routing with vmagent, vmselect proxy for deduplication
+
+## 4. Use Cases & Applications (15 minutes)
+### Use Cases Overview
+- Milking data, biogas plant, electric fences, milk vending, invoicing
+
+### DeLaval Milking Robot
+- VMS™ system installed December 2024, DelPro Farm Manager
+- 2.4 milkings per day average, individual cow tracking
+
+### DelPro Farm Manager Demo
+- Legacy Windows interface with click animation (main GUI → historical graphs)
+- Limited remote capabilities, data locked in legacy system
+
+### DelPro Data Extraction
+- Custom delpro-exporter (GitHub), Golang service querying MS SQL
+- Live mode `/metrics` vs. historical mode `/historical-metrics`
+- Real code examples showing database queries and metrics creation
+
+### Grafana Milking Dashboard
+- Side-by-side view: production trends + individual cow stats (Jura #33)
+- Real-time visualization and mobile-friendly design
+
+### Biogas Plant Operations
+- 2x220 kW electrical capacity, waste-to-energy conversion
+- SAIA PCD controller with proprietary EtherSBus protocol
+
+### SAIA PCD Controller GUI
+- Click animation showing different interface views
+- Limitations: VNC only, outdated dashboard capabilities
+
+### SAIA EtherSBus Protocol
+- digimat-saia Python library discovery
+- Problem statement: "I don't want to implement a prometheus exporter in Python again"
+- Reference to previous alpro-openmetrics-exporter
+
+### gRPC Service Implementation
+- Python service using digimat-saia + ConnectRPC framework
+- Real code example: ReadFlag method with error handling
+
+### Prometheus Metrics Exporter
+- Golang saia-pcd-exporter querying gRPC service
+- VictoriaMetrics/metrics library integration
+
+### Biogas Plant Grafana Dashboard
+- Real-time monitoring screenshot demonstration
+
+### Electric Fence Control
+- Shelly MQTT relays + Kubernetes MQTT cluster + Home Assistant
+- 1/3 text, 1/3 Shelly device photo, 1/3 Home Assistant interface
+- Emergency shutdown capabilities
+
+### Farm Invoicing System
+- InvoiceNinja open-source solution on MariaDB
+- Use cases: silage work, hay sales, crop drying
+- MariaDB Operator for HA deployment
+
+## 5. Live Demo & Security (6 minutes)
+### Live Demo
+- Real farm data: milk production, biogas performance, electric fence
+- Security consideration: "One IT guy managing electric fences - What could go wrong?"
+- Jurassic Park reference with Dennis Nedry image and Jurassic Systems link
+
+## 6. Lessons Learned (2 minutes)
+### Lessons Learned
+- What worked: on-premises cost savings, Talos Linux stability, GitOps workflow
+- Challenges: legacy system integration, reverse engineering
+
+
+## 7. Conclusion & Q&A (2 minutes)
+### Thank You & Questions
+- Cloud-native principles work everywhere, even on Swiss farms!
+- 2/3 farm photo, 1/3 contact information
+- Website: clement.n8r.ch, LinkedIn, GitHub links
+- "From Kubernetes to Cows - Happy to discuss both!" 🚀🐄
+
+## Technical Highlights Demonstrated:
+- Real Grafana dashboards with farm data
+- Custom exporters and gRPC services
+- Legacy system integration patterns
+- Home Operations GitOps workflows
+- IPv6 networking with MetalLB
+- Two-tier VictoriaMetrics architecture
+- Industrial protocol reverse engineering
+
+## Visual Design Elements:
+- Swiss mountain background theme with glassmorphism effects
+- Excalidraw technical diagrams
+- Click animations for interface demonstrations
+- Consistent image captions with blur backgrounds
+- Personal photos connecting presenter to farm story

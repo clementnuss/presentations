@@ -1,0 +1,25 @@
+flowchart TD
+    A[🐄 Cows] -->|produce| B[💩 Manure]
+    A -->|produce| N[🥛 Milk]
+    B -->|transferred to| C[🏭 Biogas Plant]
+    C -->|inserted into| D[⚗️ Digesters]
+    D -->|anaerobic reaction| E[⛽ Methane CH4
+Biogas]
+    E -->|filtered & used in| F[⚙️ Engines]
+    F -->|produce| G[⚡ Electricity]
+    F -->|produce| H[🔥 Heat]
+    H -->|heats| D
+    D -->|produces| I[🧪 Digestate]
+    I -->|applied to| L[🌱 Farm Soils]
+    L -->|grow| M[🌾 Crops]
+    M -->|feed| A
+    N -->|sold for| O[💰 Revenue]
+    G -->|sold for| O
+    M -->|sold for| O
+
+    style A fill:#90EE90
+    style E fill:#FFE4B5
+    style G fill:#87CEEB
+    style M fill:#98FB98
+    style O fill:#FFD700
+

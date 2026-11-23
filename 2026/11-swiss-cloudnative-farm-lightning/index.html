@@ -1,0 +1,147 @@
+<!-- Custom HTML injected into each slide page by Slidev v52.
+     See node/setups/indexHtml.ts: body content from every root's index.html
+     is concatenated into the rendered page. -->
+<body>
+<style>
+/* Sylva Hackathon 2026 theme overrides, on top of @slidev/theme-seriph.
+ * Palette (from the participant guide):
+ *   #073b3a deep teal · #07805b green · #b7df57 lime · #f7f8f2 paper
+ */
+
+.slidev-layout {
+  background: #f7f8f2;
+  position: relative;
+  overflow: hidden;
+  font-family: "Avenir Next", Avenir, "Trebuchet MS", sans-serif;
+}
+
+/* Thin green→lime band along the bottom */
+.slidev-layout::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #07805b 0%, #b7df57 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Keep content above the band */
+.slidev-layout > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Footnotes — solid bg (no blur: breaks PDF export) */
+/* Pinned to the slide bottom, just above the green band */
+.slidev-layout .footnotes {
+  position: absolute;
+  left: 3.5rem;
+  right: 3.5rem;
+  bottom: 14px;
+  background: rgba(255, 255, 255, 0.85);
+  padding: 6px 12px;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.footnotes .footnotes-list {
+  margin: 0;
+  padding-left: 16px;
+}
+
+.footnotes .footnote-item {
+  font-size: 0.65rem;
+}
+
+.footnotes .footnote-item p {
+  margin: 0;
+  font-size: 0.65rem;
+  color: #374151;
+}
+
+.footnotes .footnote-backref {
+  display: none;
+}
+
+.footnotes-sep {
+  display: none;
+}
+
+/* Image captions — solid bg (no blur) */
+.text-xs.text-gray-600.mt-2.text-center.italic {
+  background: rgba(255, 255, 255, 0.85);
+  padding: 4px 8px;
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  margin-top: 8px;
+}
+
+/* Headings in deep teal */
+.slidev-layout h1,
+.slidev-layout h2,
+.slidev-layout h3 {
+  color: #073b3a;
+  font-family: inherit;
+}
+
+/* Links in Sylva green */
+.slidev-layout a {
+  color: #07805b;
+}
+
+/* Inline code gets a subtle lime tint */
+.slidev-layout :not(pre) > code {
+  color: #073b3a;
+  background: rgba(183, 223, 87, 0.25);
+  padding: 0.1em 0.3em;
+  border-radius: 4px;
+}
+
+/* Lime bar under slide titles, like the guide's section headers */
+.slidev-layout h1 {
+  font-weight: 700;
+}
+.slidev-layout h1::after {
+  content: '';
+  display: block;
+  width: 3rem;
+  height: 4px;
+  margin-top: 0.4rem;
+  background: #b7df57;
+}
+.slidev-layout h1.text-center::after,
+.slidev-layout .text-center h1::after {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Bullets in Sylva green */
+.slidev-layout ul li::marker {
+  color: #07805b;
+}
+
+.slidev-layout pre,
+.slidev-layout code {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+/* Callouts: mint/green for info, orange for punchlines */
+.callout {
+  padding: 0.75rem 1rem;
+  background: #e7f2e7;
+  border-left: 4px solid #07805b;
+  border-radius: 3px;
+  color: #073b3a;
+}
+.callout-warn {
+  padding: 0.75rem 1rem;
+  background: #fbe6da;
+  border-left: 4px solid #e87942;
+  border-radius: 3px;
+  color: #073b3a;
+}
+</style>
+</body>
